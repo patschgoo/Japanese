@@ -87,11 +87,22 @@
     }, 60);
   }
 
+  // An embedding page may set data-theme itself; "system" leaves its choice alone
+  // and hands it back after Options overrode it.
+  let ownTheme = false;
+  let hostTheme = null;
   function applySettings() {
     const s = NI.store.settings;
     const el = doc.documentElement;
-    if (s.theme === "light" || s.theme === "dark") el.setAttribute("data-theme", s.theme);
-    else el.removeAttribute("data-theme");
+    if (s.theme === "light" || s.theme === "dark") {
+      if (!ownTheme) hostTheme = el.getAttribute("data-theme");
+      el.setAttribute("data-theme", s.theme);
+      ownTheme = true;
+    } else if (ownTheme) {
+      if (hostTheme) el.setAttribute("data-theme", hostTheme);
+      else el.removeAttribute("data-theme");
+      ownTheme = false;
+    }
     doc.body.classList.toggle("furi-hover", s.furigana === "hover");
   }
 
