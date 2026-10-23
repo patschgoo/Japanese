@@ -17,8 +17,8 @@
     // particles
     { s: "は", u: 2, kind: "particle", en: "topic marker — “as for …” (read わ)" },
     { s: "が", u: 8, kind: "particle", en: "subject marker; between two clauses: “but”" },
-    { s: "を", u: 4, kind: "particle", en: "marks the object of an action (read お)" },
-    { s: "に", u: 6, kind: "particle", en: "at (a time); to (a place or person); in/at (where something is)" },
+    { s: "を", u: 4, kind: "particle", en: "marks the object of an action (read お); also a route or a place you leave (道を渡る, 電車を降りる)" },
+    { s: "に", u: 6, kind: "particle", en: "at (a time); to (a place or person); in/at (where something is); for (a purpose: 飲みに行く)" },
     { s: "で", u: 3, kind: "particle", en: "in/by (a language or means); at (where an action happens)" },
     { s: "へ", u: 7, kind: "particle", en: "to, toward (direction; read え)" },
     { s: "と", u: 4, kind: "particle", en: "and (between nouns); with (someone); quotes what is said or thought" },

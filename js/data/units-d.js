@@ -16,7 +16,7 @@
       { j: "{大好|だいす}き", pos: "adj-na", en: "love, really like" },
       { j: "{上手|じょうず}", pos: "adj-na", en: "good at, skilled", note: "For other people. About yourself it can sound boastful." },
       { j: "{下手|へた}", pos: "adj-na", en: "bad at, poor at" },
-      { j: "できる", pos: "v1", en: "can do, be able to; be ready" },
+      { j: "できる", pos: "v1", noDrill: ["tai", "mashou", "teimasu"], en: "can do, be able to; be ready" },
       { j: "{少|すこ}し", pos: "adv", en: "a little, a few" },
       { j: "ほしい", pos: "adj-i", en: "want (a thing)" },
       { j: "{物|もの}", pos: "n", en: "thing (an object)" },
@@ -30,7 +30,7 @@
       { j: "すし", pos: "n", en: "sushi" },
       { j: "ラーメン", pos: "n", en: "ramen" },
       { j: "{甘|あま}い", pos: "adj-i", en: "sweet" },
-      { j: "{辛|から}い", pos: "adj-i", en: "spicy, hot; salty" },
+      { j: "{辛|から}い", pos: "adj-i", en: "spicy, hot" },
       { j: "{料理|りょうり}", pos: "n", en: "cooking; dish, cuisine" },
       { j: "{作|つく}る", pos: "v5", en: "make, cook" },
       { j: "{歌|うた}", pos: "n", en: "song; singing" },
@@ -50,10 +50,11 @@
       },
       {
         t: "Good at, bad at, can do",
-        body: "<p>上手 (good at) and 下手 (bad at) also take が. Compliment others with 上手; about yourself, say 下手 or [[あまり{上手|じょうず}じゃありません]]. できます means “can do”, again with が.</p>",
+        body: "<p>上手 (good at) and 下手 (bad at) also take が. Compliment others with 上手; about yourself, say 下手 or [[あまり{上手|じょうず}じゃありません]]. できます means “can do”, again with が. To play it down, add だけ (only): [[{少|すこ}しだけできます]], I can only do a little.</p>",
         ex: [
           ["ゆきさんは {歌|うた}が {上手|じょうず}です。", "Yuki is a good singer."],
           ["{日本語|にほんご}が {少|すこ}し できます。", "I can speak a little Japanese."],
+          ["{日本語|にほんご}が {少|すこ}しだけ できます。", "I can only speak a little Japanese."],
         ],
       },
       {
@@ -74,10 +75,11 @@
       },
       {
         t: "Which do you prefer? どちら・一番",
-        body: "<p>To compare two things: [[AとBとどちらが{好|す}きですか]]. Answer with [[Aのほうが{好|す}きです]] (I prefer A). For the favourite of a group, use 一番: [[{何|なに}が{一番|いちばん}{好|す}きですか]].</p>",
+        body: "<p>To compare two things: [[AとBとどちらが{好|す}きですか]]. Answer with [[Aのほうが{好|す}きです]] (I prefer A), and name the other one with より (than): [[{肉|にく}より{魚|さかな}のほうが{好|す}きです]]. For the favourite of a group, use 一番: [[{何|なに}が{一番|いちばん}{好|す}きですか]].</p>",
         ex: [
           ["{肉|にく}と {魚|さかな}と どちらが {好|す}きですか。", "Which do you like better, meat or fish?"],
           ["{魚|さかな}の ほうが {好|す}きです。", "I prefer fish."],
+          ["{肉|にく}より {魚|さかな}の ほうが {好|す}きです。", "I like fish more than meat."],
         ],
       },
     ],
@@ -88,6 +90,7 @@
       { jp: "ゆきさんは {歌|うた}が {上手|じょうず}ですね。", en: "Yuki, you're a great singer!" },
       { jp: "{私|わたし}は {料理|りょうり}が {下手|へた}です。", en: "I'm bad at cooking.", p: "が" },
       { jp: "{日本語|にほんご}が {少|すこ}し できます。", en: "I can speak a little Japanese.", p: "が" },
+      { jp: "{日本語|にほんご}が {少|すこ}しだけ できます。", en: "I can only speak a little Japanese." },
       { jp: "{新|あたら}しい スマホが ほしいです。", en: "I want a new smartphone.", p: "が" },
       { jp: "{日本|にほん}へ {行|い}きたいです。", en: "I want to go to Japan.", p: "へ" },
       { jp: "{何|なに}が {食|た}べたいですか。", en: "What do you want to eat?" },
@@ -96,6 +99,7 @@
       { jp: "{辛|から}い {料理|りょうり}が {好|す}きです。", en: "I like spicy food." },
       { jp: "{肉|にく}と {魚|さかな}と どちらが {好|す}きですか。", en: "Which do you like better, meat or fish?" },
       { jp: "{魚|さかな}の ほうが {好|す}きです。", en: "I prefer fish." },
+      { jp: "{肉|にく}より {魚|さかな}の ほうが {好|す}きです。", en: "I like fish more than meat." },
       { jp: "{果物|くだもの}の {中|なか}で {何|なに}が {一番|いちばん} {好|す}きですか。", en: "What's your favourite fruit?" },
       { jp: "{甘|あま}い {物|もの}が {大好|だいす}きです。", en: "I love sweet things." },
       { jp: "{晩|ばん}ご{飯|はん}を {作|つく}ります。", en: "I'll make dinner.", p: "を" },
@@ -222,7 +226,7 @@
       { jp: "みなさん、 {頑張|がんば}ってください。", en: "Good luck, everyone!" },
     ],
     sit: [
-      { q: "Your teacher is speaking too fast.", a: "ゆっくり {話|はな}してください。", o: ["ちょっと {待|ま}ってください。", "{急|いそ}いでください。", "ドアを {閉|し}めてください。"] },
+      { q: "Your teacher is speaking too fast.", a: "ゆっくり {話|はな}してください。", o: ["{写真|しゃしん}を {見|み}せてください。", "{急|いそ}いでください。", "ドアを {閉|し}めてください。"] },
       { q: "You didn't catch what someone said.", a: "もう{一度|いちど} {言|い}ってください。", o: ["{写真|しゃしん}を {撮|と}ってください。", "ここに {座|すわ}ってください。", "{急|いそ}いでください。"] },
       { q: "You'd like a stranger to take a picture of you and your friends.", a: "{写真|しゃしん}を {撮|と}ってください。", o: ["{写真|しゃしん}を {見|み}せてください。", "{窓|まど}を {開|あ}けてください。", "{電話|でんわ}してください。"] },
       { q: "A guest is standing at your door.", a: "どうぞ、 {入|はい}ってください。", o: ["{急|いそ}いでください。", "ドアを {閉|し}めてください。", "もう{一度|いちど} {言|い}ってください。"] },
@@ -247,7 +251,7 @@
       ],
       q: [
         { q: "What does Ken ask the woman to do?", a: "Take a photo of them", o: ["Show them the way", "Lend him a phone", "Speak slowly"] },
-        { q: "What does the teacher ask Ken to do?", a: "Close the window", o: ["Open the door", "Sit down", "Read a book"] },
+        { q: "What does the teacher ask Ken to do?", a: "Close the window", o: ["Open the window", "Open the door", "Read a book"] },
         { q: "What does Emma ask the teacher?", a: "To say it again", o: ["To speak slowly", "To open the window", "To show her a photo"] },
       ],
     },
@@ -267,10 +271,10 @@
     words: [
       { j: "{住|す}む", pos: "v5", en: "live (somewhere)", note: "Usually 〜に住んでいます." },
       { j: "{働|はたら}く", pos: "v5", en: "work" },
-      { j: "{知|し}る", pos: "v5", en: "get to know", note: "知っています = I know. I don't know = 知りません." },
+      { j: "{知|し}る", pos: "v5", noDrill: ["mashou"], en: "get to know", note: "知っています = I know. I don't know = 知りません." },
       { j: "{持|も}つ", pos: "v5", en: "hold, carry; have" },
       { j: "{結婚|けっこん}する", pos: "vs", en: "get married" },
-      { j: "{降|ふ}る", pos: "v5", en: "fall (rain, snow)" },
+      { j: "{降|ふ}る", pos: "v5", noDrill: ["tai", "mashou"], en: "fall (rain, snow)" },
       { j: "{雨|あめ}", pos: "n", en: "rain" },
       { j: "{雪|ゆき}", pos: "n", en: "snow" },
       { j: "{着|き}る", pos: "v1", en: "wear, put on (clothes)" },
@@ -331,7 +335,7 @@
       { jp: "もう {昼|ひる}ご{飯|はん}を {食|た}べましたか。", en: "Have you had lunch yet?" },
       { jp: "いいえ、 まだです。", en: "No, not yet." },
       { jp: "{子供|こども}たちは {公園|こうえん}で {遊|あそ}んでいます。", en: "The children are playing in the park.", p: "で" },
-      { jp: "{田中|たなか}{先生|せんせい}は {大学|だいがく}で {日本語|にほんご}を {教|おし}えています。", en: "Tanaka-sensei teaches Japanese at a university." },
+      { jp: "{田中|たなか}{先生|せんせい}は {学校|がっこう}で {日本語|にほんご}を {教|おし}えています。", en: "Tanaka-sensei teaches Japanese at the school." },
       { jp: "{雪|ゆき}が {降|ふ}っていますね。", en: "It's snowing, isn't it?" },
       { jp: "{傘|かさ}を {持|も}っていますか。", en: "Do you have an umbrella with you?", p: "を" },
       { jp: "エマさんは {新|あたら}しい {服|ふく}を {着|き}ています。", en: "Emma is wearing new clothes." },
@@ -362,7 +366,7 @@
     },
     culture: {
       t: "Phone manners",
-      body: "<p>もしもし is only for the phone, never face to face. On trains, keep your phone on silent and avoid calls. Messaging apps, LINE above all, are how most people actually keep in touch.</p>",
+      body: "<p>もしもし is mostly for the phone. On trains, keep your phone on silent and avoid calls. Messaging apps, LINE above all, are how most people actually keep in touch.</p>",
     },
   });
 
@@ -542,7 +546,7 @@
       },
       {
         t: "Shoes off: entering a home",
-        body: "<p>Homes have an entrance step (玄関, げんかん) where shoes come off. The host says いらっしゃい; you answer お邪魔します as you step up. Turn your shoes to face the door after taking them off.</p>",
+        body: "<p>Homes have an entrance area (玄関, げんかん) where shoes come off before you step up into the house. The host says いらっしゃい; you answer お邪魔します as you step up. Turn your shoes to face the door after taking them off.</p>",
         ex: [
           ["お{邪魔|じゃま}します。", "Excuse me for coming in."],
           ["{靴|くつ}を {脱|ぬ}いでください。", "Please take off your shoes."],
@@ -550,7 +554,7 @@
       },
     ],
     sentences: [
-      { jp: "ここで {写真|しゃしん}を {撮|と}っても いいですか。", en: "May I take photos here?", p: "で" },
+      { jp: "ここで {写真|しゃしん}を {撮|と}っても いいですか。", en: "May I take photos here?", p: "を", alt: ["に"] },
       { jp: "はい、 どうぞ。", en: "Yes, go ahead." },
       { jp: "すみません、 ここは ちょっと…。", en: "Sorry, not here, I'm afraid…" },
       { jp: "{美術館|びじゅつかん}の {中|なか}で {写真|しゃしん}を {撮|と}っては いけません。", en: "You mustn't take photos inside the museum." },
@@ -559,7 +563,7 @@
       { jp: "トイレを {使|つか}っても いいですか。", en: "May I use the toilet?", p: "を" },
       { jp: "{明日|あした} {休|やす}んでも いいですか。", en: "May I take tomorrow off?" },
       { jp: "これ、 {試着|しちゃく}しても いいですか。", en: "May I try this on?" },
-      { jp: "ここに {車|くるま}を {止|と}めては いけません。", en: "You can't park here.", p: "に" },
+      { jp: "ここに {車|くるま}を {止|と}めては いけません。", en: "You can't park here.", p: "を" },
       { jp: "{窓|まど}を {開|あ}けても いいですか。", en: "Do you mind if I open the window?" },
       { jp: "ここで {泳|およ}いでも いいですか。", en: "Is it OK to swim here?" },
       { jp: "{荷物|にもつ}を ここに {置|お}いても いいですか。", en: "May I leave my bags here?" },
@@ -573,7 +577,7 @@
       { q: "You'd like to take a photo inside a temple.", a: "{写真|しゃしん}を {撮|と}っても いいですか。", o: ["{写真|しゃしん}を {撮|と}ってください。", "{写真|しゃしん}を {撮|と}っては いけません。", "{写真|しゃしん}を {見|み}せてください。"] },
       { q: "You step into a Japanese friend's home.", a: "お{邪魔|じゃま}します。", o: ["いらっしゃい。", "いただきます。", "ごちそうさまでした。"] },
       { q: "You'd like to try on a jacket in a shop.", a: "{試着|しちゃく}しても いいですか。", o: ["{試着|しちゃく}しては いけません。", "{荷物|にもつ}を {持|も}ちましょうか。", "{試着|しちゃく}しましょう。"] },
-      { q: "What does a no-smoking sign say?", a: "たばこを {吸|す}っては いけません", o: ["たばこを {吸|す}っても いいです", "たばこを {吸|す}いましょう", "たばこを ください"] },
+      { q: "How do you say smoking isn't allowed here?", a: "たばこを {吸|す}っては いけません", o: ["たばこを {吸|す}っても いいです", "たばこを {吸|す}いましょう", "たばこを ください"] },
     ],
     dialogue: {
       title: "Visiting Yuki's family",

@@ -14,7 +14,7 @@ train (各停) to the shinkansen (新幹線) as you remember them.
 
 | | |
 |---|---|
-| **20 units** in 4 stages | 447 words, 358 example sentences, 20 dialogues, grammar notes and culture notes |
+| **20 units** in 4 stages | 448 words, 364 example sentences, 20 dialogues, grammar notes and culture notes |
 | **Lessons** | 13 exercise types: new-word cards, meaning/word choice, listening, typing (romaji turns into kana), matching, particle gaps, sentence building, conjugation drills, prices and times, “what do you say?” situations, conversation questions |
 | **Reviews** | Spaced repetition with expanding intervals (4 h → 1 d → 3 d → 1 w → 2 w → 1 mo → 3 mo → 6 mo) |
 | **Kana trainer** | Hiragana check, katakana drills (answer with the hiragana you know), 75 loanwords, look-alike katakana (シ/ツ, ソ/ン…) |
@@ -51,8 +51,8 @@ The full reasoning (with sources) is on the site's **Guide** page
 Grammar order: greetings → AはBです, か, の, も → こそあど and question words →
 numbers, prices, time → ます-verbs with を/に/で/へ/と and the past →
 あります/います, family, adjectives, likes/wants → て-form (requests,
-〜ています, invitations, permission) → plain forms, と思います, から,
-〜たことがある, 〜たほうがいい. Roughly JLPT N5 and the start of N4.
+〜ています, permission) and invitations (〜ませんか, 〜ましょう) → plain
+forms, と思います, から, 〜たことがある, 〜くなる, 〜たほうがいい. Roughly JLPT N5 and the start of N4.
 
 ## Run it
 
@@ -100,7 +100,9 @@ sentence-building exercise).
 { jp: "{毎朝|まいあさ} コーヒーを {飲|の}みます。", en: "I drink coffee every morning.", p: "を" }
 ```
 
-`p` names a particle to blank out in the particle exercise. Words are listed
+`p` names a particle to blank out in the particle exercise; `alt` can list
+other particles that would also fit there, so they are never offered as wrong
+answers. Words are listed
 once, in dictionary form with a part-of-speech code; all conjugated forms are
 generated:
 

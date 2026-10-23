@@ -22,7 +22,7 @@
       { j: "{起|お}きる", pos: "v1", en: "get up, wake up" },
       { j: "{寝|ね}る", pos: "v1", en: "go to bed, sleep" },
       { j: "{勉強|べんきょう}する", pos: "vs", en: "study" },
-      { j: "{分|わ}かる", pos: "v5", en: "understand, know", note: "分かりません = I don't understand. 分かりました = Got it." },
+      { j: "{分|わ}かる", pos: "v5", noDrill: ["tai", "mashou"], en: "understand, know", note: "分かりません = I don't understand. 分かりました = Got it." },
       { j: "{朝|あさ}ご{飯|はん}", pos: "n", en: "breakfast" },
       { j: "{昼|ひる}ご{飯|はん}", pos: "n", en: "lunch" },
       { j: "{晩|ばん}ご{飯|はん}", pos: "n", en: "dinner" },
@@ -36,7 +36,7 @@
       { j: "{時々|ときどき}", pos: "adv", en: "sometimes" },
       { j: "あまり", pos: "adv", en: "(not) much, (not) very", note: "With a negative: あまり見ません = I don't watch it much." },
       { j: "{全然|ぜんぜん}", pos: "adv", en: "(not) at all", note: "With a negative." },
-      { j: "{早|はや}い", pos: "adj-i", en: "early; fast" },
+      { j: "{早|はや}い", pos: "adj-i", en: "early; quick" },
     ],
     grammar: [
       {
@@ -58,7 +58,7 @@
       },
       {
         t: "Clock times take に",
-        body: "<p>A specific time or day takes に: [[{7|しち}{時|じ}に]], [[{月曜日|げつようび}に]]. Words relative to now take no particle: 今日, 明日, 昨日, 毎日, 毎朝, 今.</p>",
+        body: "<p>A specific time or day takes に: [[{7|しち}{時|じ}に]], [[{月曜日|げつようび}に]]. Words that count from today, like 今日, 明日, 昨日 and 今, take no particle, and neither do 毎日 and 毎朝.</p>",
         ex: [
           ["{6|ろく}{時|じ}に {起|お}きます。", "I get up at six."],
           ["{毎朝|まいあさ} {6|ろく}{時|じ}に {起|お}きます。", "I get up at six every morning."],
@@ -258,8 +258,8 @@
     goal: "Ask and say where things and people are, and what there is in a place.",
     intro: "Japanese has two verbs for “there is”: one for things and one for living beings. Add a handful of position words and you can describe any room or street.",
     words: [
-      { j: "ある", pos: "v5r-i", en: "be, exist (things); have", note: "For things and plants. Negative: ありません." },
-      { j: "いる", pos: "v1", en: "be, exist (people, animals)", note: "For people and animals." },
+      { j: "ある", pos: "v5r-i", noDrill: ["tai", "mashou", "teimasu"], en: "be, exist (things); have", note: "For things and plants. Negative: ありません." },
+      { j: "いる", pos: "v1", noDrill: ["teimasu"], en: "be, exist (people, animals)", note: "For people and animals." },
       { j: "{上|うえ}", pos: "n", en: "on, above, top" },
       { j: "{下|した}", pos: "n", en: "under, below" },
       { j: "{中|なか}", pos: "n", en: "inside, in" },
@@ -365,7 +365,7 @@
       ],
       q: [
         { q: "Where is the convenience store?", a: "In front of the station", o: ["Behind the station", "Next to the hospital", "Inside the station"] },
-        { q: "Where is the bank?", a: "Next to the convenience store", o: ["In front of the station", "Behind the park", "There isn't one"] },
+        { q: "Where is the bank?", a: "Next to the convenience store", o: ["Behind the station", "Behind the park", "There isn't one"] },
         { q: "Where is Tanaka-sensei?", a: "In the library", o: ["In the classroom", "At the bank", "At home"] },
       ],
     },
@@ -512,7 +512,7 @@
       { j: "{静|しず}か", pos: "adj-na", en: "quiet" },
       { j: "にぎやか", pos: "adj-na", en: "lively, bustling" },
       { j: "{有名|ゆうめい}", pos: "adj-na", en: "famous" },
-      { j: "{元気|げんき}", pos: "adj-na", en: "well, healthy, lively", note: "お元気ですか。— How are you?" },
+      { j: "{元気|げんき}", pos: "adj-na", en: "well, healthy, lively", note: "お元気ですか。— How have you been? (to someone you haven't seen for a while)" },
       { j: "{便利|べんり}", pos: "adj-na", en: "convenient, handy" },
       { j: "{簡単|かんたん}", pos: "adj-na", en: "easy, simple" },
       { j: "とても", pos: "adv", en: "very" },
@@ -567,7 +567,7 @@
       },
       {
         t: "Linking: 〜くて / 〜で, and “but”",
-        body: "<p>To join two adjectives, い-adjectives change い to <b>くて</b> and な-adjectives add <b>で</b>: [[{安|やす}くておいしい]] (cheap and tasty), [[きれいで{静|しず}か]] (pretty and quiet).</p><p>For “but”, put が between two sentences, or start the next sentence with でも.</p>",
+        body: "<p>To join two adjectives, い-adjectives change い to <b>くて</b> (いい becomes よくて) and な-adjectives add <b>で</b>: [[{安|やす}くておいしい]] (cheap and tasty), [[きれいで{静|しず}か]] (pretty and quiet).</p><p>For “but”, put が between two sentences, or start the next sentence with でも.</p>",
         ex: [
           ["{安|やす}くて おいしいです。", "It's cheap and tasty."],
           ["{忙|いそが}しいですが、 {楽|たの}しいです。", "It's busy, but fun."],
@@ -587,7 +587,7 @@
       { jp: "{仕事|しごと}は どうですか。", en: "How's work?" },
       { jp: "{忙|いそが}しいですが、 {楽|たの}しいです。", en: "It's busy, but fun." },
       { jp: "いい {天気|てんき}ですね。", en: "Nice weather, isn't it?" },
-      { jp: "お{元気|げんき}ですか。", en: "How are you?" },
+      { jp: "お{元気|げんき}ですか。", en: "How have you been?" },
       { jp: "はい、 {元気|げんき}です。", en: "I'm fine, thanks." },
       { jp: "この スマホは {新|あたら}しくて {便利|べんり}です。", en: "This smartphone is new and handy." },
       { jp: "{日本語|にほんご}は {難|むずか}しいです。 でも、 {面白|おもしろ}いです。", en: "Japanese is hard. But it's interesting." },

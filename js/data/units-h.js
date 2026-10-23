@@ -35,7 +35,7 @@
     grammar: [
       {
         t: "Polite and casual versions",
-        body: "<p>Many greetings have a short casual form and a longer polite form. Adding ございます makes a phrase polite.</p><p>Use the polite form with anyone who isn't a close friend or family member: shop staff, teachers, colleagues, neighbours. It is never wrong.</p>",
+        body: "<p>Many greetings have a short casual form and a longer polite form. Adding ございます makes おはよう and ありがとう polite, and おやすみ becomes おやすみなさい.</p><p>Use the polite form with anyone who isn't a close friend or family member: shop staff, teachers, colleagues, neighbours. It is never wrong.</p>",
         ex: [
           ["おはよう。", "Morning! (to a friend)"],
           ["おはようございます。", "Good morning. (to anyone)"],
@@ -87,7 +87,7 @@
       { jp: "ごちそうさまでした。", en: "Thank you for the meal." },
       { jp: "おやすみなさい。", en: "Good night." },
       { jp: "じゃあね。また{明日|あした}！", en: "Bye! See you tomorrow!" },
-      { jp: "すみません、 お{願|ねが}いします。", en: "Excuse me, could I ask you something? (lit. please)" },
+      { jp: "すみません、 お{願|ねが}いします。", en: "Excuse me, please! (calling staff over, e.g. to order)" },
       { jp: "ごめんなさい。", en: "I'm sorry." },
       { jp: "さようなら。", en: "Goodbye." },
     ],
@@ -118,7 +118,7 @@
         ["K", "いただきます。", "(before eating)"],
         ["*", "After dinner."],
         ["K", "ごちそうさまでした。", "Thank you for the meal."],
-        ["Y", "いいえ。", "Not at all."],
+        ["Y", "いいえ、 どういたしまして。", "You're very welcome."],
         ["K", "おやすみなさい。", "Good night."],
         ["Y", "おやすみなさい。また{明日|あした}。", "Good night. See you tomorrow."],
       ],
@@ -169,7 +169,7 @@
     grammar: [
       {
         t: "A は B です: “A is B”",
-        body: "<p>This one pattern carries you a long way. は marks the <b>topic</b>, the thing you are talking about, and is read <b>わ</b>. です at the end makes the sentence polite.</p><p>Japanese has no words for “a” or “the”, nouns have no plural, and です doesn't change for I, you or she. If the topic is obvious, leave it out: [[{学生|がくせい}です。]] alone means “I'm a student.”</p>",
+        body: "<p>This one pattern carries you a long way. は marks the <b>topic</b>, the thing you are talking about, and is read <b>わ</b>. です at the end makes the sentence polite.</p><p>Japanese has no words for “a” or “the”, nouns don't usually mark the plural, and です doesn't change for I, you or she. If the topic is obvious, leave it out: [[{学生|がくせい}です。]] alone means “I'm a student.”</p>",
         ex: [
           ["{私|わたし}は {学生|がくせい}です。", "I'm a student."],
           ["ケンさんは アメリカ{人|じん}です。", "Ken is American."],
@@ -263,7 +263,7 @@
     },
     culture: {
       t: "Names in Japan",
-      body: "<p>Japanese names put the family name first: 田中ゆき is Yuki of the Tanaka family. Most people use family name + さん, even with colleagues they've known for years. First names are for close friends and children.</p><p>At work, introductions come with business cards (名刺, めいし), offered and received with both hands and a small bow.</p>",
+      body: "<p>Japanese names put the family name first: 山田ゆき is Yuki of the Yamada family. Most people use family name + さん, even with colleagues they've known for years. First names are for close friends and children.</p><p>At work, introductions come with business cards (名刺, めいし), offered and received with both hands and a small bow.</p>",
     },
   });
 

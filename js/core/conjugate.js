@@ -12,7 +12,11 @@
      vs     する and noun+する            勉強する
      adj-i  い-adjective                   高い
      adj-ix いい (conjugates from よい)
-     adj-na な-adjective                   静か */
+     adj-na な-adjective                   静か
+
+   A word can list drills it should stay out of, for forms that exist on
+   paper but aren't said: { j: "ある", pos: "v5r-i", noDrill: ["tai"] }
+   keeps ありたいです out of the 〜たい drill. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
@@ -213,7 +217,7 @@
 
   function drillAnswers(entry, target) {
     const d = DRILLS[target];
-    if (!d) return null;
+    if (!d || (entry.noDrill && entry.noDrill.includes(target))) return null;
     const f = forms(entry);
     if (isVerb(entry.pos)) return d.verb ? d.verb(f) : null;
     if (entry.pos === "adj-na") return d.na ? d.na(f) : null;

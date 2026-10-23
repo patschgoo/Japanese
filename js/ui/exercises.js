@@ -310,7 +310,8 @@
   T.particle = (sen, target, rng) => {
     const toks = NI.lex.tokens(sen.jp);
     const idx = toks.findIndex((t) => t.entry && t.entry.kind === "grammar" && t.entry.s === target);
-    const avoid = new Set([target].concat(SAME[target] || []));
+    // sen.alt lists particles that would also fit this sentence (写真に撮る).
+    const avoid = new Set([target].concat(SAME[target] || [], sen.alt || []));
     const opts = U.shuffle([target].concat(U.sample(PARTICLES.filter((p) => !avoid.has(p)), 3, rng)), rng);
     // Render with the chosen token blanked out.
     let k = -1;
@@ -353,7 +354,7 @@
       if (i < last && own.some((x) => /^(v|adj)/.test(x.entry.pos || "") || x.entry.kind === "form")) strict = true;
       if (i === last || !own.length) return false;
       const end = own[own.length - 1].entry;
-      if (end.kind === "grammar" && PARTICLES.indexOf(end.s) >= 0 && end.s !== "の") return true;
+      if (end.kind === "grammar" && (PARTICLES.indexOf(end.s) >= 0 || end.s === "より") && end.s !== "の") return true;
       return own.length === 1 && TIME_WORDS.has(end.pos);
     });
     const blocks = [];

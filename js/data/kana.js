@@ -117,7 +117,7 @@
     { k: "ガソリンスタンド", en: "petrol station, gas station", note: "Made in Japan." },
     { k: "コンセント", en: "power socket", note: "Made in Japan; nothing to do with consent." },
     { k: "ホッチキス", en: "stapler", note: "From the Hotchkiss brand name." },
-    { k: "シャープペンシル", en: "mechanical pencil", note: "From the Sharp brand; often シャーペン." },
+    { k: "シャープペンシル", en: "mechanical pencil", note: "Often シャーペン. The Sharp company took its name from an early one, the Ever-Ready Sharp Pencil." },
     { k: "ペットボトル", en: "plastic bottle", note: "From PET, the plastic." },
     { k: "レジ", en: "till, checkout", note: "From register." },
     { k: "バイキング", en: "all-you-can-eat buffet", note: "From “Viking”, after a Tokyo hotel restaurant." },
@@ -129,7 +129,7 @@
   const LOOKALIKES = [
     { set: ["シ", "ツ"], tip: "シ (shi): dots on the left, long stroke sweeps up from the bottom. ツ (tsu): dots along the top, long stroke falls from the top right." },
     { set: ["ソ", "ン"], tip: "ソ (so): short stroke at the top, both strokes fall downward. ン (n): a dot on the left, the long stroke sweeps up." },
-    { set: ["ク", "ケ", "タ"], tip: "ク (ku) is two strokes. タ (ta) adds a short stroke inside. ケ (ke) has a straight stroke standing apart." },
+    { set: ["ク", "ケ", "タ"], tip: "ク (ku) is two strokes. タ (ta) adds a short stroke inside. ケ (ke): the top line runs straight across without turning down, and a third stroke falls from its middle." },
     { set: ["ウ", "ワ", "フ"], tip: "ウ (u) has a short stroke on top. ワ (wa) has a vertical stroke on the left. フ (fu) is a single stroke." },
     { set: ["ヌ", "ス"], tip: "ヌ (nu) has an extra stroke crossing its tail. ス (su) doesn't." },
     { set: ["マ", "ア"], tip: "ア (a) has a long tail sweeping down. マ (ma) ends in a short dot." },
@@ -157,7 +157,7 @@
     ["{会社員|かいしゃいん}", "office worker"], ["エンジニア", "engineer"], ["プログラマー", "programmer"], ["デザイナー", "designer"],
     ["{教師|きょうし}", "teacher (about yourself)"], ["{医者|いしゃ}", "doctor"], ["{看護師|かんごし}", "nurse"],
     ["{公務員|こうむいん}", "civil servant"], ["{店員|てんいん}", "shop assistant"], ["シェフ", "chef"], ["{研究者|けんきゅうしゃ}", "researcher"],
-    ["{弁護士|べんごし}", "lawyer"], ["アーティスト", "artist"], ["フリーランス", "freelancer"], ["{主婦|しゅふ}", "homemaker"],
+    ["{弁護士|べんごし}", "lawyer"], ["アーティスト", "artist"], ["フリーランス", "freelancer"], ["{主婦|しゅふ}", "housewife"], ["{主夫|しゅふ}", "househusband"],
   ].map(([j, en]) => ({ j, en }));
 
   const HOBBIES = [

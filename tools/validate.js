@@ -62,6 +62,9 @@ function engineTests(NI) {
   eq("いい neg", F.base(NI.conj.forms({ j: "いい", pos: "adj-ix" }).neg), "よくない");
   eq("高い past", F.base(NI.conj.forms({ j: "{高|たか}い", pos: "adj-i" }).past), "高かった");
   eq("静か na", F.base(NI.conj.forms({ j: "{静|しず}か", pos: "adj-na" }).na), "静かな");
+  const aru = { j: "ある", pos: "v5r-i", noDrill: ["tai"] };
+  eq("noDrill skips ありたい", NI.conj.drillAnswers(aru, "tai"), null);
+  eq("noDrill keeps other drills", NI.conj.drillAnswers(aru, "nai")[0], "ない");
 
   const N = NI.num;
   eq("300", N.toKana(300), "さんびゃく");
@@ -109,6 +112,8 @@ function builderTests(NI) {
   ok("{古|ふる}くて きれいな {町|まち}です。", [1, 0, 2], false);
   ok("はい、 {兄|あに}が {一人|ひとり} います。", [0, 1, 2, 3], true);
   ok("{富士山|ふじさん}に {登|のぼ}った ことが ありますか。", [1, 2, 0, 3], false);
+  ok("{肉|にく}より {魚|さかな}の ほうが {好|す}きです。", [1, 2, 0, 3], true);
+  ok("{肉|にく}より {魚|さかな}の ほうが {好|す}きです。", [1, 0, 2, 3], false);
 }
 
 // Every part of every unit builds a lesson whose exercises render.
@@ -219,6 +224,7 @@ function main() {
       for (const p of [].concat(s.p || [])) {
         if (!toks.some((t) => t.entry && t.entry.kind === "grammar" && t.entry.s === p)) err(S, "particle target " + p + " not found");
       }
+      for (const a of s.alt || []) if (!s.p || [].concat(s.p).includes(a)) err(S, "alt particle " + a + " needs a different p");
     }
     (u.grammar || []).forEach((g, gi) => {
       const G = U + " grammar " + (gi + 1);
