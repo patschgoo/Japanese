@@ -1,5 +1,6 @@
-/* Kana trainer: charts with audio, quick-fire drills (katakana → hiragana,
-   kana → romaji), loanword reading and look-alike katakana. */
+/* Kana trainer: practice and tests (kana-practice.js), a chart of hiragana
+   and katakana side by side with audio, stroke order and how well you know
+   each one, handwriting, loanword reading and look-alike katakana. */
 (function (root) {
   "use strict";
   const NI = root.NI;
@@ -7,109 +8,170 @@
   const esc = ui.esc;
   const U = NI.util;
   const K = NI.kana;
+  const doc = root.document;
   const pages = (NI.pages = NI.pages || {});
 
   const TABS = [
-    ["kata", "Katakana", "カタカナ"],
-    ["hira", "Hiragana check", "ひらがな"],
-    ["test", "Test", "テスト"],
+    ["practice", "Practice", "れんしゅう"],
+    ["chart", "Chart", "ひょう"],
+    ["write", "Write", "かく"],
     ["loan", "Loanwords", "がいらいご"],
     ["pairs", "Look-alikes", "にている じ"],
-    ["write", "Write", "かく"],
   ];
+  // Older links: #kana-kata, #kana-hira and #kana-test open a ready-made practice.
+  const ALIAS = { kata: "kata", hira: "hira", test: "mixed" };
+  const tabOf = (args) => (ALIAS[args[0]] ? "practice" : TABS.some((t) => t[0] === args[0]) ? args[0] : "practice");
 
-  function groupsFor(script) {
+  // ---------------------------------------------------------------------------
+  // The chart
+
+  const LEVEL = { known: "Known", learning: "Learning", weak: "Needs practice", new: "Not practised yet" };
+
+  function cell(k, rom) {
+    const lv = NI.kanaPractice.level(k);
+    return '<button class="kc-cell lv-' + lv + '" type="button" data-kc="' + esc(k) + '" aria-label="' + esc(k + ", " + rom + ": " + LEVEL[lv]) + '"><b lang="ja">' + esc(k) + "</b><small>" + esc(rom) + "</small></button>";
+  }
+  const cellsOf = (r) => r.cells.filter(Boolean);
+
+  function chartBody() {
     const D = NI.data.kana;
-    const g = [
-      { id: "basic", label: "Basic 46", rows: D.ROWS },
-      { id: "daku", label: "゛ and ゜ (dakuten)", rows: D.DAKUTEN },
-      { id: "yoon", label: "Small ゃゅょ combinations", rows: D.YOON },
-    ];
-    if (script === "kata") g.push({ id: "ext", label: "Extra katakana sounds", rows: D.EXTENDED, kataOnly: true });
-    return g;
+    const side = (row, kata) => '<div class="kc-side">' + cellsOf(row).map((c) => cell(kata ? K.toKatakana(c[0]) : c[0], c[1])).join("") + "</div>";
+    const rows = (list) => list.map((r) => '<div class="kc-row">' + side(r, false) + side(r, true) + "</div>").join("");
+    // わ を and ん share a line, as on most charts.
+    const basic = D.ROWS.filter((r) => r.id !== "n").map((r) => (r.id === "wa" ? { id: "wa", cells: r.cells.concat(D.ROWS.find((x) => x.id === "n").cells) } : r));
+    const P = NI.kanaPractice;
+    return (
+      "<p>Katakana spells the same sounds as hiragana, mostly for words from other languages: コーヒー (coffee), テレビ (TV). Tap any kana to hear it, watch how it’s written and try writing it.</p>" +
+      '<p class="kc-know small">Hiragana <b>' + P.mastery("hira") + "%</b> known · Katakana <b>" + P.mastery("kata") + "%</b> known</p>" +
+      '<p class="kc-legend small">' + ["known", "learning", "weak", "new"].map((lv) => '<span class="lv-' + lv + '"><i aria-hidden="true"></i>' + LEVEL[lv] + "</span>").join("") + "</p>" +
+      '<div class="kc-chart">' +
+      '<div class="kc-row kc-heads" aria-hidden="true"><span>Hiragana</span><span>Katakana</span></div>' +
+      '<h3 class="kc-h">Basic</h3>' + rows(basic) +
+      '<h3 class="kc-h">With ゛ and ゜</h3>' + rows(D.DAKUTEN) +
+      '<h3 class="kc-h">With small ゃ ゅ ょ</h3>' + rows(D.YOON) +
+      '<h3 class="kc-h">Extra katakana for other languages</h3>' +
+      '<div class="kc-extra">' + D.EXTENDED.map((r) => '<div class="kc-side">' + cellsOf(r).map((c) => cell(c[0], c[1])).join("") + "</div>").join("") + "</div>" +
+      "</div>" +
+      '<p class="small muted">Known means right three times in a row. Stroke order from <a href="http://kanjivg.tagaini.net" target="_blank" rel="noopener">KanjiVG</a> (CC BY-SA 3.0).</p>'
+    );
   }
 
-  // Cells for a script: katakana is derived from the hiragana tables.
-  const cellKana = (cell, script, row) => (row && row.kataOnly ? cell[0] : script === "kata" ? K.toKatakana(cell[0]) : cell[0]);
+  // Up to three words with the kana, ones that start with it first.
+  function examples(k) {
+    const kata = K.hasKatakana(k);
+    const list = kata
+      ? NI.data.kana.LOANWORDS.map((w) => ({ show: w.k, say: w.k, en: w.en }))
+      : NI.course.words.filter((w) => w.en && /^[ぁ-ゖー]+$/.test(w.r)).map((w) => ({ show: w.head, say: w.r, en: w.en, r: w.r }));
+    const has = (w) => K.toHiragana(w.say).indexOf(K.toHiragana(k)) >= 0;
+    const starts = (w) => K.toHiragana(w.say).startsWith(K.toHiragana(k));
+    const byLen = (a, b) => a.say.length - b.say.length;
+    return list.filter(starts).sort(byLen).concat(list.filter((w) => has(w) && !starts(w)).sort(byLen)).slice(0, 3);
+  }
 
-  function chart(script) {
-    let html = "";
-    for (const g of groupsFor(script)) {
-      html += '<section class="kana-group"><h3>' + esc(g.label) + '</h3><div class="kana-grid cols-' + g.rows[0].cells.length + '">';
-      for (const row of g.rows) {
-        for (const cell of row.cells) {
-          if (!cell) {
-            html += '<span class="k-cell empty" aria-hidden="true"></span>';
-            continue;
-          }
-          const k = g.kataOnly ? cell[0] : cellKana(cell, script);
-          const hira = K.toHiragana(k);
-          const stat = NI.store.state.kana[k];
-          const weak = stat && stat[1] > stat[0] ? " weak" : "";
-          html +=
-            '<button class="k-cell' + weak + '" type="button" data-say="' + esc(hira) + '" aria-label="' + esc(k + " " + cell[1]) + '">' +
-            '<span class="k-big" lang="ja">' + esc(k) + "</span>" +
-            '<span class="k-rom">' + esc(cell[1]) + "</span>" +
-            (script === "kata" ? '<span class="k-hira" lang="ja">' + esc(hira) + "</span>" : "") +
-            "</button>";
-        }
+  // The card for one kana: its sound, stroke order, your record, words with it.
+  function sheet(k) {
+    const m = doc.getElementById("modal");
+    if (!m) return;
+    ui.hidePop();
+    const h = K.toHiragana(k);
+    const pair = Array.from(h).length === Array.from(k).length ? [h, K.toKatakana(h)] : [k];
+    const rom = NI.kanaPractice.toRomaji(k);
+    const s = NI.store.state.kana[k];
+    const lv = NI.kanaPractice.level(k);
+    const ex = examples(k);
+    const chars = (w) => Array.from(w).filter((c) => NI.strokes.has(c));
+    let showing = k;
+    m.innerHTML =
+      '<div class="modal-card kc-card" role="dialog" aria-modal="true" aria-labelledby="kc-title">' +
+      '<div class="bd-head"><h2 id="kc-title"><span lang="ja">' + esc(k) + "</span> " + esc(rom) + "</h2>" +
+      '<button class="icon-btn" type="button" data-kc-close aria-label="Close">' + ui.ICON.close + "</button></div>" +
+      (pair.length > 1 ? '<div class="kc-pick" role="group" aria-label="Script">' + pair.map((x) => '<button type="button" class="kc-pk" data-show="' + esc(x) + '" aria-pressed="' + (x === k) + '"><span lang="ja">' + esc(x) + "</span><small>" + (K.hasKatakana(x) ? "katakana" : "hiragana") + "</small></button>").join("") + "</div>" : "") +
+      '<div class="kc-draw"></div>' +
+      '<div class="row center wrap kc-btns">' +
+      (NI.speech.supported ? '<button class="btn small" type="button" data-say="' + esc(h) + '">' + ui.ICON.speaker + "<span>Listen</span></button>" : "") +
+      '<button class="btn small ghost" type="button" data-kc="replay">' + ui.ICON.repeat + "<span>Replay</span></button>" +
+      '<button class="btn small ghost" type="button" data-kc="trace">Trace it</button>' +
+      '<button class="btn small ghost" type="button" data-kc="memory">From memory</button></div>' +
+      '<p class="kc-rec small lv-' + lv + '"><i aria-hidden="true"></i>' + esc(LEVEL[lv]) + (s ? " · " + U.plural(s[0], "right answer") + ", " + s[1] + " missed" : "") + "</p>" +
+      (ex.length
+        ? '<ul class="kc-words">' + ex.map((w) => "<li>" + (NI.speech.supported ? ui.say(w.say, w.say, "small") : "") + '<span class="jp">' + ui.jp(w.show, { tokens: false }) + "</span><span>" + esc(w.en) + "</span></li>").join("") + "</ul>"
+        : "") +
+      '<div class="row center"><button class="btn primary small" type="button" data-kc="practise">Practise this row</button></div>' +
+      "</div>";
+    m.hidden = false;
+    const box = m.querySelector(".kc-draw");
+    let anim = null;
+    const show = (mode) => {
+      if (anim) anim.stop();
+      const cs = chars(showing);
+      if (mode === "trace" || mode === "memory") {
+        // One character at a time: the first, then the next when it's done.
+        let i = 0;
+        const one = () => {
+          box.innerHTML = '<div class="kc-pad"></div><p class="small muted kc-pad-note">' + (mode === "trace" ? "Trace each stroke from the dot, in order." : "Write it from memory, stroke by stroke.") + "</p>";
+          NI.strokes.pad(box.querySelector(".kc-pad"), cs[i], {
+            guide: mode === "trace",
+            arrows: mode === "trace",
+            loose: mode === "memory",
+            onStroke: (r) => NI.fx.play(r.ok ? "tick" : "wrong"),
+            onDone: ({ mistakes }) => {
+              NI.store.log("wr", 1);
+              if (++i < cs.length) return setTimeout(one, 600);
+              NI.fx.play(mistakes ? "chime" : "right");
+              if (NI.speech.supported) NI.speech.speak(h);
+            },
+          });
+        };
+        return one();
       }
-      html += "</div></section>";
-    }
-    return html;
-  }
-
-  function poolFor(script, groups) {
-    const out = [];
-    for (const g of groupsFor(script)) {
-      if (groups.indexOf(g.id) < 0) continue;
-      for (const row of g.rows) for (const cell of row.cells) if (cell) out.push({ k: g.kataOnly ? cell[0] : cellKana(cell, script), rom: cell[1], hira: g.kataOnly ? K.toHiragana(cell[0]) : cell[0] });
-    }
-    return out;
-  }
-
-  function lookalikeOf(k) {
-    const set = NI.data.kana.LOOKALIKES.find((s) => s.set.indexOf(k) >= 0);
-    return set ? set.set.filter((x) => x !== k) : [];
-  }
-
-  // A drill is a list of {prompt, answer, options, after} rendered by quiz().
-  function kanaDrill(script, groups, answerMode) {
-    const pool = poolFor(script, groups);
-    if (!pool.length) return [];
-    const stats = NI.store.state.kana;
-    const weight = (it) => {
-      const s = stats[it.k] || [0, 0];
-      return 1 + s[1] * 2 - Math.min(s[0], 4) * 0.15;
+      box.innerHTML = '<div class="kc-diagrams">' + cs.map((c) => NI.strokes.diagram(c)).join("") + "</div>" + '<p class="small muted">' + esc(cs.map((c) => U.plural(NI.strokes.count(c), "stroke")).join(" + ")) + "</p>";
+      anim = NI.strokes.animate(box);
     };
-    // Weighted sample without replacement: shaky kana come up more often.
-    const picks = [];
-    const bag = pool.slice();
-    while (picks.length < Math.min(20, pool.length)) {
-      const total = bag.reduce((a, b) => a + weight(b), 0);
-      let r = Math.random() * total;
-      let idx = 0;
-      for (; idx < bag.length - 1; idx++) {
-        r -= weight(bag[idx]);
-        if (r <= 0) break;
+    show();
+    const close = () => {
+      if (anim) anim.stop();
+      m.hidden = true;
+      m.innerHTML = "";
+      doc.removeEventListener("keydown", onKey, true);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        close();
       }
-      picks.push(bag.splice(idx, 1)[0]);
-    }
-    const label = (it) => (answerMode === "rom" ? it.rom : it.hira);
-    return picks.map((it) => {
-      const near = lookalikeOf(it.k).map((k) => pool.find((p) => p.k === k)).filter(Boolean);
-      const rest = U.shuffle(pool.filter((p) => p !== it && near.indexOf(p) < 0 && label(p) !== label(it)));
-      const opts = U.shuffle([it].concat(near.slice(0, 2), rest).filter((p, i, a) => a.findIndex((q) => label(q) === label(p)) === i).slice(0, 4));
-      return {
-        prompt: '<div class="kana-prompt hand" lang="ja">' + esc(it.k) + "</div>",
-        options: opts.map((o) => (answerMode === "rom" ? esc(o.rom) : '<span lang="ja" class="hand opt-kana">' + esc(o.hira) + "</span>")),
-        answer: opts.indexOf(it),
-        audio: it.hira,
-        record: (ok) => NI.store.kanaResult(it.k, ok),
-        solution: '<span lang="ja">' + esc(it.k) + "</span> = " + (answerMode === "rom" ? esc(it.rom) : '<span lang="ja">' + esc(it.hira) + "</span>") + " (" + esc(it.rom) + ")",
-      };
-    });
+    };
+    doc.addEventListener("keydown", onKey, true);
+    m.onclick = (e) => {
+      if (e.target === m || e.target.closest("[data-kc-close]")) return close();
+      const pk = e.target.closest("[data-show]");
+      if (pk) {
+        showing = pk.getAttribute("data-show");
+        m.querySelectorAll("[data-show]").forEach((b) => b.setAttribute("aria-pressed", String(b === pk)));
+        return show();
+      }
+      const b = e.target.closest("[data-kc]");
+      if (!b) return;
+      const what = b.getAttribute("data-kc");
+      if (what === "replay") return show();
+      if (what === "trace" || what === "memory") return show(what);
+      if (what === "practise") {
+        close();
+        NI.kanaPractice.preset(rowOf(showing));
+        NI.app.go("kana-practice");
+      }
+    };
+    const first = m.querySelector("[data-kc-close]");
+    if (first) first.focus();
   }
+
+  // The practice set for the row a kana is in.
+  function rowOf(k) {
+    const card = NI.kanaPractice.groups()[K.hasKatakana(k) ? "kata" : "hira"].filter((g) => g.id !== "alike").flatMap((g) => g.cards).find((c) => c.kana.indexOf(k) >= 0);
+    return { pick: "manual", cards: card ? [card.id] : [], mode: "train" };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Loanword and look-alike drills
 
   function loanDrill() {
     const L = NI.data.kana.LOANWORDS;
@@ -224,29 +286,9 @@
   }
 
   function tabBody(tab) {
+    if (tab === "practice") return NI.kanaPractice.body();
+    if (tab === "chart") return chartBody();
     if (tab === "write") return NI.kanaWrite.body();
-    if (tab === "test") return NI.kanaTest.body();
-    if (tab === "kata" || tab === "hira") {
-      const script = tab;
-      const intro =
-        script === "kata"
-          ? "<p>Katakana spells the same sounds as hiragana, mostly for words from other languages: コーヒー (coffee), テレビ (TV). You already know the sounds, so match each katakana to the hiragana you know. Tap any character to hear it.</p>"
-          : "<p>A quick check that your hiragana is solid, including the combinations with small ゃ, ゅ, ょ. Tap any character to hear it.</p>";
-      const groups = groupsFor(script);
-      return (
-        intro +
-        '<div class="drill-setup"><fieldset class="stack"><legend>Practise</legend>' +
-        groups.map((g, i) => '<label class="check"><input type="checkbox" name="kg" value="' + g.id + '"' + (i === 0 ? " checked" : "") + "> " + esc(g.label) + "</label>").join("") +
-        "</fieldset>" +
-        (script === "kata"
-          ? '<fieldset><legend>Answer with</legend><label class="check"><input type="radio" name="km" value="hira" checked> hiragana</label><label class="check"><input type="radio" name="km" value="rom"> romaji</label></fieldset>'
-          : "") +
-        '<button class="btn primary" type="button" data-start>Start a 20-question drill</button></div>' +
-        '<div class="drill-box session" hidden></div>' +
-        '<div class="chart">' + chart(script) + "</div>" +
-        '<p class="small muted">Characters you often miss are marked in the chart.</p>'
-      );
-    }
     if (tab === "loan") {
       return (
         "<p>Once you can read katakana, many words are easy to guess: they're borrowed, mostly from English. Watch for the ones made in Japan and the false friends.</p>" +
@@ -265,7 +307,8 @@
     title: "Kana trainer",
     nav: "kana",
     render(args) {
-      const tab = TABS.some((t) => t[0] === args[0]) ? args[0] : "kata";
+      const tab = tabOf(args);
+      if (ALIAS[args[0]]) NI.kanaPractice.preset(ALIAS[args[0]]);
       return (
         '<header class="page-head"><h1>Kana trainer</h1>' +
         '<nav class="tabs" aria-label="Kana sections">' + TABS.map((t) => '<a class="tab' + (t[0] === tab ? " on" : "") + '" href="#kana-' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : "") + "><span>" + esc(t[1]) + '</span><small lang="ja">' + esc(t[2]) + "</small></a>").join("") + "</nav></header>" +
@@ -273,24 +316,25 @@
       );
     },
     mount(el, args) {
-      const tab = TABS.some((t) => t[0] === args[0]) ? args[0] : "kata";
+      const tab = tabOf(args);
+      if (tab === "practice") return NI.kanaPractice.mount(el);
       if (tab === "write") return NI.kanaWrite.mount(el);
-      if (tab === "test") return NI.kanaTest.mount(el);
+      if (tab === "chart") {
+        el.querySelectorAll(".kc-cell").forEach((b) =>
+          b.addEventListener("click", () => {
+            if (NI.speech.supported) NI.speech.speak(K.toHiragana(b.getAttribute("data-kc")));
+            sheet(b.getAttribute("data-kc"));
+          })
+        );
+        return;
+      }
       const start = el.querySelector("[data-start]");
       const box = el.querySelector(".drill-box");
       const setup = el.querySelector(".drill-setup");
-      const rest = Array.from(el.querySelectorAll(".chart, .loanlist, .pairs"));
+      const rest = Array.from(el.querySelectorAll(".loanlist, .pairs"));
       if (!start) return;
       start.addEventListener("click", () => {
-        let items;
-        if (tab === "loan") items = loanDrill();
-        else if (tab === "pairs") items = pairsDrill();
-        else {
-          const groups = Array.from(el.querySelectorAll('input[name="kg"]:checked')).map((x) => x.value);
-          if (!groups.length) return ui.toast("Choose at least one set to practise.");
-          const m = el.querySelector('input[name="km"]:checked');
-          items = kanaDrill(tab, groups, tab === "hira" ? "rom" : m ? m.value : "hira");
-        }
+        const items = tab === "loan" ? loanDrill() : pairsDrill();
         setup.hidden = true;
         rest.forEach((x) => (x.hidden = true));
         box.hidden = false;
@@ -308,7 +352,7 @@
             '<div class="finish">' + (res.right / res.total >= 0.8 ? NI.session.hanamaru() : "") +
             "<h2>" + res.right + " / " + res.total + "</h2><p>" + (res.right === res.total ? "Perfect!" : res.right / res.total >= 0.8 ? "Nearly there." : "Keep at it: a few short drills a day work best.") + "</p>" +
             (xp ? NI.session.xpBlock(won, [["Correct answers", xp]]) : "") +
-            '<div class="row center wrap"><button class="btn primary" type="button" data-again>Go again</button><button class="btn ghost" type="button" data-back>Back to the chart</button></div></div>';
+            '<div class="row center wrap"><button class="btn primary" type="button" data-again>Go again</button><button class="btn ghost" type="button" data-back>Back to the list</button></div></div>';
           box.querySelector("[data-again]").addEventListener("click", () => start.click());
           box.querySelector("[data-back]").addEventListener("click", () => NI.app.render());
         });
@@ -316,6 +360,8 @@
     },
     unmount() {
       NI.session.setKeys(null);
+      NI.kanaPractice.leave();
+      NI.kanaWrite.leave();
     },
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -25,7 +25,7 @@ shinkansen (新幹線) as you remember them.
 | **Sentence breakdown** | Any sentence, word by word: each particle's job, each verb form, slow audio, and record-and-compare for your own pronunciation |
 | **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
-| **Kana trainer** | Hiragana check, katakana drills (answer with the hiragana you know), 75 loanwords, look-alike katakana (シ/ツ, ソ/ン…), and a kana test: single kana, words or both, in hiragana, katakana or a mix, by typing, choosing or listening |
+| **Kana trainer** | **Practice:** let it choose the kana as you improve (a new row once you know the last), or tick the rows yourself, look-alikes and the ones you often miss included. Nine stages: kana → sound, sound → kana, find the pairs, type the sound, type a word, read a line, listen, trace and write from memory. Train with no end (it moves up a stage when you get 9 of 10 right) or take a scored test. Quick settings: stay on a stage, turn one off, timer, sounds, typed answers checked without Enter, word meanings; the eye shows an answer. **Chart:** hiragana and katakana side by side, coloured by how well you know each; tap one to hear it, watch its stroke order and trace it. **Write:** trace, then write from memory, with every stroke checked for shape, direction and order. Also 75 loanwords and look-alike katakana (シ/ツ, ソ/ン…) |
 | **Your plan** | Pick a goal (travel, anime, work, the JLPT, people, curiosity), a daily target and a focus (listening, speaking, reading, exam); lessons adapt their mix of exercises |
 
 ## The method, in short
@@ -113,11 +113,12 @@ js/core/              engines with no DOM: kana & romaji input, furigana,
 js/data/              course content (units-h/m/d/k/t/s.js = the six lines),
                       stories, phrasebook, kana tables, grammar-word glosses,
                       emoji for concrete words, sentence-maker fillers,
-                      omikuji fortunes
+                      omikuji fortunes, kana stroke order (strokes.js)
 js/ui/                pages, exercise types, lesson/review sessions, games,
                       reader and maker, stories, stamps, the sentence breakdown,
-                      role-play, hands-free listening, kana writing and the
-                      pronunciation check
+                      role-play, hands-free listening, kana practice, the
+                      stroke-order pad, kana writing and the pronunciation
+                      check
 js/app.js             router and start-up
 tools/validate.js     content checks and engine tests (`npm test`)
 tools/vocab.js        what a learner knows by a given unit (for writers)
@@ -158,3 +159,8 @@ the learner knows, and that every lesson can be generated.
 
 Content and code are provided as-is for learning. Fonts are loaded from
 Google Fonts (Fira Sans, BIZ UDPGothic, Klee One) under their own licences.
+
+The kana stroke order in `js/data/strokes.js` comes from
+[KanjiVG](http://kanjivg.tagaini.net), Copyright (C) 2009–2011 Ulrich Apel,
+under the [Creative Commons Attribution-Share Alike 3.0](http://creativecommons.org/licenses/by-sa/3.0/)
+licence; that file is shared under the same licence.

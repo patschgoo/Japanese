@@ -16,14 +16,14 @@
   const IF_YOU = [
     ["like to listen", "Play conversations and stories with <b>Play all</b>, then <b>Shadow</b> them. <b>Listen on the go</b> plays your words and sentences hands-free, with pauses to answer. Time Attack has a listening mode, and the 🔍 breakdown plays any sentence slowly.", [["#listen", "Listen on the go"], ["#stories", "Stories"]]],
     ["like to talk", "Take a part in a <b>role-play</b> and answer Ken, Yuki and the others. Lessons include <b>Say it</b> cards, and where your browser can recognise speech, a microphone check shows which sounds it heard. In the 🔍 breakdown you can also record yourself and compare.", [["#roleplays", "Role-play"], ["#maker", "Sentence Maker"]]],
-    ["like to do things with your hands", "Write kana with your finger or a mouse in the Kana trainer, build sentences from tiles, and match cards in Memory Match.", [["#kana-write", "Write kana"], ["#game-memory", "Memory Match"]]],
+    ["like to do things with your hands", "Write kana with your finger or a mouse in the Kana trainer, with every stroke checked; build sentences from tiles, and match cards in Memory Match.", [["#kana-write", "Write kana"], ["#game-memory", "Memory Match"]]],
     ["are often on the move", "Use <b>Listen on the go</b> on a walk or a commute, and keep a few reviews for the bus. Everything works offline once the site has loaded.", [["#listen", "Listen on the go"], ["#review", "Reviews"]]],
     ["like to read", "Read the graded <b>Stories</b>, or paste any Japanese into the <b>Reader</b> to see how much of it you know. Turn on word meanings when a text is a stretch.", [["#stories", "Stories"], ["#reader", "Reader"]]],
     ["like rules and systems", "The <b>Grammar</b> list collects every pattern. Tap 🔍 on any sentence for a word-by-word breakdown with each particle’s job and each verb form named.", [["#grammar", "Grammar list"]]],
     ["like games and goals", "Daily missions, XP and levels, a stamp for every station, line exams for gold, and four games with personal bests.", [["#play", "Play"], ["#stamps", "Stamp book"]]],
     ["get nervous about mistakes", "Mistakes are just practice here: hints are always there, wrong answers come back gently in your mistakes notebook, and recordings never leave your device. <b>Relaxed mode</b> takes the clocks and hearts out of the games.", [["#options", "Options"], ["#mistakes", "Mistakes notebook"]]],
     ["prefer short bursts", "A lesson part takes five to ten minutes and a game one or two. A low daily goal still keeps a streak going, and two short sessions beat one long one.", [["#options", "Daily goal"]]],
-    ["aren’t sure of your kana yet", "Take the <b>Kana test</b>: single kana, words or both, in hiragana, katakana or a mix. Type, choose or listen; the ones you miss are listed with their sound to practise.", [["#kana-test", "Kana test"], ["#kana-write", "Write kana"]]],
+    ["aren’t sure of your kana yet", "Use <b>Kana practice</b>: let it pick the kana as you improve, or tick the rows you want, and work up stage by stage from recognising each one to writing it from memory. A test gives you a score; the <b>chart</b> shows how well you know each kana.", [["#kana-practice", "Kana practice"], ["#kana-chart", "Kana chart"]]],
     ["find kanji daunting","Every kanji has its reading on top. If that is still too much, switch to kana only in Options; switch back once the common ones look familiar.", [["#options", "Options"]]],
     ["already read Chinese characters", "Many kanji will look familiar, though the readings and some meanings differ. Lean on reading: the Stories and the Reader will move fast for you.", [["#reader", "Reader"]]],
   ];
@@ -122,7 +122,7 @@
         principle(
           "Write new characters by hand",
           "<p>Adults learning an unfamiliar script recognised the characters better later when they had practised writing them by hand than when they had typed them (Longcamp et al., 2008). Writing builds a memory of how each character is formed, not just how it looks.</p>",
-          "the Kana trainer has a <b>Write</b> tab: trace each kana over a guide, then write it from memory and compare with the model."
+          "the Kana trainer has a <b>Write</b> tab, and practice stages for tracing and for writing from memory: each stroke is checked for its shape, its direction and its place in the order."
         ) +
         principle(
           "Pictures can help, a little",
@@ -225,8 +225,9 @@
         '<li><b><a href="#phrases">Phrasebook</a>:</b> ready-made phrases for shops, restaurants, stations and emergencies.</li>' +
         '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +
         '<li><b><a href="#listen">Listen on the go</a>:</b> hands-free audio with pauses to recall, Japanese first or English first.</li>' +
-        '<li><b><a href="#kana-write">Write kana</a>:</b> trace and write hiragana and katakana with your finger.</li>' +
-        '<li><b><a href="#kana-test">Kana test</a>:</b> check your hiragana and katakana on single kana, on words, or both, by typing, choosing or listening.</li>' +
+        '<li><b><a href="#kana-practice">Kana practice</a>:</b> choose the kana or let it choose them as you improve, from recognising each one to writing it from memory; train, or take a test with a score.</li>' +
+        '<li><b><a href="#kana-chart">Kana chart</a>:</b> hiragana and katakana side by side, coloured by how well you know each; tap one to hear it and watch its stroke order.</li>' +
+        '<li><b><a href="#kana-write">Write kana</a>:</b> trace, then write from memory, with every stroke checked.</li>' +
         "</ul></section>" +
 
         '<section><h2>Sounds to watch when reading kana</h2><p>You can read hiragana, but a few spellings don\'t sound the way they look:</p><ul class="sounds">' +

@@ -40,11 +40,12 @@
   ];
   // Combinations that only exist in katakana, for sounds borrowed from other languages.
   const EXTENDED = [
-    { id: "fa", cells: [["ファ", "fa"], ["フィ", "fi"], ["フェ", "fe"], ["フォ", "fo"]] },
-    { id: "ti", cells: [["ティ", "ti"], ["ディ", "di"], ["トゥ", "tu"], ["ドゥ", "du"]] },
+    { id: "fa", cells: [["ファ", "fa"], ["フィ", "fi"], ["フェ", "fe"], ["フォ", "fo"], ["フュ", "fyu"]] },
+    { id: "ti", cells: [["ティ", "ti"], ["ディ", "di"], ["トゥ", "tu"], ["ドゥ", "du"], ["デュ", "dyu"]] },
     { id: "wi", cells: [["ウィ", "wi"], ["ウェ", "we"], ["ウォ", "wo"], ["イェ", "ye"]] },
-    { id: "she", cells: [["シェ", "she"], ["ジェ", "je"], ["チェ", "che"], ["ツァ", "tsa"]] },
-    { id: "va", cells: [["ヴァ", "va"], ["ヴィ", "vi"], ["ヴ", "vu"], ["ヴェ", "ve"]] },
+    { id: "she", cells: [["シェ", "she"], ["ジェ", "je"], ["チェ", "che"]] },
+    { id: "tsa", cells: [["ツァ", "tsa"], ["ツィ", "tsi"], ["ツェ", "tse"], ["ツォ", "tso"]] },
+    { id: "va", cells: [["ヴァ", "va"], ["ヴィ", "vi"], ["ヴ", "vu"], ["ヴェ", "ve"], ["ヴォ", "vo"]] },
   ];
 
   /* Katakana words: mostly English loans you can often guess once you can read them. */

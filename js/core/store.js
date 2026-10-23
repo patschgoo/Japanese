@@ -326,9 +326,12 @@
       this.save();
     },
 
+    // Per kana: [right, wrong, right answers in a row]. Older saves lack the run.
     kanaResult(ch, ok) {
-      const k = state.kana[ch] || (state.kana[ch] = [0, 0]);
+      const k = state.kana[ch] || (state.kana[ch] = [0, 0, 0]);
+      if (k.length < 3) k[2] = k[1] ? 0 : Math.min(k[0], 3);
       k[ok ? 0 : 1]++;
+      k[2] = ok ? k[2] + 1 : 0;
       this.log("kn", 1);
     },
 

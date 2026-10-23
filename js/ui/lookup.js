@@ -17,7 +17,7 @@
   // Taps on these do their own thing.
   const INTERACTIVE = "a, button, input, textarea, select, label, canvas, summary, [contenteditable], [data-say], [data-bd], .opt, .tile, .m-cell, .mem-card, #pop, #seltool";
   // Where a look-up would give answers away.
-  const CLOSED = ".game-area, .drill-box, .kt-box, .write-box";
+  const CLOSED = ".game-area, .drill-box, .kp-box, .write-box, .kc-pad";
   // Text that isn't part of the Japanese being read.
   const NOT_TEXT = "rt, rp, .sr, .say, .bd-btn, .s-tools, .dlg-tools, .who-en";
 

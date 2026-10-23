@@ -41,7 +41,7 @@
     { href: "roleplays", icon: "🎭", t: "Role-play", ja: "ロールプレイ", d: "Take a part in a conversation: your partner speaks, you answer." },
     { href: "listen", icon: "🎧", t: "Listen on the go", ja: "{聞|き}き{流|なが}し", d: "Hands-free audio of your words and sentences, with pauses to answer." },
     { href: "kana-write", icon: "🖌️", t: "Write kana", ja: "{書|か}く", d: "Trace and write hiragana and katakana with your finger." },
-    { href: "kana-test", icon: "🔤", t: "Kana test", ja: "かなテスト", d: "Test your hiragana and katakana: single kana, words, or both." },
+    { href: "kana-practice", icon: "🔤", t: "Kana practice", ja: "かなれんしゅう", d: "Nine stages from reading a kana to writing it from memory; train, or take a test." },
   ];
 
   function missionsCard() {
