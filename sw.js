@@ -2,7 +2,7 @@
    updates show up immediately when online and the course still opens offline.
    Installing caches the page and every file it loads, so this already works
    after the first visit (the page's own first requests come before the worker). */
-const CACHE = "nihongo-ippo-v1";
+const CACHE = "nihongo-ippo-v2";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
