@@ -37,6 +37,23 @@
   NI.nextStep = nextStep;
   NI.counts = counts;
 
+  // How many review cards ride each train type, local to shinkansen.
+  function tierSummary() {
+    const srs = NI.store.state.srs;
+    const ids = Object.keys(srs);
+    if (!ids.length) return "";
+    const n = {};
+    for (const id of ids) {
+      const t = NI.srs.tierOf(srs[id].st);
+      if (t) n[t.id] = (n[t.id] || 0) + 1;
+    }
+    return (
+      '<p class="tiers" aria-label="Review cards by stage">' +
+      NI.srs.TIERS.map((t) => '<span class="tier tier-' + t.id + '" title="' + esc(t.en) + '">' + esc(t.ja) + ' <b>' + (n[t.id] || 0) + "</b></span>").join("") +
+      '<a class="small" href="#guide">What are these?</a></p>'
+    );
+  }
+
   // ---------------------------------------------------------------------------
   pages.home = {
     title: "Route map",
@@ -61,7 +78,7 @@
         '<div><dt>Due now</dt><dd>' + c.due + "</dd></div>" +
         '<div><dt>Words learned</dt><dd>' + c.words + "</dd></div>" +
         '<div><dt>Day streak</dt><dd>' + c.streak + "</dd></div>" +
-        "</dl></section>";
+        "</dl>" + tierSummary() + "</section>";
 
       if (!NI.store.state.onboarded) {
         html +=
