@@ -129,14 +129,15 @@
       NI.breakdown.open(bd.getAttribute("data-bd"), bd.getAttribute("data-en"));
       return;
     }
+    // Words inside buttons and links belong to them (answer options, station names).
     const tok = e.target.closest(".tok[data-k]");
-    if (tok) {
+    if (tok && !tok.parentElement.closest("a, button, label, .opt, .tile, .m-cell")) {
       e.preventDefault();
       if (ui.popAnchor === tok) ui.hidePop();
-      else ui.showWord(tok.getAttribute("data-k"), tok);
+      else ui.showWord(tok.getAttribute("data-k"), tok, NI.lookup.mode(tok));
       return;
     }
-    if (!e.target.closest("#pop")) ui.hidePop();
+    if (!e.target.closest("#pop, #seltool")) ui.hidePop();
     // Internal links navigate from script, so routing also works in embedded
     // frames whose base URL is the host page's (where "#unit-1" would resolve
     // to the host's address).
@@ -159,7 +160,10 @@
     if (jump) {
       const t = doc.getElementById(jump.getAttribute("data-jump"));
       if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
     }
+    // Any other Japanese text: the word under the tap.
+    if (NI.lookup.tap(e)) e.preventDefault();
   }
 
   function registerWorker() {
@@ -176,6 +180,7 @@
     NI.course.init();
     NI.lex.build();
     applySettings();
+    NI.lookup.init();
     NI.store.on((what) => {
       if (what === "settings") {
         applySettings();

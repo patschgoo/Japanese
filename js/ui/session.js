@@ -181,6 +181,19 @@
       ui.confirm({ title: "Leave now?", body: o.quitBody || "Your answers so far won't be saved.", ok: "Leave", cancel: "Keep going" }).then((yes) => yes && NI.app.go(o.quitTo));
     });
 
+    // Looking up a meaning during a question (NI.lookup) counts as a hint.
+    const onPeek = () => {
+      if (!card.isConnected) return document.removeEventListener("ni-peek", onPeek);
+      const ex = queue[i];
+      const inner = card.firstElementChild;
+      if (!ex || !inner || inner.dataset.answered || !foot.hidden || ex.hinted) return;
+      ex.hinted = true;
+      hints++;
+      const h = card.querySelector("[data-hint]");
+      if (h) h.disabled = true;
+    };
+    document.addEventListener("ni-peek", onPeek);
+
     function show() {
       if (i >= queue.length) return finish();
       const ex = queue[i];

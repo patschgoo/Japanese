@@ -170,6 +170,7 @@
     { id: "brush", icon: "🖌️", t: "Steady hand", d: "Write 50 kana by hand.", test: (c) => c.written >= 50 },
     { id: "ears", icon: "🎧", t: "All ears", d: "Listen to 100 words and sentences hands-free.", test: (c) => c.listened >= 100 },
     { id: "daikichi", icon: "🎋", t: "Great blessing", d: "Draw 大吉 from the omikuji.", event: true },
+    { id: "kanamaster", icon: "🏯", t: "Kana master", d: "Score 100% in a kana test of 20 questions or more.", event: true },
     { id: "level10", icon: "⭐", t: "Level 10", d: "Reach level 10.", test: (c) => c.level >= 10 },
     { id: "early", icon: "🌅", t: "Early bird", d: "Finish a lesson before 7 a.m.", event: true },
     { id: "night", icon: "🌙", t: "Night owl", d: "Finish a lesson after 10 p.m.", event: true },

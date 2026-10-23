@@ -12,6 +12,7 @@
   const TABS = [
     ["kata", "Katakana", "カタカナ"],
     ["hira", "Hiragana check", "ひらがな"],
+    ["test", "Test", "テスト"],
     ["loan", "Loanwords", "がいらいご"],
     ["pairs", "Look-alikes", "にている じ"],
     ["write", "Write", "かく"],
@@ -224,6 +225,7 @@
 
   function tabBody(tab) {
     if (tab === "write") return NI.kanaWrite.body();
+    if (tab === "test") return NI.kanaTest.body();
     if (tab === "kata" || tab === "hira") {
       const script = tab;
       const intro =
@@ -273,6 +275,7 @@
     mount(el, args) {
       const tab = TABS.some((t) => t[0] === args[0]) ? args[0] : "kata";
       if (tab === "write") return NI.kanaWrite.mount(el);
+      if (tab === "test") return NI.kanaTest.mount(el);
       const start = el.querySelector("[data-start]");
       const box = el.querySelector(".drill-box");
       const setup = el.querySelector(".drill-setup");

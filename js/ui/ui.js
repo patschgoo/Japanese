@@ -106,26 +106,39 @@
     return out;
   }
 
-  function showWord(key, anchor) {
+  /* Pop-up for a word: reading, meaning, form and audio. mode comes from
+     NI.lookup.mode(): during a question ("quiz", "review") the meaning waits
+     behind a button; "closed" shows nothing. */
+  function showWord(key, anchor, mode) {
     const pop = doc.getElementById("pop");
     const entry = NI.lex.get(key);
     const d = describe(entry);
-    if (!d || !pop) return;
-    let html = '<div class="pop-head">' + (d.em ? '<span class="em" aria-hidden="true">' + d.em + "</span>" : "") + jp(d.title, { tokens: false, gaps: false }) + say(d.audio, d.reading) + "</div>";
+    if (!d || !pop || mode === "closed") return;
+    let html = '<div class="pop-head">' + (d.em && !mode ? '<span class="em" aria-hidden="true">' + d.em + "</span>" : "") + jp(d.title, { tokens: false, gaps: false }) + say(d.audio, d.reading) + "</div>";
     if (d.reading !== NI.furi.base(d.title)) html += '<div class="pop-reading" lang="ja">' + esc(d.reading) + "</div>";
-    html += '<div class="pop-en">' + esc(d.en) + "</div>";
-    if (d.form) html += '<div class="pop-form">' + esc(d.form) + (d.base ? " of " + jp(d.base, { tokens: false, gaps: false }) : "") + "</div>";
+    let meaning = '<div class="pop-en">' + esc(d.en) + "</div>";
+    if (d.form) meaning += '<div class="pop-form">' + esc(d.form) + (d.base ? " of " + jp(d.base, { tokens: false, gaps: false }) : "") + "</div>";
     const meta = [];
     if (d.pos) meta.push(esc(NI.course.posLabel(d.pos)));
     if (d.kindLabel) meta.push(esc(d.kindLabel));
     if (d.unit) meta.push('<a href="#unit-' + d.unit + '">Unit ' + d.unit + "</a>");
-    if (meta.length) html += '<div class="pop-meta">' + meta.join(" · ") + "</div>";
-    if (entry.kind === "word" || entry.kind === "form") html += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
+    if (meta.length) meaning += '<div class="pop-meta">' + meta.join(" · ") + "</div>";
+    if (entry.kind === "word" || entry.kind === "form") meaning += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
+    if (mode)
+      html +=
+        '<div class="pop-peek"><button class="btn small" type="button" data-peek>Show the meaning</button>' +
+        (mode === "quiz" ? '<span class="small muted">counts as a hint: half XP</span>' : "") + '</div><div class="pop-hidden" hidden>' + meaning + "</div>";
+    else html += meaning;
     pop.innerHTML = html;
+    placePop(pop, anchor);
+    if (NI.store.settings.tapSpeak !== false) NI.speech.speak(d.audio);
+  }
+
+  // Shows the pop-up next to an anchor (an element, or anything with getBoundingClientRect).
+  function placePop(pop, anchor) {
     pop.hidden = false;
     popAnchor = anchor;
     place(pop, anchor);
-    if (NI.store.settings.autoplay) NI.speech.speak(d.audio);
   }
 
   function place(pop, anchor) {
@@ -207,5 +220,5 @@
      to fit on one line (よろしくお願いします) instead of wrapping one character. */
   const fit = (markup) => ' style="--n:' + Math.max(3, Array.from(NI.furi.base(String(markup))).length) + '"';
 
-  NI.ui = { ICON, esc, jp, rich, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, get popAnchor() { return popAnchor; } };
+  NI.ui = { ICON, esc, jp, rich, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
 })(typeof window !== "undefined" ? window : globalThis);

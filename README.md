@@ -20,12 +20,12 @@ shinkansen (新幹線) as you remember them.
 | **Reviews** | Spaced repetition with expanding intervals (4 h → 1 d → 3 d → 1 w → 2 w → 1 mo → 3 mo → 6 mo) |
 | **Games** | Time Attack (meanings, listening or pictures), Kana Rain, Memory Match and Sentence Sprint, built from the words and sentences you've met; a relaxed mode takes out clocks and hearts |
 | **More ways to practise** | Role-play any course conversation (pick or say your lines), Listen on the go (hands-free audio with pauses to recall, Japanese or English first), write kana by hand on a tracing pad, and a pronunciation check with the browser's speech recognition that marks the sounds it missed |
-| **Motivation** | XP and levels, a daily goal and streak with rest days that cover a missed day, combos, 29 badges, three daily missions, an omikuji fortune once the goal is reached, a stamp for every station, a gold exam for every line, a mistakes notebook |
-| **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings under every word, colour-coded particles, tap any word for its meaning and form |
+| **Motivation** | XP and levels, a daily goal and streak with rest days that cover a missed day, combos, 30 badges, three daily missions, an omikuji fortune once the goal is reached, a stamp for every station, a gold exam for every line, a mistakes notebook |
+| **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings under every word, colour-coded particles; tap any Japanese anywhere to hear it and see its meaning, or select a stretch to listen (slowly, too) or translate it. During a question the meaning stays hidden until you ask, and counts as a hint |
 | **Sentence breakdown** | Any sentence, word by word: each particle's job, each verb form, slow audio, and record-and-compare for your own pronunciation |
 | **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
-| **Kana trainer** | Hiragana check, katakana drills (answer with the hiragana you know), 75 loanwords, look-alike katakana (シ/ツ, ソ/ン…) |
+| **Kana trainer** | Hiragana check, katakana drills (answer with the hiragana you know), 75 loanwords, look-alike katakana (シ/ツ, ソ/ン…), and a kana test: single kana, words or both, in hiragana, katakana or a mix, by typing, choosing or listening |
 | **Your plan** | Pick a goal (travel, anime, work, the JLPT, people, curiosity), a daily target and a focus (listening, speaking, reading, exam); lessons adapt their mix of exercises |
 
 ## The method, in short

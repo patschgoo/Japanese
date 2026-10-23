@@ -18,6 +18,8 @@
     sound: true, // sound effects for right/wrong answers and rewards
     relaxed: false, // no clocks or lives in games, softer sound for mistakes
     buzz: true, // vibrate on answers where the phone supports it
+    tapSpeak: true, // say a word aloud when it's tapped
+    selBar: true, // Listen / Meaning / Translate bar for selected Japanese text
     dailyGoal: 60, // XP per day
     goal: "", // travel | media | work | exam | people | curious
     focus: "balanced", // balanced | listening | speaking | reading | exam

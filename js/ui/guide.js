@@ -23,7 +23,8 @@
     ["like games and goals", "Daily missions, XP and levels, a stamp for every station, line exams for gold, and four games with personal bests.", [["#play", "Play"], ["#stamps", "Stamp book"]]],
     ["get nervous about mistakes", "Mistakes are just practice here: hints are always there, wrong answers come back gently in your mistakes notebook, and recordings never leave your device. <b>Relaxed mode</b> takes the clocks and hearts out of the games.", [["#options", "Options"], ["#mistakes", "Mistakes notebook"]]],
     ["prefer short bursts", "A lesson part takes five to ten minutes and a game one or two. A low daily goal still keeps a streak going, and two short sessions beat one long one.", [["#options", "Daily goal"]]],
-    ["find kanji daunting", "Every kanji has its reading on top. If that is still too much, switch to kana only in Options; switch back once the common ones look familiar.", [["#options", "Options"]]],
+    ["aren’t sure of your kana yet", "Take the <b>Kana test</b>: single kana, words or both, in hiragana, katakana or a mix. Type, choose or listen; the ones you miss are listed with their sound to practise.", [["#kana-test", "Kana test"], ["#kana-write", "Write kana"]]],
+    ["find kanji daunting","Every kanji has its reading on top. If that is still too much, switch to kana only in Options; switch back once the common ones look familiar.", [["#options", "Options"]]],
     ["already read Chinese characters", "Many kanji will look familiar, though the readings and some meanings differ. Lean on reading: the Stories and the Reader will move fast for you.", [["#reader", "Reader"]]],
   ];
 
@@ -214,7 +215,7 @@
         "</div></section>" +
 
         '<section id="g-helpers"><h2>Helpers for beginners</h2><ul class="helpers">' +
-        "<li><b>Tap any word</b> for its reading, meaning and audio, with a link to the Jisho dictionary.</li>" +
+        "<li><b>Tap any Japanese</b>, wherever it appears, to hear it and see its reading and meaning, with links to Jisho, Google Translate and DeepL. <b>Select</b> a longer stretch to hear it, slowly too, or to see each word’s meaning. During a question the meaning stays hidden until you ask for it, and then counts as a hint.</li>" +
         "<li><b>Reading aids</b> above Japanese text: meanings under every word, colour-coded particles, furigana only on tap.</li>" +
         "<li><b>🔍 Break it down</b> on any sentence: word by word, what each particle does, which verb form is used, slow audio, and record-and-compare.</li>" +
         '<li><b><a href="#reader">Reader</a>:</b> paste any Japanese text to see how much of it you know, look up the rest, or send it to Google Translate or DeepL. It also finds course words and sentences for English you type.</li>' +
@@ -225,6 +226,7 @@
         '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +
         '<li><b><a href="#listen">Listen on the go</a>:</b> hands-free audio with pauses to recall, Japanese first or English first.</li>' +
         '<li><b><a href="#kana-write">Write kana</a>:</b> trace and write hiragana and katakana with your finger.</li>' +
+        '<li><b><a href="#kana-test">Kana test</a>:</b> check your hiragana and katakana on single kana, on words, or both, by typing, choosing or listening.</li>' +
         "</ul></section>" +
 
         '<section><h2>Sounds to watch when reading kana</h2><p>You can read hiragana, but a few spellings don\'t sound the way they look:</p><ul class="sounds">' +

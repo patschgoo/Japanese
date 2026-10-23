@@ -658,6 +658,8 @@
         toggle("gaps", "Space between phrases", "Japanese has no spaces; small gaps make sentences easier to split at first.") +
         toggle("gloss", "Word meanings under Japanese", "A small English gloss under every word. Great for reading longer texts; turn it off to test yourself.") +
         toggle("particles", "Colour-code particles", "は topic, が subject, を object, に/へ direction, で place or means…") +
+        toggle("tapSpeak", "Say words when you tap them", "Tap any Japanese word to see what it means; this also plays it.") +
+        toggle("selBar", "Listen and translate selected text", "Select some Japanese (press and hold on a phone) for Listen, Slowly, Meaning and Translate.") +
         '<fieldset><legend>Text size</legend>' + radio("textSize", "s", s.textSize, "Small") + radio("textSize", "m", s.textSize, "Medium") + radio("textSize", "l", s.textSize, "Large") + radio("textSize", "xl", s.textSize, "Extra large") + "</fieldset>" +
         "</section>" +
         '<section class="u-sec opt-sec"><h2>Audio</h2>' +
