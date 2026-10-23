@@ -49,7 +49,7 @@
       },
       {
         t: "How many times: 〜回",
-        body: "<p>[[{回|かい}]] counts times. It changes its sound at 1, 6, 8 and 10:[[{1|いっ}{回|かい}]], [[{2|に}{回|かい}]], [[{3|さん}{回|かい}]], [[{6|ろっ}{回|かい}]], [[{8|はっ}{回|かい}]], [[{10|じゅっ}{回|かい}]]. How many times? [[{何回|なんかい}]]. With 〜たことがあります it says how often you've done something: [[{2|に}{回|かい}{行|い}ったことがあります]]. [[{何回|なんかい}も]] means “again and again”.</p>",
+        body: "<p>[[{回|かい}]] counts times. The number changes its sound at 1, 6, 8 and 10: [[{1|いっ}{回|かい}]], [[{2|に}{回|かい}]], [[{3|さん}{回|かい}]], [[{6|ろっ}{回|かい}]], [[{8|はっ}{回|かい}]], [[{10|じゅっ}{回|かい}]]. How many times? [[{何回|なんかい}]]. With 〜たことがあります it says how often you've done something: [[{2|に}{回|かい}{行|い}ったことがあります]]. [[{何回|なんかい}も]] means “again and again”.</p>",
         ex: [
           ["{京都|きょうと}には {3|さん}{回|かい} {行|い}った ことが あります。", "I've been to Kyoto three times."],
           ["この {映画|えいが}は {何回|なんかい}も {見|み}ました。", "I've seen this film again and again."],
@@ -159,7 +159,7 @@
     grammar: [
       {
         t: "Looks …: adjective + そう",
-        body: "<p>To say how something looks, drop the い of an い-adjective and add [[そう]]: [[おいしい]] → [[おいしそう]] (looks tasty), [[{高|たか}い]] → [[{高|たか}そう]] (looks expensive). な-adjectives just add そう: [[{元気|げんき}そう]], [[{大変|たいへん}そう]]. One exception: [[いい]] becomes [[よさそう]]. Finish with です (or だ, casually), or use な before a noun: [[おいしそうなケーキ]].</p><p>It's a guess from what you see, so it isn't used for what's plain to see: just say [[きれい]]. And careful with かわいい (cute): かわいそう doesn't mean “looks cute”, it means “poor thing!”.</p>",
+        body: "<p>To say how something looks, drop the い of an い-adjective and add [[そう]]: [[おいしい]] → [[おいしそう]] (looks tasty), [[{高|たか}い]] → [[{高|たか}そう]] (looks expensive). な-adjectives just add そう: [[{元気|げんき}そう]], [[{大変|たいへん}そう]]. Two exceptions: [[いい]] becomes [[よさそう]], and ない becomes なさそう. Finish with です (or だ, casually), or use な before a noun: [[おいしそうなケーキ]].</p><p>It's a guess from what you see, so it isn't used for what's plain to see: just say [[きれい]]. And careful with かわいい (cute): かわいそう doesn't mean “looks cute”, it means “poor thing!”.</p>",
         ex: [
           ["この カレー、 おいしそうですね。", "This curry looks delicious."],
           ["その かばん、 {高|たか}そうですね。", "That bag looks expensive."],
@@ -201,7 +201,7 @@
       { jp: "よさそうな ホテルですね。", en: "That looks like a nice hotel." },
       { jp: "{山|やま}の {上|うえ}は {涼|すず}しくて {気持|きも}ちいいです。", en: "It's cool and lovely up on the mountain." },
       { jp: "{午後|ごご}は {雨|あめ}が {降|ふ}りそうです。", en: "It looks like it's going to rain this afternoon.", p: "が", alt: ["まで"] },
-      { jp: "{明日|あした}は {朝|あさ}から {雨|あめ}だそうです。", en: "I hear it's going to rain from the morning tomorrow." },
+      { jp: "{明日|あした}は {朝|あさ}から {雨|あめ}だそうです。", en: "I hear it'll be raining from first thing tomorrow." },
       { jp: "{天気予報|てんきよほう}によると、 {台風|たいふう}が {来|く}るそうです。", en: "According to the forecast, a typhoon is coming." },
       { jp: "ニュースによると、 {今年|ことし}の {夏|なつ}は とても {暑|あつ}いそうです。", en: "The news says this summer is going to be very hot." },
       { jp: "{鈴木|すずき}さんは {来月|らいげつ} {結婚|けっこん}するそうです。", en: "I hear Suzuki is getting married next month." },
@@ -246,7 +246,7 @@
     },
     culture: {
       t: "Climbing Mount Fuji",
-      body: "<p>Mount Fuji (3,776 m) is officially open to climbers from early July to early September; outside that season the trails and huts are closed. Most people climb in the afternoon, sleep for a few hours in a mountain hut and set off again in the dark to reach the summit for the sunrise, ご来光 (ごらいこう). Huts serve simple meals (curry and rice is the classic), and many will burn a stamp into your wooden walking stick as a souvenir.</p><p>Rushing up overnight without a rest, 弾丸登山 (だんがんとざん), is strongly discouraged: altitude sickness and the cold at the top are real dangers. In recent years the prefectures have also introduced climbing fees and booking rules, and these change from year to year, so check the official site before you go.</p>",
+      body: "<p>Mount Fuji (3,776 m) is officially open to climbers from early July to early September; outside that season the trails and huts are closed. Many people climb in the afternoon, sleep for a few hours in a mountain hut and set off again in the dark to reach the summit for the sunrise, ご来光 (ごらいこう). Huts serve simple meals (curry and rice is the classic), and many will burn a stamp into your wooden walking stick for a small fee.</p><p>Rushing up overnight without a rest, 弾丸登山 (だんがんとざん), is strongly discouraged: altitude sickness and the cold at the top are real dangers. In recent years the prefectures have also introduced climbing fees and booking rules, and these change from year to year, so check the official site before you go.</p>",
     },
   });
 
@@ -255,7 +255,7 @@
     ja: "どうすれば いいですか",
     en: "If & advice",
     goal: "Ask what you should do, give simple advice with 〜ば, pick up a topic with なら, and give reasons politely with ので.",
-    intro: "The ば-form is another way to say “if”, and the one Japanese uses for advice: どうすればいいですか (what should I do?) and 〜ばいいですよ (all you need to do is …). なら picks up something the other person has mentioned, and ので gives a reason more gently than から.",
+    intro: "The ば-form is another way to say “if”, and a favourite for asking and giving advice: どうすればいいですか (what should I do?) and 〜ばいいですよ (all you need to do is …). なら picks up something the other person has mentioned, and ので gives a reason more gently than から.",
     drill: { conj: ["ba", "ba:a"], words: ["行く", "する", "来る", "急ぐ", "待つ", "安い", "いい", "暇"] },
     gwords: [
       { s: "ので", kind: "particle", en: "because, so (softer and more polite than から)" },
@@ -282,7 +282,7 @@
     grammar: [
       {
         t: "If: the ば-form",
-        body: "<p>For group 1 verbs, change the final う-row sound to the え-row and add ば: [[{行|い}く]] → [[{行|い}けば]], [[{飲|の}む]] → [[{飲|の}めば]], [[{待|ま}つ]] → [[{待|ま}てば]], [[{買|か}う]] → [[{買|か}えば]]. Group 2 verbs change る to れば: [[{食|た}べれば]], [[{見|み}れば]]. Irregular: [[すれば]], [[{来|く}れば]] (くれば). For “if not”, the ない form becomes なければ: [[{行|い}かなければ]].</p><p>Like 〜たら it means “if”, but it's best when the second half follows naturally from the first: do this, and that happens.</p>",
+        body: "<p>For group 1 verbs, change the final う-row sound to the え-row and add ば: [[{行|い}く]] → [[{行|い}けば]], [[{飲|の}む]] → [[{飲|の}めば]], [[{待|ま}つ]] → [[{待|ま}てば]], [[{買|か}う]] → [[{買|か}えば]]. Group 2 verbs change る to れば: [[{食|た}べれば]], [[{見|み}れば]]. Irregular: [[すれば]], [[{来|く}れば]] (くれば). For “if not”, the ない form becomes なければ: [[{行|い}かなければ]].</p><p>Like 〜たら it means “if”, but it's best when the second half follows naturally from the first: do this, and that happens. For a request or an invitation after an action, use 〜たら instead: [[{駅|えき}に{着|つ}いたら、 {電話|でんわ}してください]].</p>",
         ex: [
           ["{急|いそ}げば、 {間|ま}に{合|あ}います。", "If you hurry, you'll make it."],
           ["{分|わ}からなければ、 {聞|き}いてください。", "If there's anything you don't understand, please ask."],
@@ -314,7 +314,7 @@
       },
       {
         t: "Because, gently: ので",
-        body: "<p>[[ので]] means “because” or “so”, like から, but it sounds softer and more polite, which makes it the one to use when you explain yourself and ask for something at work or with people you don't know well. It follows a plain form: [[{用事|ようじ}があるので]]. Nouns and な-adjectives take な: [[{雨|あめ}なので]].</p>",
+        body: "<p>[[ので]] means “because” or “so”, like から, but it sounds softer and more polite, which makes it the one to use when you explain yourself and ask for something at work or with people you don't know well. It follows a plain form: [[{用事|ようじ}があるので]]. Nouns and な-adjectives take な: [[{雨|あめ}なので]]. In very polite speech you'll also hear it after ます: [[{午後|ごご}{行|い}きますので]].</p>",
         ex: [
           ["{用事|ようじ}が あるので、 {早|はや}く {帰|かえ}っても いいですか。", "I have something to take care of, so may I leave early?"],
           ["{雨|あめ}なので、 タクシーで {行|い}きましょう。", "It's raining, so let's take a taxi."],
@@ -376,7 +376,7 @@
     },
     culture: {
       t: "Asking for help, the Japanese way",
-      body: "<p>When asking for something, Japanese speakers usually give the reason first and keep the request soft. ので helps here: it presents the reason as a plain fact rather than an argument, which is why it's preferred at work and with strangers. Often the request is left unsaid: ちょっと用事があるので… (ちょっとようじがあるので, “I have something on, so…”) is a complete, polite way to turn down an invitation.</p><p>At work, new staff learn 報連相 (ほうれんそう, which also means spinach): 報告 (ほうこく, report what you've done), 連絡 (れんらく, keep people informed) and 相談 (そうだん, consult before you act). Saying 相談があるんですが… is seen as sensible, not as a sign of weakness.</p>",
+      body: "<p>When asking for something, Japanese speakers usually give the reason first and keep the request soft. ので helps here: it presents the reason as a plain fact rather than an argument, which is why it's preferred at work and with strangers. Often the rest is left unsaid: ちょっと用事があるので… (ちょっとようじがあるので, “I have something on, so…”) is a complete, polite way to turn down an invitation.</p><p>At work, new staff learn 報連相 (ほうれんそう, which also means spinach): 報告 (ほうこく, report what you've done), 連絡 (れんらく, keep people informed) and 相談 (そうだん, consult before you act). Saying 相談があるんですが… is seen as sensible, not as a sign of weakness.</p>",
     },
   });
 
@@ -568,7 +568,7 @@
       },
       {
         t: "Answering: keep it simple",
-        body: "<p>Customers don't use keigo, so the polite Japanese you already know is just right. [[はい、 お{願|ねが}いします]] accepts an offer, and [[いいえ、 {大丈夫|だいじょうぶ}です]] turns it down politely (no, thank you). To call staff, say [[すみません]]; to pay at a restaurant, [[お{会計|かいけい}お{願|ねが}いします]]. Asked [[お{弁当|べんとう}、 {温|あたた}めますか]] (shall I heat up your bento?), just say はい、お願いします or いいえ、大丈夫です.</p>",
+        body: "<p>Customers don't need keigo, so the polite Japanese you already know is just right. [[はい、 お{願|ねが}いします]] accepts an offer, and [[いいえ、 {大丈夫|だいじょうぶ}です]] turns it down politely (no, thank you). To call staff, say [[すみません]]; to pay at a restaurant, [[お{会計|かいけい}お{願|ねが}いします]]. Asked [[お{弁当|べんとう}、 {温|あたた}めますか]] (shall I heat up your bento?), just say はい、お願いします or いいえ、大丈夫です.</p>",
         ex: [
           ["いいえ、 {大丈夫|だいじょうぶ}です。", "No, thank you."],
           ["カードで お{願|ねが}いします。", "By card, please."],
@@ -576,7 +576,7 @@
       },
       {
         t: "Floors: 〜階",
-        body: "<p>[[{階|かい}]] counts floors. Like 回, it changes at 1, 6, 8 and 10, and 3 takes がい: [[{1|いっ}{階|かい}]], [[{2|に}{階|かい}]], [[{3|さん}{階|がい}]], [[{6|ろっ}{階|かい}]]. Which floor? [[{何階|なんがい}]]. Japan counts the American way: the ground floor is 1階 and the one above it is 2階. Basement floors are [[{地下|ちか}]]: [[{地下|ちか}{1|いっ}{階|かい}]] (B1) is where department stores sell food.</p>",
+        body: "<p>[[{階|かい}]] counts floors. As with 回, the number changes at 1, 6, 8 and 10, and 3 takes がい: [[{1|いっ}{階|かい}]], [[{2|に}{階|かい}]], [[{3|さん}{階|がい}]], [[{6|ろっ}{階|かい}]]. Which floor? [[{何階|なんがい}]]. Japan counts the American way: the ground floor is 1階 and the one above it is 2階. Basement floors are [[{地下|ちか}]]: [[{地下|ちか}{1|いっ}{階|かい}]] (B1) is where most department stores sell food.</p>",
         ex: [
           ["{靴|くつ}{売|う}り{場|ば}は {何階|なんがい}ですか。", "Which floor is the shoe department on?"],
           ["{3|さん}{階|がい}でございます。", "It's on the third floor."],
@@ -593,7 +593,7 @@
       { jp: "いいえ、 {持|も}っていません。", en: "No, I don't." },
       { jp: "{袋|ふくろ}は ご{利用|りよう}ですか。", en: "Would you like a bag?" },
       { jp: "いいえ、 {大丈夫|だいじょうぶ}です。", en: "No, thank you." },
-      { jp: "この お{弁当|べんとう}、 {温|あたた}めますか。", en: "Shall I heat up this bento for you?" },
+      { jp: "お{弁当|べんとう}、 {温|あたた}めますか。", en: "Shall I heat up your bento?" },
       { jp: "はい、 お{願|ねが}いします。", en: "Yes, please." },
       { jp: "すみません、 お{会計|かいけい} お{願|ねが}いします。", en: "Excuse me, could we have the bill, please?" },
       { jp: "お{会計|かいけい}は {全部|ぜんぶ}で {1200|せんにひゃく}{円|えん}でございます。", en: "That comes to 1,200 yen altogether." },
@@ -639,7 +639,7 @@
     },
     culture: {
       t: "Keigo at work",
-      body: "<p>Shop and restaurant staff speak keigo (敬語, けいご), the most polite level of Japanese. Many part-timers learn the phrases from a staff manual before their first shift, which is why you hear the same words in convenience stores from Hokkaido to Okinawa. Keigo here isn't about the staff being lower than you: it marks a professional role, and the customer, お客様 (おきゃくさま), is treated as an honoured guest. Some manual phrases, such as 1000円からお預かりします (せんえんからおあずかりします, “out of 1,000 yen”), are criticised as not quite correct, but you'll hear them everywhere.</p><p>Nobody expects a customer, let alone a learner, to answer in keigo. Ordinary です/ます Japanese is exactly right, and a nod or a smile is all いらっしゃいませ needs.</p><p>This is the last station on the map, but not the end of the line. You now have the core of everyday Japanese, roughly JLPT N4: keep reviewing, keep listening and keep talking. お疲れさまでした！</p>",
+      body: "<p>Shop and restaurant staff speak keigo (敬語, けいご), the most polite level of Japanese. Many part-timers learn the phrases from a staff manual before their first shift, which is why you hear the same words in convenience stores from Hokkaido to Okinawa. Keigo here isn't about the staff being lower than you: it marks a professional role, and the customer, お客様 (おきゃくさま), is treated as an honoured guest. Some manual phrases, such as 1000円からお預かりします (せんえんからおあずかりします, “out of 1,000 yen”), are criticised as not quite correct, but you'll hear them everywhere.</p><p>Nobody expects a customer, let alone a learner, to answer in keigo. Ordinary です/ます Japanese is exactly right, and a nod or a smile is all いらっしゃいませ needs.</p><p>This is the last station on the map, but not the end of the line. You now have the core of everyday Japanese, from JLPT N5 well into N4: keep reviewing, keep listening and keep talking. お疲れさまでした！</p>",
     },
   });
 
@@ -660,7 +660,7 @@
       ["{日本|にほん}では、 ゴミを {分|わ}けなければ なりません。{大変|たいへん}ですが、 もう {覚|おぼ}えました。", "In Japan you have to sort your rubbish. It's a lot of work, but I've learned the rules now."],
       ["カフェの アルバイトも {頑張|がんば}っています。{敬語|けいご}は {難|むずか}しいですが、 {毎日|まいにち} {練習|れんしゅう}しています。", "I'm working hard at the café, too. Keigo is difficult, but I practise every day."],
       ["{昨日|きのう}、 {田中|たなか}{先生|せんせい}と エマさんと ゆきさんが {店|みせ}に {来|き}てくれました。", "Yesterday Tanaka-sensei, Emma and Yuki came to see me at the café."],
-      ["{先生|せんせい}は 「{日本語|にほんご}が {上手|じょうず}に なりましたね」と {言|い}ってくれました。とても {嬉|うれ}しかったです。", "Tanaka-sensei told me my Japanese had really improved. I was so happy."],
+      ["{先生|せんせい}は 「{日本語|にほんご}が {上手|じょうず}に なりましたね」と {言|い}ってくれました。とても {嬉|うれ}しかったです。", "Tanaka-sensei told me my Japanese had improved. I was so happy."],
       ["{来月|らいげつ}から また {学校|がっこう}が {始|はじ}まります。", "School starts again next month."],
       ["{僕|ぼく}は {元気|げんき}ですから、 {心配|しんぱい}しなくても いいですよ。", "I'm doing fine, so you don't need to worry."],
       ["{来年|らいねん}の {夏|なつ}は、 お{母|かあ}さんも {一緒|いっしょ}に {富士山|ふじさん}に {登|のぼ}りませんか。", "Next summer, why don't you come and climb Mount Fuji with me?"],
