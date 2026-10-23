@@ -225,7 +225,7 @@
       cast: { C: { ja: "{山小屋|やまごや}の {人|ひと}", en: "Hut staff" }, K: { ja: "ケン", en: "Ken" }, Y: { ja: "ゆき", en: "Yuki" } },
       lines: [
         ["C", "お{疲|つか}れさまでした。{晩|ばん}ご{飯|はん}は カレーですよ。", "Well done, you made it! Dinner is curry."],
-        ["K", "カレー！ おいしそう！", "Curry! That looks great!"],
+        ["K", "カレー！ おいしそう！", "Curry! Sounds delicious!"],
         ["Y", "ケン、 {元気|げんき}そうだね。{私|わたし}は もう {眠|ねむ}い…。", "Ken, you look full of energy. I'm already sleepy…"],
         ["*", "After dinner, Ken looks out of the window."],
         ["K", "{雲|くも}が {多|おお}いね。{雨|あめ}が {降|ふ}りそう…。", "There are a lot of clouds. It looks like rain…"],
