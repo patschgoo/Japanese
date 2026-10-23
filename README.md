@@ -15,14 +15,14 @@ shinkansen (新幹線) as you remember them.
 
 | | |
 |---|---|
-| **30 units** on 6 lines | 553 words, 464 example sentences, 25 dialogues, 129 grammar points, culture notes. Units 1–20 cover roughly JLPT N5, units 21–30 much of N4 |
+| **30 units** on 6 lines | 646 words, 564 example sentences, 30 dialogues, 152 grammar points, culture notes. Units 1–20 cover roughly JLPT N5, units 21–30 much of N4 |
 | **Lessons** | 14 exercise types: new-word cards, meaning/word choice, listening, typing (romaji turns into kana), matching, particle gaps, sentence building, translation, conjugation drills, numbers and counters, “what do you say?” situations, conversation questions, and “say it aloud” cards |
 | **Reviews** | Spaced repetition with expanding intervals (4 h → 1 d → 3 d → 1 w → 2 w → 1 mo → 3 mo → 6 mo) |
 | **Games** | Time Attack, Kana Rain, Memory Match and Sentence Sprint, built from the words and sentences you've met; a relaxed mode takes out clocks and hearts |
 | **Motivation** | XP and levels, a daily goal and streak, combos, 24 badges, three daily missions, a stamp for every station, a gold exam for every line, a mistakes notebook |
 | **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings under every word, colour-coded particles, tap any word for its meaning and form |
 | **Sentence breakdown** | Any sentence, word by word: each particle's job, each verb form, slow audio, and record-and-compare for your own pronunciation |
-| **Stories** | 5 graded stories with audio and shadowing, written only with words you know |
+| **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
 | **Kana trainer** | Hiragana check, katakana drills (answer with the hiragana you know), 75 loanwords, look-alike katakana (シ/ツ, ソ/ン…) |
 | **Your plan** | Pick a goal (travel, anime, work, the JLPT, people, curiosity), a daily target and a focus (listening, speaking, reading, exam); lessons adapt their mix of exercises |

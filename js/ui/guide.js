@@ -221,7 +221,7 @@
         "<li><b>The て-form</b> (12–15). Requests, “is doing” and permission, the gateway to most later grammar, plus invitations with 〜ませんか and 〜ましょう.</li>" +
         "<li><b>Plain forms</b> (16–20). Casual speech, and the base for opinions (と思います), reasons (から), experiences (〜たことがある) and advice (〜たほうがいい).</li>" +
         (lastUnit >= 21 ? "<li><b>Connecting ideas</b> (21–25). Giving and receiving favours (あげる, もらう, くれる), what you can do (the potential form), if and when (〜たら), before, after and while (〜ながら), and plans (つもり, 〜かもしれません).</li>" : "") +
-        (lastUnit >= 26 ? "<li><b>Going further</b> (26–30). Trying and finishing (〜てみる, 〜てしまう), how things look and what you hear (〜そう), conditions and advice (〜ば, なら, 〜たらどうですか), rules (〜なければなりません, 〜なくてもいい), and the polite service Japanese you hear in shops.</li>" : "") +
+        (lastUnit >= 26 ? "<li><b>Going further</b> (26–30). Trying and finishing (〜てみる, 〜てしまう), how things look and what you hear (〜そう), conditions, reasons and advice (〜ば, なら, ので, どうすればいいですか), rules (〜なければなりません, 〜なくてもいい), and the polite service Japanese you hear in shops.</li>" : "") +
         "</ol><p>This is the core progression shared by the major textbooks (Genki, Minna no Nihongo, Marugoto). Units 1–20 cover roughly the grammar of the JLPT N5 exam" + (lastUnit >= 26 ? ", and units 21–30 much of N4" : "") + ".</p></section>" +
 
         "<section><h2>Choices this course makes</h2>" +
