@@ -207,7 +207,6 @@ function lessonTests(NI) {
   }
 }
 
-const COUNTER_FN = { 円: "yen", 時: "ji", 分: "fun", 人: "nin", 歳: "sai", 番線: "bansen", 本: "hon", 枚: "mai", 冊: "satsu", 匹: "hiki", 回: "kai", 階: "floor", 月: "gatsu" };
 
 function checkText(NI, markup, unit, where, opts) {
   const o = opts || {};
@@ -236,13 +235,15 @@ function checkText(NI, markup, unit, where, opts) {
       const n = Number(text.replace(/[,，]/g, ""));
       const next = toks[i + 1];
       const nextText = next && next.entry ? NI.furi.baseOfAtoms(next.atoms) : "";
-      const fn = COUNTER_FN[nextText];
+      const fn = NI.num.COUNTER_FN[nextText];
       const got = t.entry.r + (fn ? NI.furi.readingOfAtoms(next.atoms) : "");
       const want = fn ? NI.num.COUNTERS[fn](n) : NI.num.toKana(n);
       if (got !== want) err(where, "number reading " + text + nextText + " = " + got + ", expected " + want);
       return;
     }
     if (t.mismatch) err(where, "furigana " + t.reading + " doesn't match " + t.entry.s + " (" + t.entry.r + ")");
+    // Glossary words are only glossed around the site; lessons must teach what they use.
+    if (t.entry.kind === "extra" && !o.allowUnknown) err(where, "“" + text + "” isn't taught: it's only in the site's glossary (js/data/glossary.js)");
     if (!o.ignoreOrder && unit && t.entry.unit > unit) {
       err(where, "“" + text + "” is taught in unit " + t.entry.unit + (t.entry.form ? " (" + t.entry.form + ")" : "") + " but used in unit " + unit);
     }

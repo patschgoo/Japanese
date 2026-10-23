@@ -1,6 +1,7 @@
 /* Lexicon and word segmenter.
    Every course word (plus all of its conjugated forms), every grammar word and
-   every name is indexed by its written surface. Sentences are split by
+   every name is indexed by its written surface, and so is the Japanese the
+   site shows outside the lessons (kind "extra": glossed, never taught). Sentences are split by
    longest match on ruby-atom boundaries; when several entries share a surface
    (人 = ひと / じん / にん) the furigana decides. This powers tap-to-look-up and
    the content checks in tools/validate.js. */
@@ -73,7 +74,40 @@
     return false;
   }
   const DIGITS = /^[0-9０-９,，]+$/;
-  const KIND_RANK = { word: 0, form: 1, grammar: 2, name: 3 };
+  const KIND_RANK = { word: 0, form: 1, grammar: 2, name: 3, extra: 4 };
+  const KANA = /[ぁ-ゖァ-ヺ]/;
+  // Symbols in plain text that are never part of a word: い-adjective, です/ます, 飲む → 飲まない.
+  const SYMBOL = /[\-\/+=→←↔*&%#|"“”‘’[\]{}<>]/;
+
+  /* Japanese the site shows outside the lessons, with what it means: the
+     glossary (js/data/glossary.js) plus the line names, review stages,
+     level titles, fortunes, loanwords and self-introduction words kept
+     elsewhere, and numbers read with counters (いっぽん is 1本). */
+  function extras() {
+    const D = NI.data || {};
+    const out = (D.glossary || []).slice();
+    const add = (j, en, pos) => out.push({ j, en, pos: pos || "n" });
+    for (const l of D.lines || []) add(l.ja, l.en);
+    if (NI.srs) for (const t of NI.srs.TIERS) add("{" + t.ja + "|" + t.kana + "}", t.en + " (a train; also a review stage here)");
+    if (NI.game && NI.game.TITLES) for (const t of NI.game.TITLES) add(t[1], t[2] + " (a level title)");
+    if (D.omikuji) for (const o of D.omikuji.levels) add(o[0], o[1] + " (an omikuji fortune)");
+    if (D.kana) for (const w of D.kana.LOANWORDS) add(w.k, w.en);
+    if (D.builder) for (const w of D.builder.COUNTRIES.concat(D.builder.JOBS, D.builder.HOBBIES)) add(w.j, w.en);
+    if (NI.num) {
+      const N = NI.num;
+      const what = (c) => {
+        const e = (lex.index.get(c) || []).find((x) => x.pos === "ctr");
+        return e ? shortMeaning(e.en) : c;
+      };
+      for (const c in N.COUNTER_FN) {
+        const fn = N.COUNTERS[N.COUNTER_FN[c]];
+        const top = c === "月" ? 12 : c === "時" ? 12 : 10;
+        for (let n = 1; n <= top; n++) out.push({ s: n + c, r: fn(n), en: n + " · " + what(c), pos: "num" });
+      }
+      for (let n = 1; n <= 9; n++) for (const m of [100, 1000]) out.push({ s: String(n * m), r: N.toKana(n * m), en: String(n * m), pos: "num" });
+    }
+    return out;
+  }
 
   const lex = {
     ready: false,
@@ -133,8 +167,27 @@
         const s = F.base(n.j);
         this.add({ key: "n:" + s, kind: "name", unit: 0, s, r: F.reading(n.j), j: n.j, en: n.en, pos: "name" });
       }
+      for (const x of extras()) this.addExtra(x);
+      this.readIndex = null;
       this.ready = true;
       return this;
+    },
+
+    // A glossary word, with its forms if it's a verb or adjective. The course's own entry wins.
+    addExtra(x) {
+      const F = NI.furi;
+      const s = x.s || F.base(x.j);
+      const r = x.r || F.reading(x.j);
+      const key = "x:" + s;
+      if (this.byKey.has(key) || (this.index.get(s) || []).some((e) => e.r === r)) return;
+      this.add({ key, kind: "extra", unit: 0, s, r, j: x.j || s, en: x.en, pos: x.pos || "n" });
+      if (!NI.conj.isVerb(x.pos) && !NI.conj.isAdj(x.pos)) return;
+      const forms = NI.conj.forms({ j: x.j, pos: x.pos });
+      for (const f in forms) {
+        const fs = F.base(forms[f]);
+        if (fs === s || this.byKey.has(key + "#" + f)) continue;
+        this.add({ key: key + "#" + f, kind: "extra", unit: 0, s: fs, r: F.reading(forms[f]), j: forms[f], en: x.en, pos: x.pos, form: f, base: x.j });
+      }
     },
 
     get(key) {
@@ -148,7 +201,7 @@
       if (entry.kind === "grammar") return ROLE[entry.s] || shortMeaning(entry.en);
       if (entry.kind === "name") return shortMeaning(entry.en);
       let g = shortMeaning(entry.en);
-      const tag = entry.kind === "form" ? FORM_TAG[entry.form] : null;
+      const tag = entry.kind === "form" || entry.kind === "extra" ? FORM_TAG[entry.form] : null;
       if (tag) g += " · " + tag;
       return g;
     },
@@ -224,15 +277,21 @@
        私 + は. Fewest unknown characters wins, then fewest words. Returns
        [{ text, entry, unknown, punct }]. */
     readPlain(text) {
+      const K = NI.kana;
       if (!this.readIndex) {
         this.readIndex = new Map();
         this.maxRead = 1;
         for (const e of this.byKey.values()) {
-          if (!e.r || e.r === e.s) continue;
-          const list = this.readIndex.get(e.r) || [];
-          list.push(e);
-          this.readIndex.set(e.r, list);
-          if (e.r.length > this.maxRead) this.maxRead = e.r.length;
+          // Other readings count too (七 しち), and katakana words in hiragana (ごみ for ゴミ).
+          const reads = new Set([e.r].concat(e.rs || []));
+          if (K.hasKatakana(e.s)) reads.add(K.toHiragana(e.s));
+          for (const r of reads) {
+            if (!r || r === e.s) continue;
+            const list = this.readIndex.get(r) || [];
+            if (list.indexOf(e) < 0) list.push(e);
+            this.readIndex.set(r, list);
+            if (r.length > this.maxRead) this.maxRead = r.length;
+          }
         }
       }
       const chars = Array.from(String(text));
@@ -249,7 +308,8 @@
           const c = { u: cur.u + u, t: cur.t + t, prev: cur, tok: Object.assign({ start: i, end }, tok) };
           if (better(c, best[end])) best[end] = c;
         };
-        if (/\s/.test(ch) || PUNCT.test(ch)) {
+        // ー after kana lengthens it (コーヒー): part of the word, not punctuation.
+        if (/\s/.test(ch) || SYMBOL.test(ch) || (PUNCT.test(ch) && !(ch === "ー" && i > 0 && KANA.test(chars[i - 1])))) {
           push(i + 1, { punct: true }, 0, 0);
           continue;
         }
@@ -269,8 +329,12 @@
         let s = "";
         for (let j = i; j < n && j - i < maxLen; j++) {
           s += chars[j];
-          const byForm = this.index.get(s);
-          const byRead = this.readIndex.get(s);
+          // Katakana words are found in hiragana too (ダメ for だめ), but not single letters (ノ isn't の).
+          const hira = j > i && K.hasKatakana(s) ? K.toHiragana(s) : null;
+          const byForm = this.index.get(s) || (hira && this.index.get(hira));
+          let byRead = this.readIndex.get(s) || (hira && this.readIndex.get(hira));
+          // A lone kana inside a kana word isn't a kanji's reading: はじめ is not は + 時 + 目.
+          if (byRead && j === i && KANA.test(ch) && (KANA.test(chars[i - 1] || "") || KANA.test(chars[i + 1] || ""))) byRead = null;
           if (!byForm && !byRead) continue;
           // Sentence-initial words (でも, そうです "that's right") only after a break.
           let forms = byForm;

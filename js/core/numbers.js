@@ -129,5 +129,8 @@
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  NI.num = { toKana, COUNTERS, timeKana, withCommas };
+  // Which reading rule each counter follows (3本 さんぼん, 3分 さんぷん …).
+  const COUNTER_FN = { 円: "yen", 時: "ji", 分: "fun", 人: "nin", 歳: "sai", 番線: "bansen", 本: "hon", 枚: "mai", 冊: "satsu", 匹: "hiki", 回: "kai", 階: "floor", 月: "gatsu" };
+
+  NI.num = { toKana, COUNTERS, COUNTER_FN, timeKana, withCommas };
 })(typeof window !== "undefined" ? window : globalThis);

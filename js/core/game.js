@@ -266,5 +266,5 @@
     return { xp, target, frac: Math.min(1, xp / target), done: xp >= target };
   }
 
-  NI.game = { XP, level, levelStart, titleFor, week, bestStreak, stamps, BADGES, check, event, context, MISSIONS, missions, missionBonus, wordOfTheDay, goal };
+  NI.game = { XP, level, levelStart, titleFor, TITLES, week, bestStreak, stamps, BADGES, check, event, context, MISSIONS, missions, missionBonus, wordOfTheDay, goal };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -102,6 +102,14 @@
       out.unit = entry.unit;
     } else if (entry.kind === "name") {
       out.kindLabel = "name";
+    } else if (entry.kind === "extra") {
+      // Seen around the site but not taught in a lesson.
+      out.pos = entry.pos;
+      out.kindLabel = "not in the lessons";
+      if (entry.form) {
+        out.form = NI.conj.LABELS[entry.form] || entry.form;
+        out.base = entry.base;
+      }
     }
     return out;
   }
@@ -123,7 +131,7 @@
     if (d.kindLabel) meta.push(esc(d.kindLabel));
     if (d.unit) meta.push('<a href="#unit-' + d.unit + '">Unit ' + d.unit + "</a>");
     if (meta.length) meaning += '<div class="pop-meta">' + meta.join(" · ") + "</div>";
-    if (entry.kind === "word" || entry.kind === "form") meaning += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
+    if (entry.kind === "word" || entry.kind === "form" || entry.kind === "extra") meaning += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
     if (mode)
       html +=
         '<div class="pop-peek"><button class="btn small" type="button" data-peek>Show the meaning</button>' +

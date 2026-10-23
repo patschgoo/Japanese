@@ -1673,3 +1673,5 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
 .w-missed { font-size: 1.05rem; }
 .w-missed .hand { font-size: 1.5rem; letter-spacing: 0.1em; }
 .kp-box, .write-box, .drill-box { scroll-margin-top: 64px; }
+.pop-ex { display: grid; gap: 2px; margin-top: 6px; font-size: 0.92rem; }
+.pop-ex .jp { font-size: 1.1rem; line-height: 1.9; }

@@ -71,6 +71,15 @@
     const unknownWords = [];
     let cur = "";
     for (const t of tokens) {
+      // Glossary words show their meaning, but the lessons haven't taught them.
+      if (t.entry && t.entry.kind === "extra") {
+        if (inUnk) unknownWords.push(cur);
+        cur = "";
+        inUnk = false;
+        unknown++;
+        unknownWords.push(t.text);
+        continue;
+      }
       if (t.unknown) {
         if (!inUnk) unknown++;
         inUnk = true;

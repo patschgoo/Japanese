@@ -215,7 +215,7 @@
         "</div></section>" +
 
         '<section id="g-helpers"><h2>Helpers for beginners</h2><ul class="helpers">' +
-        "<li><b>Tap any Japanese</b>, wherever it appears, to hear it and see its reading and meaning, with links to Jisho, Google Translate and DeepL. <b>Select</b> a longer stretch to hear it, slowly too, or to see each word’s meaning. During a question the meaning stays hidden until you ask for it, and then counts as a hint.</li>" +
+        "<li><b>Tap any Japanese</b>, wherever it appears, to hear it and see its reading and meaning, with links to Jisho, Google Translate and DeepL. That includes headings, the phrasebook and the culture notes, and grammar written in English text such as い-adjective or 〜ませんか, which opens its grammar point. <b>Select</b> a longer stretch to hear it, slowly too, or to see each word’s meaning. During a question the meaning stays hidden until you ask for it, and then counts as a hint.</li>" +
         "<li><b>Reading aids</b> above Japanese text: meanings under every word, colour-coded particles, furigana only on tap.</li>" +
         "<li><b>🔍 Break it down</b> on any sentence: word by word, what each particle does, which verb form is used, slow audio, and record-and-compare.</li>" +
         '<li><b><a href="#reader">Reader</a>:</b> paste any Japanese text to see how much of it you know, look up the rest, or send it to Google Translate or DeepL. It also finds course words and sentences for English you type.</li>' +
