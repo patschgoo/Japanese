@@ -154,7 +154,7 @@
     const ex = NI.items.bestExample(w);
     return (
       '<section class="wotd" aria-labelledby="wotd-h"><h2 id="wotd-h">' + ui.jp("{今日|きょう}の{言葉|ことば}", { tokens: false }) + ' <span class="sub">Word of the day</span></h2>' +
-      '<div class="wotd-word">' + (w.em ? '<span class="em-big" aria-hidden="true">' + w.em + "</span>" : "") + '<span class="hand">' + ui.wordHead(w, { tokens: false }) + "</span>" + ui.say(ui.wordAudio(w), w.r) + "</div>" +
+      '<div class="wotd-word">' + (w.em ? '<span class="em-big" aria-hidden="true">' + w.em + "</span>" : "") + '<span class="hand">' + ui.wordHead(w, { tokens: false }) + "</span>" + ui.say(ui.wordAudio(w), w.r) + NI.book.star(w.id) + "</div>" +
       '<p class="wotd-en">' + esc(w.en) + " " + ui.posTag(w) + "</p>" +
       (ex ? '<div class="word-ex">' + ui.jp(ex.jp) + '<span class="s-tools">' + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '</span><p class="en">' + esc(ex.en) + "</p></div>" : "") +
       '<p class="small"><a href="#unit-' + w.unit + '">From ' + esc(NI.course.code(w.unit)) + "</a></p></section>"
@@ -289,6 +289,7 @@
         '<a class="card-link" href="#reader"><b>🔎 Reader & dictionary</b><span>Paste any Japanese to see readings and meanings, word by word.</span></a>' +
         '<a class="card-link" href="#maker"><b>🛠️ Sentence Maker</b><span>Build your own correct sentences: polite or casual, past or negative.</span></a>' +
         '<a class="card-link" href="#stories"><b>📖 Stories</b><span>Short graded stories with audio, written with the words you know.</span></a>' +
+        '<a class="card-link" href="#book"><b>🔖 Word book</b><span>The words you save, in your own lists, with vocabulary tests and flashcards.</span></a>' +
         '<a class="card-link" href="#stamps"><b>🏅 Stamp book</b><span>Station stamps, badges, your level and records.</span></a>' +
         '<a class="card-link" href="#guide"><b>🧭 How this course works</b><span>The research behind it, and how to learn in a way that suits you.</span></a>' +
         "</section>";
@@ -513,8 +514,8 @@
     nav: "tools",
     render() {
       return (
-        '<header class="page-head"><h1>Word list <span class="sub">' + ui.jp("{単語帳|たんごちょう}", { tokens: false }) + "</span></h1>" +
-        "<p>Every word in the course, in the order you meet it. Search in English, kana or romaji.</p>" +
+        '<header class="page-head"><h1>Word list <span class="sub">' + ui.jp("{単語|たんご}リスト", { tokens: false }) + "</span></h1>" +
+        "<p>Every word in the course, in the order you meet it. Search in English, kana or romaji, and tap the bookmark to save a word to your <a href=\"#book\">word book</a>.</p>" +
         '<div class="row wrap"><label class="sr" for="w-q">Search words</label><input id="w-q" class="search" type="search" placeholder="Search: eat, たべる, taberu">' +
         '<div class="seg" role="group" aria-label="Filter"><button type="button" class="seg-b on" data-f="all">All</button><button type="button" class="seg-b" data-f="in">In review</button><button type="button" class="seg-b" data-f="new">Not yet</button></div></div></header>' +
         '<div id="w-list"></div>'
@@ -621,6 +622,18 @@
     return '<label class="toggle" for="t-' + key + '"><input type="checkbox" id="t-' + key + '" data-set="' + key + '"' + (on ? " checked" : "") + "><span><b>" + label + "</b>" + (desc ? "<small>" + desc + "</small>" : "") + "</span></label>";
   }
 
+  // Options: the profile in use, and the others to switch to.
+  function profileSection() {
+    const cur = NI.store.profile;
+    const others = NI.store.profiles.filter((p) => p.id !== cur.id);
+    return (
+      '<section class="u-sec opt-sec" id="opt-profile"><h2>Learning profile</h2>' +
+      '<div class="prof-now"><span class="prof-ic" aria-hidden="true">' + cur.icon + "</span><div><b>" + esc(cur.name) + "</b><span class=\"small muted\">Its own progress, reviews, word book, plan and settings.</span></div></div>" +
+      '<div class="row wrap">' + others.map((p) => '<button class="btn small ghost" type="button" data-switch="' + esc(p.id) + '">Switch to ' + p.icon + " " + esc(p.name) + "</button>").join("") +
+      '<a class="btn small ghost" href="#profiles-new">＋ New profile</a><a class="btn small ghost" href="#profiles">Manage profiles</a></div></section>'
+    );
+  }
+
   pages.options = {
     title: "Options",
     nav: "options",
@@ -638,8 +651,10 @@
           (NI.speech.hasVoice ? "" : '<p class="note">No Japanese voice found on this device. To add one: <b>Windows</b> Settings → Time &amp; language → Speech → Add voices → Japanese. <b>macOS</b> System Settings → Accessibility → Spoken Content → System voice → Manage voices → Japanese. <b>Android</b> install Google Speech Services and add Japanese. <b>iPhone/iPad</b> Settings → Accessibility → Spoken Content → Voices → Japanese. Then reload this page.</p>');
       }
       return (
-        '<header class="page-head"><h1>Options</h1><p>Settings are saved in this browser.' + (NI.store.persistent ? "" : " <b>Your browser is blocking storage, so progress will be lost when you close this page.</b>") + "</p></header>" +
-        '<section class="u-sec opt-sec"><h2>Your plan</h2>' +
+        '<header class="page-head"><h1>Options</h1><p>Settings are saved in this browser, for each learning profile.' + (NI.store.persistent ? "" : " <b>Your browser is blocking storage, so progress will be lost when you close this page.</b>") + "</p>" +
+        '<nav class="chips opt-jump" aria-label="Sections">' + [["opt-profile", "Profile"], ["opt-plan", "Plan"], ["opt-lessons", "Lessons"], ["opt-reading", "Reading"], ["opt-audio", "Audio"], ["opt-look", "Appearance"], ["opt-data", "Progress"]].map(([id, t]) => '<a class="chip small" href="#' + id + '">' + t + "</a>").join("") + "</nav></header>" +
+        profileSection() +
+        '<section class="u-sec opt-sec" id="opt-plan"><h2>Your plan</h2>' +
         "<p>Your goal and focus shape what lessons practise most; the daily goal sets your XP target.</p>" +
         '<fieldset><legend>Why are you learning?</legend><div class="chips">' +
         NI.plan.GOALS.map((g) => '<button class="chip' + (s.goal === g.id ? " on" : "") + '" type="button" data-opt-goal="' + g.id + '" aria-pressed="' + (s.goal === g.id) + '">' + g.icon + " " + esc(g.t) + "</button>").join("") +
@@ -648,7 +663,13 @@
         '<fieldset><legend>Lesson focus</legend>' + NI.plan.FOCI.map(([v, t, d]) => radio("focus", v, s.focus, t, d)).join("") + "</fieldset>" +
         toggle("relaxed", "Relaxed mode", "No clocks or lives in games, and a softer sound for mistakes. Lessons and reviews never time you anyway.") +
         "</section>" +
-        '<section class="u-sec opt-sec"><h2>Reading</h2>' +
+        '<section class="u-sec opt-sec" id="opt-lessons"><h2>Lessons and reviews</h2>' +
+        '<fieldset><legend>Cards in one review session</legend>' + radio("reviewLimit", 20, s.reviewLimit, "20", "A few minutes") + radio("reviewLimit", 50, s.reviewLimit, "50", "The usual") + radio("reviewLimit", 100, s.reviewLimit, "100", "For catching up after a break") + "</fieldset>" +
+        toggle("autoNext", "Move on after a right answer", "Skip the Continue button when you get it right. A wrong answer still waits, so you can read the correction.") +
+        toggle("retryMissed", "Missed questions come back", "In lessons, a question you miss is asked again (another way) at the end.") +
+        toggle("handFont", "Handwriting-style kana", "Big words in questions are written in a pen-like font, closer to handwriting. Turn it off for the plain font.") +
+        "</section>" +
+        '<section class="u-sec opt-sec" id="opt-reading"><h2>Reading</h2>' +
         '<div class="preview" aria-live="polite">' + ui.jp(sample) + "</div>" +
         '<fieldset><legend>Kanji and furigana</legend>' +
         radio("furigana", "furigana", s.furigana, "Kanji with furigana", "Recommended: the reading sits above every kanji.") +
@@ -665,7 +686,7 @@
         toggle("selBar", "Listen and translate selected text", "Select some Japanese (press and hold on a phone) for Listen, Slowly, Meaning and Translate.") +
         '<fieldset><legend>Text size</legend>' + radio("textSize", "s", s.textSize, "Small") + radio("textSize", "m", s.textSize, "Medium") + radio("textSize", "l", s.textSize, "Large") + radio("textSize", "xl", s.textSize, "Extra large") + "</fieldset>" +
         "</section>" +
-        '<section class="u-sec opt-sec"><h2>Audio</h2>' +
+        '<section class="u-sec opt-sec" id="opt-audio"><h2>Audio</h2>' +
         toggle("autoplay", "Play audio automatically", "Words and sentences are spoken as they appear.") +
         toggle("sound", "Sound effects", "A chime for right answers, combos and rewards.") +
         (navigator.vibrate ? toggle("buzz", "Vibration", "A short buzz for right and wrong answers (with sound effects on).") : "") +
@@ -674,23 +695,24 @@
         voices +
         (NI.speech.supported ? '<div class="row"><button class="btn small ghost" type="button" data-test-voice>' + ui.ICON.speaker + "<span>Test the voice</span></button></div>" : "") +
         "</section>" +
-        '<section class="u-sec opt-sec"><h2>Appearance</h2><fieldset><legend>Theme</legend>' +
+        '<section class="u-sec opt-sec" id="opt-look"><h2>Appearance</h2><fieldset><legend>Theme</legend>' +
         radio("theme", "system", s.theme, "Match my device") + radio("theme", "light", s.theme, "Light") + radio("theme", "dark", s.theme, "Dark") +
         "</fieldset></section>" +
-        '<section class="u-sec opt-sec"><h2>Your progress</h2>' +
-        "<p>Progress lives in this browser only. To move it to another device, copy the backup text and paste it there.</p>" +
+        '<section class="u-sec opt-sec" id="opt-data"><h2>Your progress</h2>' +
+        "<p>Progress lives in this browser only. To move this profile to another device, copy the backup text and paste it there.</p>" +
         '<div class="row wrap"><button class="btn small" type="button" data-export>Copy backup</button>' + (root.NI_EMBED ? "" : '<button class="btn small ghost" type="button" data-download>Download backup</button>') + "</div>" +
         '<label for="import-text">Restore from a backup</label><textarea id="import-text" rows="3" placeholder="Paste backup text here"></textarea>' +
-        '<div class="row wrap"><button class="btn small" type="button" data-import>Restore</button><button class="btn small danger" type="button" data-reset>Reset all progress</button></div>' +
+        '<div class="row wrap"><button class="btn small" type="button" data-import>Restore</button><button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
         "</section>"
       );
     },
     mount(el) {
+      el.querySelectorAll("[data-switch]").forEach((b) => b.addEventListener("click", () => NI.store.switchProfile(b.getAttribute("data-switch"))));
       const preview = el.querySelector(".preview");
       const refreshPreview = () => (preview.innerHTML = ui.jp("{私|わたし}は コーヒーを {飲|の}みます。"));
       el.querySelectorAll('input[type="radio"]').forEach((r) =>
         r.addEventListener("change", () => {
-          NI.store.set(r.name, r.name === "dailyGoal" ? Number(r.value) : r.value);
+          NI.store.set(r.name, r.name === "dailyGoal" || r.name === "reviewLimit" ? Number(r.value) : r.value);
           refreshPreview();
         })
       );
@@ -749,7 +771,7 @@
         }
       });
       el.querySelector("[data-reset]").addEventListener("click", () =>
-        ui.confirm({ title: "Reset all progress?", body: "Finished lessons and every review card will be deleted. Settings stay as they are.", ok: "Reset progress", danger: true }).then((yes) => {
+        ui.confirm({ title: "Reset " + NI.store.profile.name + "'s progress?", body: "Finished lessons, every review card and the word book of this profile will be deleted. Settings and other profiles stay as they are.", ok: "Reset progress", danger: true }).then((yes) => {
           if (!yes) return;
           NI.store.reset();
           ui.toast("Progress reset.");
@@ -772,9 +794,11 @@
         link("#kana", "あ Kana trainer", "Katakana charts, drills, loanwords and look-alikes.") +
         link("#guide", "🧭 How this course works", "The research behind the course, and routes for different learners.") +
         link("#grammar", "📐 Grammar reference", "Particles, verb and adjective forms, numbers and counters.") +
+        link("#book", "🔖 Word book", "Words you've saved, your own lists and words, vocabulary tests and flashcards.") +
         link("#words", "📚 Word list", "Every word in the course, searchable.") +
         link("#phrases", "💬 Phrasebook", "Survival phrases by situation.") +
-        link("#options", "⚙️ Options", "Your plan, reading aids, audio, theme and backups.") +
+        link("#profiles", NI.store.profile.icon + " Learning profiles", "A profile for each person learning here, each with its own progress.") +
+        link("#options", "⚙️ Options", "Your plan, lessons, reading aids, audio, theme and backups.") +
         "</section>"
       );
     },

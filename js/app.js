@@ -39,6 +39,7 @@
     const tab = doc.getElementById("tabbar");
     if (top) top.innerHTML = NAV.filter((n) => !n.narrow).map((n) => item(n, "nav-link")).join("");
     if (tab) tab.innerHTML = NAV.filter((n) => !n.wide).map((n) => item(n, "tab-link")).join("");
+    NI.book.profileButton();
   }
 
   let shows = 0; // pages shown so far
@@ -110,11 +111,15 @@
     doc.body.classList.toggle("show-gloss", !!s.gloss);
     doc.body.classList.toggle("show-romaji", !!s.romaji);
     doc.body.classList.toggle("pcolor", !!s.particles);
+    doc.body.classList.toggle("no-hand", s.handFont === false);
     if (s.textSize && s.textSize !== "m") el.setAttribute("data-size", s.textSize);
     else el.removeAttribute("data-size");
   }
 
   function onClick(e) {
+    // A handler on the page already replaced what was clicked (a form that
+    // opened in its place): that click is dealt with.
+    if (e.target.nodeType === 1 && !e.target.isConnected) return;
     const say = e.target.closest("[data-say]");
     if (say) {
       e.preventDefault();
@@ -122,6 +127,27 @@
       say.classList.remove("ping");
       void say.offsetWidth;
       say.classList.add("ping");
+      return;
+    }
+    // The bookmark on any word: save it to the word book, or take it out.
+    const mark = e.target.closest("[data-save]");
+    if (mark) {
+      e.preventDefault();
+      NI.book.toggle(mark.getAttribute("data-save"));
+      mark.dispatchEvent(new CustomEvent("ni-save", { bubbles: true }));
+      return;
+    }
+    const addWord = e.target.closest("[data-add-word]");
+    if (addWord) {
+      e.preventDefault();
+      NI.book.startAdd(addWord.getAttribute("data-add-word"), addWord.getAttribute("data-r"));
+      return;
+    }
+    const prof = e.target.closest("[data-profiles]");
+    if (prof) {
+      e.preventDefault();
+      if (ui.popAnchor === prof) ui.hidePop();
+      else NI.book.profileMenu(prof);
       return;
     }
     const bd = e.target.closest("[data-bd]");
@@ -189,7 +215,12 @@
       } else if (what === "srs" || what === "progress") {
         renderNav();
       } else if (what === "all") {
+        // Another profile, a restored backup or another tab: settings may differ too.
+        applySettings();
         render();
+      } else if (what === "profile") {
+        renderNav();
+        if (current && current.name === "profiles") render();
       }
     });
     NI.speech.onVoices(() => {
@@ -206,7 +237,8 @@
     root.addEventListener("resize", () => ui.hidePop());
     root.addEventListener("pagehide", () => NI.store.flush());
     root.addEventListener("storage", (e) => {
-      if (e.key === NI.store.KEY && !(current && current.page.session)) NI.store.syncFrom(e.newValue);
+      if (e.key === NI.store.key && !(current && current.page.session)) NI.store.syncFrom(e.newValue);
+      else if (e.key === NI.store.PKEY) NI.store.syncIndex();
     });
     doc.addEventListener("visibilitychange", () => {
       if (doc.visibilityState === "hidden") NI.store.flush();

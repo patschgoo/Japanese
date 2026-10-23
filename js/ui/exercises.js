@@ -34,7 +34,15 @@
   }
   const family = (p) => (/^v/.test(p) ? "v" : /^adj/.test(p) ? "a" : p === "exp" || p === "int" ? "x" : p === "num" || p === "ctr" ? "#" : "n");
 
-  function wordDistractors(word, n, rng) {
+  /* Wrong answers for a word: words of the same kind from its unit and the
+     three before. pool: words to take them from first (a vocabulary test
+     uses the rest of the list being tested). */
+  function wordDistractors(word, n, rng, pool0) {
+    if (pool0 && pool0.length) {
+      const own = pool0.filter((w) => w.id !== word.id && w.r !== word.r && w.head !== word.head && w.en && !overlaps(w.en, word.en));
+      if (own.length >= n) return U.sample(own, n, rng);
+      return own.concat(wordDistractors(word, n - own.length, rng).filter((w) => own.indexOf(w) < 0)).slice(0, n);
+    }
     const units = NI.course.units.filter((u) => u.n <= word.unit && u.n >= word.unit - 3);
     let pool = [].concat(...units.map((u) => u.words)).filter((w) => w.id !== word.id && w.r !== word.r && w.head !== word.head && !overlaps(w.en, word.en));
     const same = pool.filter((w) => family(w.pos) === family(word.pos));
@@ -147,7 +155,7 @@
         '<p class="kicker">New word</p>' +
         '<div class="word-card">' +
         '<div class="word-big hand"' + ui.fit(word.head) + ">" + ui.wordHead(word, { tokens: false }) + "</div>" +
-        ui.say(ui.wordAudio(word), word.r, "lg") +
+        ui.say(ui.wordAudio(word), word.r, "lg") + NI.book.star(word.id, true) +
         '<p class="word-en">' + esc(word.en) + "</p>" +
         '<p class="word-meta">' + ui.posTag(word) + "</p>" +
         (word.note ? '<p class="word-note">' + esc(word.note) + "</p>" : "") +
@@ -161,8 +169,8 @@
     },
   });
 
-  T.mcMeaning = (word, rng) => {
-    const opts = U.shuffle([word].concat(wordDistractors(word, 3, rng)), rng);
+  T.mcMeaning = (word, rng, pool) => {
+    const opts = U.shuffle([word].concat(wordDistractors(word, 3, rng, pool)), rng);
     return {
       type: "mcMeaning",
       item: word.id,
@@ -179,8 +187,8 @@
     };
   };
 
-  T.mcWord = (word, rng) => {
-    const opts = U.shuffle([word].concat(wordDistractors(word, 3, rng)), rng);
+  T.mcWord = (word, rng, pool) => {
+    const opts = U.shuffle([word].concat(wordDistractors(word, 3, rng, pool)), rng);
     return {
       type: "mcWord",
       item: word.id,
@@ -196,8 +204,8 @@
     };
   };
 
-  T.listen = (word, rng) => {
-    const opts = U.shuffle([word].concat(wordDistractors(word, 3, rng)), rng);
+  T.listen = (word, rng, pool) => {
+    const opts = U.shuffle([word].concat(wordDistractors(word, 3, rng, pool)), rng);
     return {
       type: "listen",
       item: word.id,
@@ -226,6 +234,21 @@
     },
     solution: () => ui.jp(word.head, { tokens: false }) + ui.say(ui.wordAudio(word)),
     retry: () => T.mcWord(word, rng),
+  });
+
+  // A word written in kanji, without furigana: type how it's read.
+  T.reading = (word, rng) => ({
+    type: "reading",
+    item: word.id,
+    ref: word.id,
+    html() {
+      return '<p class="kicker">How is this read? Type it</p><div class="prompt-word hand no-furi"' + ui.fit(word.head) + ">" + ui.jp(word.head, { tokens: false, mode: "furigana" }) + "</div>" + '<p class="prompt-en small muted">' + esc(word.en) + "</p>" + inputBox("ans-" + U.hash(word.id + Math.random()));
+    },
+    mount(card, api) {
+      bindInput(card, api, U.uniq([word.r, NI.furi.reading(word.head)].concat(word.rs || [])));
+    },
+    solution: () => ui.jp(word.head, { tokens: false }) + " — " + esc(NI.furi.reading(word.head)) + ui.say(ui.wordAudio(word)),
+    retry: () => T.mcMeaning(word, rng),
   });
 
   T.match = (words, rng) => {

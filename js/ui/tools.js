@@ -20,7 +20,9 @@
         card("#maker", "🛠️", "Sentence Maker", "{文|ぶん}を{作|つく}る", "Pick the pieces, choose polite or casual, past or negative: get a correct sentence with audio.") +
         card("#stories", "📖", "Stories", "{読|よ}み{物|もの}", "Short graded stories with audio, using only words you’ve learned.") +
         card("#phrases", "💬", "Phrasebook", "フレーズ", "Ready-made phrases for restaurants, shops, trains and emergencies.") +
-        card("#words", "📚", "Word list", "{単語帳|たんごちょう}", "Every word in the course, searchable in English, kana or romaji.") +
+        card("#book", "🔖", "Word book", "{単語帳|たんごちょう}", "Your saved words in lists of your own, words you add yourself, vocabulary tests and flashcards.") +
+        card("#vtest", "✍️", "Vocabulary test", "{単語|たんご}テスト", "Test yourself on a list, your saved words, your reviews or any course units.") +
+        card("#words", "📚", "Word list", "{単語|たんご}リスト", "Every word in the course, searchable in English, kana or romaji.") +
         card("#grammar", "📐", "Grammar reference", "{文法|ぶんぽう}", "Particles, verb and adjective tables, numbers and counters.") +
         card("#kana", "あ", "Kana trainer", "かな", "Katakana charts and drills, loanwords and look-alike characters.") +
         "</div>"

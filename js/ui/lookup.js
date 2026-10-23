@@ -17,7 +17,7 @@
   // Taps on these do their own thing.
   const INTERACTIVE = "a, button, input, textarea, select, label, canvas, summary, [contenteditable], [data-say], [data-bd], .opt, .tile, .m-cell, .mem-card, #pop, #seltool";
   // Where a look-up would give answers away.
-  const CLOSED = ".game-area, .drill-box, .kp-box, .write-box, .kc-pad";
+  const CLOSED = ".game-area, .drill-box, .kp-box, .write-box, .kc-pad, .vt-test";
   // Text that isn't part of the Japanese being read.
   const NOT_TEXT = "rt, rp, .sr, .say, .bd-btn, .s-tools, .dlg-tools, .who-en";
 
@@ -283,7 +283,7 @@
     let run = "";
     const flush = () => {
       const rd = run && furigana ? readingFrom(run, furigana) : null;
-      if (run) rows.push('<li><span lang="ja">' + esc(run) + "</span>" + (rd && rd !== run ? ' <span class="pop-reading" lang="ja">' + esc(rd) + "</span>" : "") + ui.say(rd || run) + '<span class="muted">not in this course yet</span></li>');
+      if (run) rows.push('<li><span lang="ja">' + esc(run) + "</span>" + (rd && rd !== run ? ' <span class="pop-reading" lang="ja">' + esc(rd) + "</span>" : "") + ui.say(rd || run) + '<span class="muted">not in this course yet</span>' + '<button class="chip small ghost" type="button" data-add-word="' + esc(run) + '"' + (rd ? ' data-r="' + esc(rd) + '"' : "") + ">＋ Word book</button></li>");
       run = "";
     };
     for (const t of NI.lex.readPlain(text)) {
@@ -295,7 +295,7 @@
       if (!t.entry) continue;
       const e = t.entry;
       const reading = e.r && e.r !== t.text ? ' <span class="pop-reading" lang="ja">' + esc(e.r) + "</span>" : "";
-      rows.push('<li><span lang="ja">' + esc(t.text) + "</span>" + reading + ui.say(e.r || t.text) + "<span>" + esc(NI.lex.gloss(e)) + "</span></li>");
+      rows.push('<li><span lang="ja">' + esc(t.text) + "</span>" + reading + ui.say(e.r || t.text) + "<span>" + esc(NI.lex.gloss(e)) + "</span>" + NI.book.star(NI.items.saveId(e)) + "</li>");
     }
     flush();
     return rows.length ? '<ul class="pop-words">' + rows.join("") + "</ul>" : "";

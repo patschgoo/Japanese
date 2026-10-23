@@ -38,7 +38,7 @@
       '<li class="w-row">' +
       '<div class="w-jp">' + ui.em(w) + ui.wordHead(w, { tokens: false }) + "</div>" +
       '<div class="w-en"><span class="w-mean">' + esc(w.en) + "</span> " + ui.posTag(w) + (w.note ? '<span class="w-note">' + esc(w.note) + "</span>" : "") + "</div>" +
-      '<div class="w-side">' + ui.say(ui.wordAudio(w), w.r) + tierBadge(w.id) + "</div>" +
+      '<div class="w-side">' + ui.say(ui.wordAudio(w), w.r) + tierBadge(w.id) + NI.book.star(w.id) + "</div>" +
       "</li>"
     );
   }

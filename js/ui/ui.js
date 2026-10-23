@@ -146,7 +146,9 @@
         '<div class="pop-peek"><button class="btn small" type="button" data-peek>Show the meaning</button>' +
         (mode === "quiz" ? '<span class="small muted">counts as a hint: half XP</span>' : "") + '</div><div class="pop-hidden" hidden>' + meaning + "</div>";
     else html += meaning;
+    html += NI.book.popBlock(entry);
     pop.innerHTML = html;
+    NI.book.bindPop(pop);
     placePop(pop, anchor);
     if (NI.store.settings.tapSpeak !== false) NI.speech.speak(d.audio);
   }

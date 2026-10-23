@@ -1698,3 +1698,128 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
 .kp-box, .write-box, .drill-box { scroll-margin-top: 64px; }
 .pop-ex { display: grid; gap: 2px; margin-top: 6px; font-size: 0.92rem; }
 .pop-ex .jp { font-size: 1.1rem; line-height: 1.9; }
+
+/* ---------------------------------------------------------------- word book, tests, profiles */
+.wb-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--card);
+  color: var(--ink-3);
+  cursor: pointer;
+  font: 600 0.84rem var(--f-ui);
+  vertical-align: middle;
+  flex: none;
+}
+.wb-save svg { width: 18px; height: 18px; }
+.wb-save:hover { color: var(--ink); border-color: var(--ink-3); }
+.wb-save.on { color: var(--shu); border-color: color-mix(in srgb, var(--shu) 55%, transparent); }
+.wb-save.labelled { padding: 0 12px 0 9px; }
+.word-card .wb-save { margin-left: 8px; }
+.wotd-word .wb-save, .rv-back .wb-save { margin-left: 6px; }
+.pop-book { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--rule); }
+.pop-book .chips, .b-manage .chips { margin-top: 0; }
+.chip.small { padding: 3px 10px; font-size: 0.8rem; }
+.chip.ghost { background: transparent; border-style: dashed; color: var(--ink-2); }
+.chip small { opacity: 0.75; }
+.chip:disabled { opacity: 0.45; cursor: default; }
+.nl-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.nl-form input[type="text"] { flex: 1 1 140px; min-width: 0; }
+.nl-form.big { display: grid; gap: 8px; margin-top: 14px; padding: 14px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--card); }
+.nl-form.big[hidden] { display: none; }
+.nl-form.big label { font-size: 0.86rem; color: var(--ink-2); font-weight: 500; }
+.icon-pick { display: flex; flex-wrap: wrap; gap: 6px; border: 0; margin: 0; padding: 0; }
+.icon-pick label { position: relative; cursor: pointer; }
+.icon-pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.icon-pick label > span[aria-hidden] { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--rule); background: var(--paper); font-size: 1.3rem; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.icon-pick input:checked + span { border-color: var(--navy); box-shadow: inset 0 0 0 2px var(--navy); }
+.icon-pick input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
+.crumb { margin: 0 0 4px; font-size: 0.88rem; }
+.crumb a { color: var(--ink-2); text-decoration: none; }
+.crumb a:hover { color: var(--ink); text-decoration: underline; }
+.danger-text { color: var(--bad); }
+.b-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 10px; margin-top: 10px; }
+.b-card { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--card); color: var(--ink); text-decoration: none; text-align: left; font: inherit; cursor: pointer; }
+.b-card:hover { border-color: var(--ink-3); }
+.b-new { border-style: dashed; background: transparent; }
+.b-ic { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 12px; background: var(--tint); font-size: 1.35rem; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", var(--f-ui); color: var(--shu); }
+.b-tx { display: flex; flex-direction: column; min-width: 0; }
+.b-tx span { font-size: 0.84rem; color: var(--ink-2); }
+.b-tools { margin: 6px 0 4px; }
+.b-tools select { width: auto; }
+.b-list { margin-top: 6px; }
+.b-row .w-side { flex-wrap: wrap; justify-content: flex-end; }
+.b-row .icon-btn { width: 34px; height: 34px; font-size: 1.05rem; }
+.b-row .icon-btn svg { width: 16px; height: 16px; }
+.b-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.b-tag { font-size: 0.72rem; padding: 1px 8px; border-radius: 999px; background: var(--tint); color: var(--ink-2); }
+.b-own { border-color: color-mix(in srgb, var(--shu) 45%, transparent); color: var(--shu); }
+.b-manage { grid-column: 1 / -1; padding: 6px 0 2px; }
+.b-manage p { margin: 0 0 6px; }
+.b-add { margin-top: 18px; }
+.b-add h2 { margin-top: 0; }
+.ba-err { color: var(--bad); margin: 8px 0 0; }
+.vt-setup h2 { font-size: 1.02rem; margin: 22px 0 6px; }
+.vt-setup h2:first-child { margin-top: 0; }
+.vt-setup .seg { flex-wrap: wrap; }
+.vt-types .chip { display: inline-flex; flex-direction: column; align-items: flex-start; border-radius: 12px; padding: 6px 12px; text-align: left; }
+.vt-types .chip small { font-size: 0.74rem; }
+.vt-units { margin-top: 10px; gap: 12px; }
+.vt-units label { display: flex; flex-direction: column; gap: 4px; font-size: 0.86rem; color: var(--ink-2); }
+.vt-info { margin: 10px 0 0; }
+.vt-setup .row.center { margin-top: 22px; }
+.vt-missed { text-align: left; margin-top: 18px; }
+.vt-missed h3 { margin: 0 0 4px; font-size: 1rem; }
+.fc .rv-front { text-align: center; }
+.seg.small .seg-b { padding: 6px 10px; font-size: 0.8rem; }
+kbd { font: 600 0.72em var(--f-ui); padding: 1px 6px; border-radius: 5px; border: 1px solid currentColor; opacity: 0.7; margin-left: 4px; }
+.no-furi rt { visibility: hidden; }
+.no-hand .hand, .no-hand .hand .jp { font-family: var(--f-jp); font-weight: 700; }
+.prof-btn { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; border: 1px solid var(--rule); background: var(--card); cursor: pointer; font-size: 1.25rem; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; padding: 0; }
+.prof-btn:hover { border-color: var(--ink-3); }
+.pm { display: grid; gap: 4px; min-width: 220px; }
+.pm-h { margin: 0 0 2px; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); font-weight: 600; }
+.pm-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--ink); font: inherit; cursor: pointer; text-align: left; }
+.pm-row:hover { background: var(--tint); }
+.pm-row.on { background: var(--navy-soft); border-color: color-mix(in srgb, var(--navy) 35%, transparent); }
+.pm-ic, .prof-ic { font-size: 1.3rem; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.pm-tick { margin-left: auto; color: var(--navy); font-weight: 700; }
+.pm-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--rule); }
+.prof-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.prof { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px 14px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--card); }
+.prof-acts, .prof-edit { grid-column: 1 / -1; }
+.prof.on { border-color: var(--navy); }
+.prof .prof-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--tint); font-size: 1.5rem; flex: none; }
+.prof-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prof-tx span:not(.tag) { font-size: 0.84rem; color: var(--ink-2); }
+.prof-tx .tag { align-self: flex-start; }
+.prof-acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.prof-edit { display: grid; gap: 8px; }
+.prof-edit[hidden] { display: none; }
+.prof-edit label { font-size: 0.86rem; color: var(--ink-2); }
+.prof-new { margin-top: 22px; }
+.prof-new > label { display: block; font-size: 0.86rem; color: var(--ink-2); font-weight: 500; margin-bottom: 4px; }
+.prof-now { display: flex; align-items: center; gap: 12px; margin: 6px 0 12px; }
+.prof-now .prof-ic { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--tint); font-size: 1.5rem; }
+.prof-now div { display: flex; flex-direction: column; }
+.opt-jump { margin-top: 12px; }
+.opt-jump .chip { text-decoration: none; }
+.opt-sec { scroll-margin-top: 72px; }
+.pop-words .wb-save { min-width: 28px; height: 28px; padding: 0 5px; }
+.pop-words .wb-save svg { width: 15px; height: 15px; }
+.mk-meta .wb-save { min-width: 28px; height: 28px; padding: 0 5px; margin-left: 4px; }
+.mk-meta .wb-save svg { width: 15px; height: 15px; }
+.b-more { margin-top: 8px; }
+.fc .rv-back .word-en { font-size: 1.5rem; }
+@media (max-width: 560px) {
+  /* A saved word in two lines: the word and its buttons, then the meaning. */
+  .b-row .w-side { grid-row: 1; flex-direction: row; flex-wrap: wrap; max-width: 52vw; gap: 6px; }
+  .b-row .w-en { grid-column: 1 / -1; }
+  kbd { display: none; }
+}

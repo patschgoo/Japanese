@@ -1,11 +1,17 @@
 /* Learner state: settings, finished lesson parts, spaced-repetition items,
-   daily activity, and the game layer (XP, badges, bests, line exams, the
-   mistakes notebook). Saved in localStorage; if the browser blocks storage the
-   site still works for the current visit. */
+   daily activity, the game layer (XP, badges, bests, line exams, the
+   mistakes notebook) and the word book. Saved in localStorage; if the browser
+   blocks storage the site still works for the current visit.
+
+   Each learning profile has a state of its own under its own key. The first
+   profile keeps the original key, so saves from before profiles carry on. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
   const KEY = "nihongo-ippo-v1";
+  const PKEY = "nihongo-ippo-profiles"; // { cur, list: [{ id, name, icon, t }] }
+  const keyOf = (id) => (id === "main" ? KEY : KEY + "@" + id);
+  const ICONS = ["🙂", "😺", "🐶", "🦊", "🐼", "🐸", "🐙", "🦉", "🌸", "🍙", "🍣", "🗻", "🚄", "🎮", "📚", "⭐"];
 
   const DEFAULT_SETTINGS = {
     furigana: "furigana", // furigana | hover | kana
@@ -28,43 +34,79 @@
     romaji: false, // romaji under each Japanese word (and in pop-ups)
     romajiPop: false, // romaji in word pop-ups only
     particles: true, // colour-code particles
+    reviewLimit: 50, // cards in one review session
+    autoNext: false, // move on by itself after a right answer
+    retryMissed: true, // a missed question comes back at the end of a lesson
+    handFont: true, // the handwriting-style font for big words in questions
   };
+
+  /* The word book: every saved word (saved: id → when), named lists of ids,
+     words the learner added themselves (custom: u:n → { j, r, en, pos }), and
+     the last vocabulary test results. */
+  const blankBooks = () => ({ saved: {}, lists: [], custom: {}, tests: [], seq: 0 });
 
   function blank() {
     return {
       v: 1, settings: Object.assign({}, DEFAULT_SETTINGS), onboarded: false, planned: false,
       parts: {}, srs: {}, days: {}, kana: {}, intro: {}, created: Date.now(),
       xp: 0, badges: {}, exams: {}, games: {}, mistakes: {}, stories: {},
-      rest: { n: 0, days: {}, earned: {} },
+      rest: { n: 0, days: {}, earned: {} }, books: blankBooks(),
     };
   }
 
   let state = blank();
+  // Saves that couldn't reach localStorage (blocked), so switching profiles still works this visit.
+  const mem = {};
+  let index = { cur: "main", list: [{ id: "main", name: "Me", icon: ICONS[0], t: Date.now() }] };
   let persistent = true;
   let timer = null;
   let dirty = false;
   const listeners = [];
 
-  function read() {
+  function read(key) {
+    const k = key || keyOf(index.cur);
+    let raw = null;
     try {
-      const raw = root.localStorage && root.localStorage.getItem(KEY);
-      return raw ? JSON.parse(raw) : null;
+      raw = root.localStorage && root.localStorage.getItem(k);
     } catch (e) {
       persistent = false;
+    }
+    if (raw == null && mem[k]) raw = mem[k];
+    try {
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
       return null;
+    }
+  }
+
+  function put(k, json) {
+    try {
+      root.localStorage.setItem(k, json);
+      delete mem[k];
+      return true;
+    } catch (e) {
+      mem[k] = json;
+      return false;
     }
   }
 
   function write() {
     timer = null;
     if (!dirty) return;
-    try {
-      root.localStorage.setItem(KEY, JSON.stringify(state));
-      persistent = true;
-      dirty = false;
-    } catch (e) {
-      persistent = false;
-    }
+    persistent = put(keyOf(index.cur), JSON.stringify(state));
+    dirty = false;
+  }
+
+  // The list of profiles; a missing or broken one means a single profile.
+  function readIndex() {
+    const saved = read(PKEY);
+    if (!saved || !Array.isArray(saved.list) || !saved.list.length) return index;
+    const list = saved.list.filter((p) => p && typeof p.id === "string").map((p) => ({ id: p.id, name: String(p.name || "Me").slice(0, 30), icon: p.icon || ICONS[0], t: p.t || Date.now() }));
+    if (!list.length) return index;
+    return { cur: list.some((p) => p.id === saved.cur) ? saved.cur : list[0].id, list };
+  }
+  function writeIndex() {
+    if (!put(PKEY, JSON.stringify(index))) persistent = false;
   }
 
   function merge(saved) {
@@ -73,6 +115,13 @@
     s.settings = Object.assign({}, DEFAULT_SETTINGS, saved.settings || {});
     for (const k of ["parts", "srs", "days", "kana", "intro", "badges", "exams", "games", "mistakes", "stories"]) if (saved[k] && typeof saved[k] === "object") s[k] = saved[k];
     if (saved.rest && typeof saved.rest === "object") s.rest = Object.assign({ n: 0, days: {}, earned: {} }, saved.rest);
+    const b = saved.books;
+    if (b && typeof b === "object") {
+      s.books = Object.assign(blankBooks(), b);
+      for (const k of ["saved", "custom"]) if (!b[k] || typeof b[k] !== "object" || Array.isArray(b[k])) s.books[k] = {};
+      s.books.lists = (Array.isArray(b.lists) ? b.lists : []).filter((l) => l && l.id && Array.isArray(l.words));
+      if (!Array.isArray(b.tests)) s.books.tests = [];
+    }
     s.xp = Number(saved.xp) || 0;
     s.onboarded = !!saved.onboarded;
     s.planned = !!saved.planned;
@@ -92,8 +141,15 @@
 
   const store = {
     KEY,
+    PKEY,
+    ICONS,
     DEFAULT_SETTINGS,
+    // The storage key of the profile in use (for other tabs' storage events).
+    get key() {
+      return keyOf(index.cur);
+    },
     load() {
+      index = readIndex();
       state = merge(read());
       return state;
     },
@@ -337,8 +393,184 @@
       this.log("kn", 1);
     },
 
+    // ---- learning profiles ---------------------------------------------------
+    get profile() {
+      return index.list.find((p) => p.id === index.cur) || index.list[0];
+    },
+    get profiles() {
+      return index.list.slice();
+    },
+    switchProfile(id) {
+      if (id === index.cur || !index.list.some((p) => p.id === id)) return false;
+      this.flush();
+      index.cur = id;
+      writeIndex();
+      state = merge(read());
+      dirty = false;
+      emit("all");
+      return true;
+    },
+    /* A new profile starts with no progress. copy: take this profile's
+       settings and plan with it (otherwise the plan questions come first). */
+    addProfile(name, icon, copy) {
+      const id = "p" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+      const fresh = blank();
+      if (copy) {
+        fresh.settings = Object.assign({}, state.settings);
+        fresh.planned = fresh.onboarded = true;
+      }
+      if (!put(keyOf(id), JSON.stringify(fresh))) persistent = false;
+      index.list.push({ id, name: String(name || "Learner").slice(0, 30), icon: icon || ICONS[index.list.length % ICONS.length], t: Date.now() });
+      writeIndex();
+      this.switchProfile(id);
+      return id;
+    },
+    editProfile(id, name, icon) {
+      const p = index.list.find((x) => x.id === id);
+      if (!p) return;
+      if (name != null) p.name = String(name).trim().slice(0, 30) || p.name;
+      if (icon) p.icon = icon;
+      writeIndex();
+      emit("profile");
+    },
+    // Deletes a profile and its progress for good; the last one can't go.
+    removeProfile(id) {
+      if (index.list.length < 2 || !index.list.some((p) => p.id === id)) return false;
+      if (id === index.cur) this.switchProfile(index.list.find((p) => p.id !== id).id);
+      index.list = index.list.filter((p) => p.id !== id);
+      writeIndex();
+      delete mem[keyOf(id)];
+      try {
+        root.localStorage.removeItem(keyOf(id));
+      } catch (e) {
+        /* storage blocked: it was only in memory */
+      }
+      emit("profile");
+      return true;
+    },
+    // Another tab changed the list of profiles (a new one, a new name).
+    syncIndex() {
+      const cur = index.cur;
+      const next = readIndex();
+      index = next;
+      if (!next.list.some((p) => p.id === cur)) {
+        index.cur = next.list[0].id;
+        state = merge(read());
+        emit("all");
+      } else {
+        index.cur = cur;
+        emit("profile");
+      }
+    },
+    // A profile's numbers without switching to it, for the profile list.
+    peek(id) {
+      const st = id === index.cur ? state : read(keyOf(id));
+      if (!st) return { xp: 0, words: 0, days: 0 };
+      return { xp: Number(st.xp) || 0, words: Object.keys(st.srs || {}).filter((k) => k.startsWith("v:")).length, days: Object.keys(st.days || {}).length };
+    },
+
+    // ---- the word book ----------------------------------------------------------
+    get books() {
+      return state.books;
+    },
+    isSaved(id) {
+      return !!state.books.saved[id];
+    },
+    // Saves a word (to the All list), and to a list if one is given.
+    saveWord(id, listId) {
+      const b = state.books;
+      if (!b.saved[id]) b.saved[id] = Date.now();
+      if (listId) {
+        const l = b.lists.find((x) => x.id === listId);
+        if (l && l.words.indexOf(id) < 0) l.words.unshift(id);
+      }
+      this.save();
+      emit("books");
+    },
+    // Takes a word out of the book altogether: All and every list.
+    unsaveWord(id) {
+      const b = state.books;
+      delete b.saved[id];
+      for (const l of b.lists) l.words = l.words.filter((w) => w !== id);
+      this.save();
+      emit("books");
+    },
+    listsOf(id) {
+      return state.books.lists.filter((l) => l.words.indexOf(id) >= 0).map((l) => l.id);
+    },
+    setInList(id, listId, on) {
+      const l = state.books.lists.find((x) => x.id === listId);
+      if (!l) return;
+      l.words = l.words.filter((w) => w !== id);
+      if (on) {
+        l.words.unshift(id);
+        if (!state.books.saved[id]) state.books.saved[id] = Date.now();
+      }
+      this.save();
+      emit("books");
+    },
+    newList(name, icon) {
+      const b = state.books;
+      const id = "l" + ++b.seq;
+      b.lists.push({ id, name: String(name || "New list").trim().slice(0, 40) || "New list", icon: icon || "📒", words: [], t: Date.now() });
+      this.save();
+      emit("books");
+      return id;
+    },
+    editList(id, name, icon) {
+      const l = state.books.lists.find((x) => x.id === id);
+      if (!l) return;
+      if (name != null) l.name = String(name).trim().slice(0, 40) || l.name;
+      if (icon) l.icon = icon;
+      this.save();
+      emit("books");
+    },
+    // Deletes a list; its words stay saved in All.
+    deleteList(id) {
+      state.books.lists = state.books.lists.filter((x) => x.id !== id);
+      this.save();
+      emit("books");
+    },
+    // A word the learner adds themselves: { j: markup, r: reading, en, pos }.
+    addCustom(w) {
+      const b = state.books;
+      const id = "u:" + ++b.seq;
+      b.custom[id] = { j: w.j, r: w.r, en: w.en, pos: w.pos || "n", t: Date.now() };
+      b.saved[id] = Date.now();
+      this.save();
+      emit("books");
+      return id;
+    },
+    editCustom(id, w) {
+      const c = state.books.custom[id];
+      if (!c) return;
+      Object.assign(c, { j: w.j, r: w.r, en: w.en, pos: w.pos || c.pos });
+      this.save();
+      emit("books");
+    },
+    removeCustom(id) {
+      delete state.books.custom[id];
+      this.unsaveWord(id);
+      delete state.srs[id];
+      delete state.mistakes[id];
+      this.save();
+    },
+    // A vocabulary test's result: src names what was tested (a list, "all", "u1-5" …).
+    logTest(src, right, n) {
+      const t = state.books.tests;
+      t.push({ src, right, n, at: Date.now() });
+      if (t.length > 60) t.splice(0, t.length - 60);
+      this.save();
+    },
+    testsOf(src) {
+      const list = state.books.tests.filter((t) => t.src === src);
+      if (!list.length) return null;
+      const pct = (t) => (t.n ? Math.round((t.right / t.n) * 100) : 0);
+      return { last: pct(list[list.length - 1]), best: Math.max(...list.map(pct)), n: list.length, at: list[list.length - 1].at };
+    },
+
     exportJson() {
-      return JSON.stringify(Object.assign({ app: "nihongo-ippo", exported: new Date().toISOString() }, state));
+      return JSON.stringify(Object.assign({ app: "nihongo-ippo", exported: new Date().toISOString(), profile: { name: this.profile.name, icon: this.profile.icon } }, state));
     },
     importJson(text) {
       let data;

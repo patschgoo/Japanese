@@ -262,9 +262,9 @@
         NI.fx.play("wrong");
         if (ex.ref) NI.store.addMistake(ex.ref);
         if (o.practice && ex.ref) NI.store.log("mp", 1);
-        // A missed item comes back once at the end; a retry is never retried.
+        // A missed item comes back once at the end (unless turned off); a retry is never retried.
         const key = ex.type + ":" + (ex.item || i);
-        if (ex.retry && !ex.isRetry && !retried.has(key)) {
+        if (ex.retry && !ex.isRetry && !retried.has(key) && NI.store.settings.retryMissed !== false) {
           retried.add(key);
           const again = ex.retry();
           again.isRetry = true;
@@ -286,6 +286,13 @@
       const b = foot.querySelector("[data-next]");
       b.addEventListener("click", next);
       setTimeout(() => b.focus({ preventScroll: true }), 0);
+      // Options → continue by itself after a right answer.
+      if (ok === true && NI.store.settings.autoNext) {
+        const at = i;
+        setTimeout(() => {
+          if (i === at && card.isConnected && !foot.hidden) next();
+        }, 1100);
+      }
       foot.scrollIntoView({ block: "nearest" });
       // On a phone the feedback bar can cover the right answer: scroll it into view above the bar.
       const shown = card.querySelector(".opt.right") || card.querySelector(".kana-input");
@@ -554,7 +561,7 @@
     if (it.kind === "word") {
       const ex = NI.items.bestExample(it);
       return (
-        '<div class="rv-back">' + (it.em ? '<div class="em-big" aria-hidden="true">' + it.em + "</div>" : "") + '<div class="word-big hand"' + ui.fit(it.head) + ">" + ui.wordHead(it, { tokens: false }) + "</div>" + ui.say(ui.wordAudio(it), it.r) +
+        '<div class="rv-back">' + (it.em ? '<div class="em-big" aria-hidden="true">' + it.em + "</div>" : "") + '<div class="word-big hand"' + ui.fit(it.head) + ">" + ui.wordHead(it, { tokens: false }) + "</div>" + ui.say(ui.wordAudio(it), it.r) + NI.book.star(it.id) +
         '<p class="word-en">' + esc(it.en) + "</p>" + (it.note ? '<p class="word-note">' + esc(it.note) + "</p>" : "") +
         (ex ? '<div class="word-ex">' + ui.jp(ex.jp) + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '<p class="en">' + esc(ex.en) + "</p></div>" : "") + "</div>"
       );
@@ -605,7 +612,7 @@
       if (ex) ex.addEventListener("click", () => runReview(box, true));
       return;
     }
-    const LIMIT = 50;
+    const LIMIT = Number(NI.store.settings.reviewLimit) || 50;
     const queue = ids.slice(0, LIMIT).map((id) => ({ id, first: !extra }));
     const remaining = ids.length - queue.length;
     let i = 0;

@@ -131,7 +131,7 @@
               '<li><div class="mk-jp">' + (it.em ? ui.em(it) : "") + ui.jp(jp, { tokens: it.kind !== "word" }) +
               '<span class="s-tools">' + ui.say(it.kind === "word" ? ui.wordAudio(it) : ui.sentenceAudio(jp)) + (it.kind === "word" ? "" : ui.breakdownBtn(jp, it.en)) + "</span></div>" +
               '<p class="en">' + esc(it.en) + "</p>" +
-              '<p class="mk-meta">Missed ' + U.plural(m.n, "time") + (m.ok ? " · right once since" : "") + ' · <a href="#unit-' + it.unit + '">' + esc(NI.course.code(it.unit)) + "</a></p>" +
+              '<p class="mk-meta">Missed ' + U.plural(m.n, "time") + (m.ok ? " · right once since" : "") + (it.unit ? ' · <a href="#unit-' + it.unit + '">' + esc(NI.course.code(it.unit)) + "</a>" : " · from your word book") + (it.kind === "word" ? " " + NI.book.star(it.id) : "") + "</p>" +
               '<button class="icon-btn mk-del" type="button" data-del="' + esc(r) + '" aria-label="Remove from the notebook" title="Remove">' + ui.ICON.close + "</button></li>"
             );
           })

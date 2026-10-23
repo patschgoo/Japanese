@@ -20,14 +20,14 @@ function loadContext() {
   vm.createContext(ctx);
   const run = (rel) => vm.runInContext(fs.readFileSync(path.join(ROOT, rel), "utf8"), ctx, { filename: rel });
   for (const f of CORE) run("js/core/" + f + ".js");
-  ctx.NI.store = { settings: { furigana: "furigana", kataHelp: true, gaps: true, autoplay: false }, item: () => null };
+  ctx.NI.store = { settings: { furigana: "furigana", kataHelp: true, gaps: true, autoplay: false }, item: () => null, isSaved: () => false, listsOf: () => [], books: { lists: [], saved: {}, custom: {} } };
   ctx.NI.speech = { supported: false, canListen: false };
   // Load data files in the order index.html lists them.
   const indexPath = path.join(ROOT, "index.html");
   const order = fs.existsSync(indexPath) ? fs.readFileSync(indexPath, "utf8").match(/js\/data\/[\w.-]+\.js/g) || [] : [];
   const files = order.length ? order : fs.readdirSync(path.join(ROOT, "js/data")).sort().map((f) => "js/data/" + f);
   for (const f of files) run(f);
-  for (const f of ["ui", "speakcheck", "views", "exercises"]) run("js/ui/" + f + ".js");
+  for (const f of ["ui", "speakcheck", "views", "exercises", "book"]) run("js/ui/" + f + ".js");
   return ctx.NI;
 }
 

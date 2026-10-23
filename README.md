@@ -27,6 +27,10 @@ shinkansen (新幹線) as you remember them.
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
 | **Kana trainer** | **Practice:** let it choose the kana as you improve (a new row once you know the last), or tick the rows yourself, look-alikes and the ones you often miss included. Nine stages: kana → sound, sound → kana, find the pairs, type the sound, type a word, read a line, listen, trace and write from memory. Train with no end (it moves up a stage when you get 9 of 10 right) or take a scored test. Quick settings: stay on a stage, turn one off, timer, sounds, typed answers checked without Enter, word meanings; the eye shows an answer. **Chart:** hiragana and katakana side by side, coloured by how well you know each; tap one to hear it, watch its stroke order and trace it. **Write:** trace, then write from memory, with every stroke checked for shape, direction and order. Also 75 loanwords and look-alike katakana (シ/ツ, ソ/ン…) |
 | **Your plan** | Pick a goal (travel, anime, work, the JLPT, people, curiosity), a daily target and a focus (listening, speaking, reading, exam); lessons adapt their mix of exercises |
+| **Word book** | Save any word you meet (tap it and choose Save, or the bookmark beside it) into All saved words and lists of your own; add words from outside the course with their reading and meaning; search, sort, copy a list as text, or put a whole list into your reviews |
+| **Vocabulary tests** | Test yourself on a list, your saved words, your reviews, your mistakes or any range of units: choose the questions (meaning, Japanese, listening, typing, kanji readings), the length, and a scored test or practice with hints; each list keeps its last and best score, and missed words can go straight into a list. Flashcards for a quick run-through |
+| **Learning profiles** | One for each person learning on the device (or a fresh start): each has its own progress, reviews, word book, plan and settings, and you switch from the button at the top |
+| **Settings** | Per profile: plan, lessons and reviews (session length, moving on after a right answer, missed questions coming back, the handwriting-style font), reading aids, audio, theme, backups |
 
 ## The method, in short
 
@@ -109,8 +113,9 @@ index.html            app shell; loads every script in order
 css/app.css           all styles (light and dark themes)
 js/core/              engines with no DOM: kana & romaji input, furigana,
                       conjugation, number readings, word segmenter,
-                      spaced repetition, storage, speech, XP and badges,
-                      the sentence maker
+                      spaced repetition, storage (with learning profiles
+                      and the word book), speech, XP and badges, the
+                      sentence maker
 js/data/              course content (units-h/m/d/k/t/s.js = the six lines),
                       stories, phrasebook, kana tables, grammar-word glosses,
                       emoji for concrete words, sentence-maker fillers,
@@ -119,8 +124,9 @@ js/data/              course content (units-h/m/d/k/t/s.js = the six lines),
 js/ui/                pages, exercise types, lesson/review sessions, games,
                       reader and maker, stories, stamps, the sentence breakdown,
                       role-play, hands-free listening, kana practice, the
-                      stroke-order pad, kana writing and the pronunciation
-                      check
+                      stroke-order pad, kana writing, the pronunciation
+                      check, and the word book with vocabulary tests,
+                      flashcards and profiles (book.js)
 js/app.js             router and start-up
 tools/validate.js     content checks and engine tests (`npm test`)
 tools/vocab.js        what a learner knows by a given unit (for writers)

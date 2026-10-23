@@ -1,11 +1,18 @@
 /* Review items. An item id names what is reviewed:
      v:食べる      a course word
      s:6:3         sentence 3 of unit 6
-     p:food:2      phrase 2 of the "food" phrasebook section */
+     p:food:2      phrase 2 of the "food" phrasebook section
+     x:線          a word from the site's glossary, saved to the word book
+     u:3           a word the learner added to their word book */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
   let examples = null;
+
+  // A word-like item: what lessons, reviews and tests need from a course word.
+  function word(id, j, r, en, pos) {
+    return { id, kind: "word", head: j, j, w: NI.furi.base(j), r: r || NI.furi.reading(j), en: en || "", pos: pos || "n", unit: 0 };
+  }
 
   const items = {
     get(id) {
@@ -19,6 +26,25 @@
         const p = sec && sec.items[Number(idx)];
         return p ? Object.assign({ id, kind: "phrase", section: sec }, p) : null;
       }
+      // Glossary and learner-added words look like course words from unit 0.
+      if (id.startsWith("x:")) {
+        const e = NI.lex.get(id);
+        return e && e.kind === "extra" ? word(id, e.j, e.r, e.en, e.pos) : null;
+      }
+      if (id.startsWith("u:")) {
+        const c = NI.store.state.books && NI.store.state.books.custom[id];
+        return c ? Object.assign(word(id, c.j, c.r, c.en, c.pos), { custom: true }) : null;
+      }
+      return null;
+    },
+
+    /* The word-book id for a lexicon entry: a course word or one of its forms
+       is its word, a glossary word (or its form) is the glossary word. Names,
+       grammar and numbers can't be saved (null). */
+    saveId(e) {
+      if (!e) return null;
+      if ((e.kind === "word" || e.kind === "form") && e.id && e.id.startsWith("v:")) return e.id;
+      if (e.kind === "extra" && e.key) return e.key.split("#")[0];
       return null;
     },
 

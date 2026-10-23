@@ -222,6 +222,9 @@
         '<li><b><a href="#maker">Sentence Maker</a>:</b> pick a pattern and the parts, and it builds a correct sentence in any tense, polite or casual, as a question or a request.</li>' +
         "<li><b>Hints</b> in every lesson (press H): fewer options, or the first letters of the answer, for half the XP.</li>" +
         '<li><b><a href="#mistakes">Mistakes notebook</a>:</b> everything you get wrong, until you get it right twice.</li>' +
+        '<li><b><a href="#book">Word book</a>:</b> save any word you meet (tap it and choose Save, or the bookmark beside it), sort words into your own lists next to All saved words, and add words from outside the course. Any list can go into your reviews.</li>' +
+        '<li><b><a href="#vtest">Vocabulary tests</a>:</b> test yourself on a list, your saved words, your reviews, your mistakes or any course units, with the question types you choose (meaning, Japanese, listening, typing, kanji readings). Each list keeps its last and best score; flashcards are there for a quick run-through.</li>' +
+        '<li><b><a href="#profiles">Learning profiles</a>:</b> one for each person learning on this device, each with its own progress, word book, plan and settings.</li>' +
         '<li><b><a href="#phrases">Phrasebook</a>:</b> ready-made phrases for shops, restaurants, stations and emergencies.</li>' +
         '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +
         '<li><b><a href="#listen">Listen on the go</a>:</b> hands-free audio with pauses to recall, Japanese first or English first.</li>' +
