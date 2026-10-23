@@ -972,7 +972,15 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
   z-index: 60;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.modal { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgba(10, 14, 20, 0.45); padding: 16px; }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 14, 20, 0.45);
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
 .modal-card { width: 100%; max-width: 420px; padding: 20px 22px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
 .modal-card h2 { font-size: 1.2rem; }
 

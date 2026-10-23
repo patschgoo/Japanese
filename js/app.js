@@ -113,6 +113,24 @@
       return;
     }
     if (!e.target.closest("#pop")) ui.hidePop();
+    // Internal links navigate from script, so routing also works in embedded
+    // frames whose base URL is the host page's (where "#unit-1" would resolve
+    // to the host's address).
+    const link = e.target.closest('a[href^="#"]');
+    if (link && e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
+      e.preventDefault();
+      const href = link.getAttribute("href");
+      if (parse(href)) {
+        if (root.location.hash !== href) go(href.slice(1));
+      } else {
+        const t = doc.getElementById(href.slice(1));
+        if (t) {
+          t.scrollIntoView({ block: "start" });
+          t.focus({ preventScroll: true });
+        }
+      }
+      return;
+    }
     const jump = e.target.closest("[data-jump]");
     if (jump) {
       const t = doc.getElementById(jump.getAttribute("data-jump"));
