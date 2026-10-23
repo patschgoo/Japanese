@@ -240,6 +240,51 @@
     kata: { t: "Learn katakana", d: "Starts with ア イ ウ エ オ and adds a row when you're ready", set: { pick: "auto", auto: "kata", from: "", mode: "train" } },
     mixed: { t: "Kana test", d: "Hiragana and katakana, single kana and words", set: { pick: "manual", cards: hiraAll().concat(hiraAll().map((id) => "k" + id.slice(1))), stages: ["read", "find", "type", "word", "listen"], mode: "test", length: 20 } },
   };
+  /* Saved setups, like Kana Pro's profiles: a name for a choice of kana,
+     stages and mode. Hiragana and Katakana to begin with. Choosing one fills
+     the setup screen, and starting saves any changes back to it. */
+  const SKEY = "kanaSetups";
+  const SETUP_FIELDS = ["pick", "auto", "from", "cards", "stages", "mode", "length", "kataAs"];
+  function setups() {
+    const saved = NI.store.state.intro[SKEY];
+    if (Array.isArray(saved) && saved.length) return saved;
+    return [
+      { id: "s1", name: "Hiragana", cfg: { pick: "auto", auto: "hira", from: "", mode: "train" } },
+      { id: "s2", name: "Katakana", cfg: { pick: "auto", auto: "kata", from: "", mode: "train" } },
+    ];
+  }
+  const saveSetups = (list) => NI.store.setIntro(SKEY, list);
+  const currentSetup = () => setups().find((x) => x.id === NI.store.state.intro.kanaSetup) || null;
+  const pickFields = (c) => SETUP_FIELDS.reduce((o, k) => ((o[k] = Array.isArray(c[k]) ? c[k].slice() : c[k]), o), {});
+
+  // What a setup covers, and how much of it is known.
+  function setupLine(cfg) {
+    const c = Object.assign(defaults(), cfg);
+    const mode = c.mode === "test" ? "test" : "train";
+    if (c.pick === "auto") {
+      const pct = c.auto === "both" ? Math.round((mastery("hira") + mastery("kata")) / 2) : mastery(c.auto === "kata" ? "kata" : "hira");
+      return "Automatic · " + mode + " · " + pct + "% known";
+    }
+    const pool = poolOf(c);
+    if (!pool.length) return "No kana chosen";
+    const known = pool.filter((k) => level(k) === "known").length;
+    return U.plural(pool.length, "kana", "kana") + " · " + mode + " · " + Math.round((known / pool.length) * 100) + "% known";
+  }
+
+  function setupsHtml() {
+    const cur = currentSetup();
+    const list = setups();
+    return (
+      '<div class="kp-setups"><div class="kp-setups-head"><b>Your setups</b><small>Each remembers which kana, stages and mode you chose. Changes are saved to the setup in use when you start.</small></div>' +
+      '<div class="kp-setups-list">' +
+      list.map((x) => '<button class="chip-btn kp-su' + (cur && cur.id === x.id ? " on" : "") + '" type="button" data-setup="' + esc(x.id) + '" aria-pressed="' + !!(cur && cur.id === x.id) + '"><b>' + esc(x.name) + "</b><small>" + esc(setupLine(x.cfg)) + "</small></button>").join("") +
+      '<button class="chip-btn kp-su-new" type="button" data-setup-new><b>＋ New setup</b><small>From the choices below</small></button></div>' +
+      (cur ? '<div class="kp-su-acts"><span class="small muted">In use: <b>' + esc(cur.name) + '</b></span><button class="btn small ghost" type="button" data-setup-rename>Rename</button>' + (list.length > 1 ? '<button class="btn small ghost danger-text" type="button" data-setup-del>Delete</button>' : "") + "</div>" : "") +
+      '<form class="kp-su-form" hidden><label for="kp-su-name">Name of the setup</label><div class="row wrap"><input id="kp-su-name" type="text" maxlength="30" autocomplete="off" placeholder="e.g. Own, Tricky ones, ガギグ…"><button class="btn small primary" type="submit">Save</button><button class="btn small ghost" type="button" data-su-cancel>Cancel</button></div></form>' +
+      "</div>"
+    );
+  }
+
   let pending = null; // a preset to show, from a link such as #kana-hira
   let active = null; // the session on screen, so leaving the page can end it
 
@@ -279,6 +324,7 @@
     const tests = NI.store.state.intro.kanaTests || [];
     return (
       "<p>Practise exactly the kana you choose, or let the trainer choose them as you improve. Each stage asks in a new way, from recognising a kana to writing it from memory.</p>" +
+      setupsHtml() +
       '<div class="kp-quick"><b>Quick start</b>' + Object.keys(PRESETS).map((k) => '<button class="chip-btn" type="button" data-preset="' + k + '"><b>' + esc(PRESETS[k].t) + "</b><small>" + esc(PRESETS[k].d) + "</small></button>").join("") + "</div>" +
       '<div class="kp-setup">' +
       '<section class="kp-sec"><h2>1. Which kana?</h2>' +
@@ -388,7 +434,11 @@
     update();
 
     const go = (c, save) => {
-      if (save) NI.store.setIntro(KEY, c);
+      if (save) {
+        NI.store.setIntro(KEY, c);
+        const cur = currentSetup();
+        if (cur) saveSetups(setups().map((x) => (x.id === cur.id ? Object.assign({}, x, { cfg: pickFields(c) }) : x)));
+      }
       setup.hidden = true;
       quick.hidden = true;
       if (intro) intro.hidden = true;
@@ -405,6 +455,64 @@
       if (c.pick === "manual" && !poolOf(c).length) return ui.toast("Choose at least one row of kana.");
       go(c, true);
     });
+    // Saved setups: use one, make one from the screen, rename or delete the one in use.
+    const suForm = el.querySelector(".kp-su-form");
+    let suMode = "new";
+    const openForm = (mode, value) => {
+      suMode = mode;
+      suForm.hidden = false;
+      const input = suForm.querySelector("input");
+      input.value = value || "";
+      input.focus();
+    };
+    el.querySelectorAll("[data-setup]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const id = b.getAttribute("data-setup");
+        const list = setups();
+        const x = list.find((y) => y.id === id);
+        if (!x) return;
+        saveSetups(list);
+        NI.store.setIntro("kanaSetup", id);
+        NI.store.setIntro(KEY, Object.assign(config(), x.cfg));
+        NI.app.render();
+      })
+    );
+    el.querySelector("[data-setup-new]").addEventListener("click", () => openForm("new", ""));
+    const ren = el.querySelector("[data-setup-rename]");
+    if (ren) ren.addEventListener("click", () => openForm("rename", currentSetup().name));
+    const del = el.querySelector("[data-setup-del]");
+    if (del)
+      del.addEventListener("click", () => {
+        const cur = currentSetup();
+        ui.confirm({ title: "Delete the setup “" + cur.name + "”?", body: "Only the setup goes: what you know about each kana stays.", ok: "Delete", danger: true }).then((yes) => {
+          if (!yes) return;
+          const rest = setups().filter((x) => x.id !== cur.id);
+          saveSetups(rest);
+          NI.store.setIntro("kanaSetup", rest[0].id);
+          NI.store.setIntro(KEY, Object.assign(config(), rest[0].cfg));
+          NI.app.render();
+        });
+      });
+    suForm.querySelector("[data-su-cancel]").addEventListener("click", () => (suForm.hidden = true));
+    suForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = suForm.querySelector("input").value.trim();
+      if (!name) return suForm.querySelector("input").focus();
+      const list = setups();
+      if (suMode === "rename") {
+        const cur = currentSetup();
+        saveSetups(list.map((x) => (x.id === cur.id ? Object.assign({}, x, { name }) : x)));
+      } else {
+        const c = read(el);
+        const id = "s" + (list.reduce((m, x) => Math.max(m, Number(String(x.id).slice(1)) || 0), 0) + 1);
+        saveSetups(list.concat([{ id, name, cfg: pickFields(c) }]));
+        NI.store.setIntro("kanaSetup", id);
+        NI.store.setIntro(KEY, c);
+        ui.toast("Setup “" + name + "” saved.");
+      }
+      NI.app.render();
+    });
+
     el.querySelectorAll("[data-preset]").forEach((b) =>
       b.addEventListener("click", () => {
         const p = PRESETS[b.getAttribute("data-preset")];

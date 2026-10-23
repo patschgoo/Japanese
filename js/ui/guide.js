@@ -228,7 +228,7 @@
         '<li><b><a href="#phrases">Phrasebook</a>:</b> ready-made phrases for shops, restaurants, stations and emergencies.</li>' +
         '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +
         '<li><b><a href="#listen">Listen on the go</a>:</b> hands-free audio with pauses to recall, Japanese first or English first.</li>' +
-        '<li><b><a href="#kana-practice">Kana practice</a>:</b> choose the kana or let it choose them as you improve, from recognising each one to writing it from memory; train, or take a test with a score.</li>' +
+        '<li><b><a href="#kana-practice">Kana practice</a>:</b> choose the kana or let it choose them as you improve, from recognising each one to writing it from memory; train, or take a test with a score. Save what you chose as a setup (Hiragana and Katakana are there to begin with) and switch between them.</li>' +
         '<li><b><a href="#kana-chart">Kana chart</a>:</b> hiragana and katakana side by side, coloured by how well you know each; tap one to hear it and watch its stroke order.</li>' +
         '<li><b><a href="#kana-write">Write kana</a>:</b> trace, then write from memory, with every stroke checked.</li>' +
         "</ul></section>" +
