@@ -38,6 +38,7 @@
     じゃありませんでした: "wasn’t", じゃなかったです: "wasn’t", だ: "is", だった: "was", じゃない: "isn’t", じゃなかった: "wasn’t",
     んです: "(explains)", たち: "(plural)", お: "(polite)", ご: "(polite)", こと: "thing", ほう: "side", だったら: "if it’s",
     かもしれません: "might", かもしれない: "might", なら: "if it’s", でございます: "is (polite)",
+    そうです: "I hear", だそうです: "I hear it’s", によると: "according to",
   };
   const FORM_TAG = {
     masen: "not", mashita: "past", masendeshita: "not · past", mashou: "let’s", tai: "want to", takunai: "don’t want to",
@@ -59,6 +60,17 @@
   }
 
   const PUNCT = /^[。、？！「」『』…〜・（）()!?,.:：　ー—]$/;
+
+  // Plain forms that hearsay そうです can follow: 降る, 降った, 寒い, 寒くない, 雨だ …
+  const PLAIN = new Set(["dict", "nai", "nakatta", "ta", "teiru", "teinai", "teita", "pot", "potnai", "potta", "potnakatta", "tai", "takunai", "takatta", "takunakatta", "neg", "past", "pastneg", "da", "datta", "janai", "janakatta"]);
+  function isPlain(tok) {
+    const e = tok && tok.entry;
+    if (!e) return false;
+    if (e.kind === "word") return NI.conj.isVerb(e.pos) || e.pos === "adj-i" || e.pos === "adj-ix";
+    if (e.kind === "form") return PLAIN.has(e.form) && (NI.conj.isVerb(e.pos) || NI.conj.isAdj(e.pos));
+    if (e.kind === "grammar") return ["だ", "だった", "じゃない", "じゃなかった", "ない", "なかった"].indexOf(e.s) >= 0;
+    return false;
+  }
   const DIGITS = /^[0-9０-９,，]+$/;
   const KIND_RANK = { word: 0, form: 1, grammar: 2, name: 3 };
 
@@ -114,7 +126,7 @@
       }
       for (const g of NI.data.grammar) {
         const s = F.base(g.s);
-        this.add({ key: "g:" + s + (g.tag ? "#" + g.tag : ""), kind: "grammar", unit: g.u, s, r: F.reading(g.s), rs: g.rs, j: g.s, en: g.en, pos: g.kind, start: g.start });
+        this.add({ key: "g:" + s + (g.tag ? "#" + g.tag : ""), kind: "grammar", unit: g.u, s, r: F.reading(g.s), rs: g.rs, j: g.s, en: g.en, pos: g.kind, start: g.start, after: g.after });
       }
       for (const n of NI.data.names) {
         const s = F.base(n.j);
@@ -195,7 +207,9 @@
         const cur = best[i];
         if (!cur) continue;
         for (const o of this.options(atoms, i, offs, base)) {
-          const c = { u: cur.u + (o.unknown ? 1 : 0), m: cur.m + (o.mismatch ? 1 : 0), w: cur.w + o.w, tok: o, prev: cur };
+          // Hearsay そうです needs a plain form in front: 元気そうです is 元気そう + です.
+          const misplaced = o.entry && o.entry.after === "plain" && !isPlain(cur.tok);
+          const c = { u: cur.u + (o.unknown ? 1 : 0), m: cur.m + (o.mismatch || misplaced ? 1 : 0), w: cur.w + o.w, tok: o, prev: cur };
           if (!best[o.end] || better(c, best[o.end])) best[o.end] = c;
         }
       }
@@ -257,9 +271,13 @@
           const byForm = this.index.get(s);
           const byRead = this.readIndex.get(s);
           if (!byForm && !byRead) continue;
-          if (i > 0 && byForm && byForm.every((c) => c.start) && !(PUNCT.test(chars[i - 1]) || /\s/.test(chars[i - 1])) && !byRead) continue;
-          const entry = this.choose(byForm || byRead);
-          push(j + 1, { entry, byReading: !byForm }, 0, 1);
+          // Sentence-initial words (でも, そうです "that's right") only after a break.
+          let forms = byForm;
+          if (forms && i > 0 && !(PUNCT.test(chars[i - 1]) || /\s/.test(chars[i - 1]))) forms = forms.filter((c) => !c.start);
+          if (forms && !forms.length) forms = null;
+          if (!forms && !byRead) continue;
+          const entry = this.choose(forms || byRead);
+          push(j + 1, { entry, byReading: !forms }, 0, entry.after === "plain" && !isPlain(cur.tok) ? 3 : 1);
         }
       }
       const out = [];

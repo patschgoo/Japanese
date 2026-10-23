@@ -165,7 +165,7 @@
     }
     const stem = pos === "adj-ix" ? chop(j, 2) + "よ" : chop(j, 1);
     const looks = pos === "adj-ix" ? stem + "さそう" : stem + "そう"; // いい → よさそう
-    return {
+    const f = {
       dict: j,
       neg: stem + "くない",
       past: stem + "かった",
@@ -179,6 +179,12 @@
       sou: looks,
       souna: looks + "な",
     };
+    // かわいそう means "poor thing", so かわいい has no "looks …" form.
+    if (NI.furi.base(j) === "かわいい") {
+      delete f.sou;
+      delete f.souna;
+    }
+    return f;
   }
 
   // Verbs you don't choose to do (ある, 分かる, 降る …) have no potential form.
@@ -283,7 +289,7 @@
     pot: { label: "can … (〜ます form)", verb: (f) => (f.potmasu ? [f.potmasu] : null) },
     tara: { label: "if / when … (〜たら)", verb: (f) => [f.tara], i: (f) => [f.tara], na: (f) => [f.tara] },
     nagara: { label: "while …ing (〜ながら)", verb: (f) => [f.nagara] },
-    sou: { label: "looks … (〜そうです)", i: (f) => [f.sou + "です", f.sou], na: (f) => [f.sou + "です", f.sou] },
+    sou: { label: "looks … (〜そうです)", i: (f) => (f.sou ? [f.sou + "です", f.sou] : null), na: (f) => [f.sou + "です", f.sou] },
     ba: { label: "if … (〜ば)", verb: (f) => [f.ba], i: (f) => [f.ba], na: (f) => [f.nara] },
     nakereba: { label: "must … (〜なければなりません)", verb: (f) => [f.nakereba + "なりません", f.nakereba + "いけません"] },
     nakute: { label: "don't have to … (〜なくてもいいです)", verb: (f) => [f.nakute + "もいいです"] },

@@ -246,11 +246,45 @@ function checkText(NI, markup, unit, where, opts) {
   return toks;
 }
 
+// Words that share a surface split by context: そうです "that's right" vs hearsay.
+function segmentTests(NI) {
+  const key = (markup, surface) => {
+    const t = NI.lex.tokens(markup).find((x) => NI.furi.baseOfAtoms(x.atoms) === surface);
+    return t && t.entry ? t.entry.key + (t.entry.form ? "@" + t.entry.form : "") : "(none)";
+  };
+  const eq = (name, got, want) => {
+    if (got !== want) err("segmenter", name + " → " + got + ", expected " + want);
+  };
+  eq("はい、 そうです", key("はい、 そうです。", "そうです"), "v:そうです");
+  eq("降るそうです (hearsay)", key("{雨|あめ}が {降|ふ}るそうです。", "そうです"), "g:そうです#hearsay");
+  eq("寒いそうです (hearsay)", key("とても {寒|さむ}いそうです。", "そうです"), "g:そうです#hearsay");
+  eq("元気そうです (looks)", key("{元気|げんき}そうです。", "元気そう"), "v:元気#sou@sou");
+  eq("降りそうです (looks)", key("{雨|あめ}が {降|ふ}りそうです。", "降りそう"), "v:降る#sou@sou");
+  const plain = (text, surface) => {
+    const t = NI.lex.readPlain(text).find((x) => x.text === surface);
+    return t && t.entry ? t.entry.key : "(none)";
+  };
+  eq("reader: 降るそうです", plain("明日は雨が降るそうです。", "そうです"), "g:そうです#hearsay");
+  eq("reader: はい、そうです", plain("はい、そうです。", "そうです"), "v:そうです");
+  eq("reader: 元気そうですね", plain("元気そうですね。", "元気そう"), "v:元気#sou");
+  eq("no かわいそう for cute", String(NI.conj.forms({ j: "かわいい", pos: "adj-i" }).sou), "undefined");
+}
+
+// A picture belongs to one meaning (父 and お父さん may share: same person).
+function emojiTests(NI) {
+  const by = new Map();
+  for (const w of NI.course.words) if (w.em) (by.get(w.em) || by.set(w.em, []).get(w.em)).push(w);
+  const head = (en) => String(en).replace(/\(.*?\)/g, "").split(/[;,/]/)[0].trim().toLowerCase();
+  for (const [em, ws] of by) if (new Set(ws.map((w) => head(w.en))).size > 1) err("emoji", em + " is used by " + ws.map((w) => w.w + " (" + w.en + ")").join(", "));
+}
+
 function main() {
   const NI = loadContext();
   engineTests(NI);
   NI.course.init();
   NI.lex.build();
+  segmentTests(NI);
+  emojiTests(NI);
   builderTests(NI);
   lessonTests(NI);
   const nMade = makerTests(NI);

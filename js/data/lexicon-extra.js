@@ -59,6 +59,7 @@
     { s: "だったら", u: 23, kind: "copula", en: "if (it) is … (after a noun or な-adjective)" },
     { s: "かもしれません", u: 25, kind: "ending", en: "might, may (polite)" },
     { s: "かもしれない", u: 25, kind: "ending", en: "might, may (plain)" },
+    { s: "そうです", u: 27, kind: "ending", tag: "hearsay", after: "plain", en: "I hear (that) …, apparently (after a plain form: 降るそうです)" },
     { s: "なら", u: 28, kind: "copula", en: "if it's …; as for … (after a noun)" },
     { s: "でございます", u: 30, kind: "copula", en: "is (very polite: shop and hotel staff)" },
     // interjections and fillers

@@ -162,7 +162,7 @@
       { j: "{中国|ちゅうごく}", pos: "n", en: "China" },
       { j: "{韓国|かんこく}", pos: "n", en: "South Korea" },
       { j: "から{来|き}ました", pos: "exp", en: "(I) come from … (lit. came from)", note: "After a country or city: イギリスから来ました。" },
-      { j: "そうです", pos: "exp", en: "that's right; yes, it is" },
+      { j: "そうです", pos: "exp", en: "that's right; yes, it is", start: true },
       { j: "そうですか", pos: "exp", en: "I see; oh, really?" },
       { j: "{違|ちが}います", pos: "exp", en: "no, that's not right", note: "Literally “it's different.”" },
     ],
