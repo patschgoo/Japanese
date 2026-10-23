@@ -38,6 +38,15 @@
         '<div class="principle"><h3>Sound from the start</h3><p>Japanese pronunciation is regular, but a few details change meaning: long vowels ([[おばさん]] aunt, [[おばあさん]] grandmother), the small っ ([[きて]] come, [[きって]] stamp) and pitch. Hearing words and repeating them aloud trains your ear and your mouth together.</p><p class="applied"><b>Here:</b> every word, sentence and conversation has audio, played by your device’s Japanese voice.</p></div>' +
         "</div></section>" +
 
+        '<section><h2>Sounds to watch when reading kana</h2><p>You can read hiragana, but a few spellings don\'t sound the way they look:</p><ul class="sounds">' +
+        "<li><b>Particles:</b> は is read <b>wa</b>, へ is read <b>e</b> and を is read <b>o</b> when they are particles: [[{私|わたし}は]] (watashi wa).</li>" +
+        "<li><b>Long vowels</b> are held for twice as long: おう and おお are a long o ([[がっこう]] gakkō), えい is usually a long e ([[せんせい]] sensē). Katakana marks length with ー: [[コーヒー]].</li>" +
+        "<li><b>Small っ</b> is a short silent beat that doubles the next consonant: [[きて]] (come) vs [[きって]] (stamp).</li>" +
+        "<li><b>ん</b> changes with the sound after it: it sounds like m before b, p and m ([[さんぽ]], [[しんぶん]]).</li>" +
+        "<li><b>Whispered vowels:</b> u and i between voiceless sounds almost disappear, so [[です]] sounds like “des” and [[します]] like “shimas”.</li>" +
+        "<li><b>Pitch, not stress:</b> Japanese words rise and fall in pitch ([[はし]] can be chopsticks or bridge). Don't worry about rules yet; copy the audio.</li>" +
+        "</ul></section>" +
+
         '<section><h2>What to learn first, and why</h2><ol class="order">' +
         "<li><b>Survival phrases</b> (unit 1). Greetings, thanks, sorry, please: usable immediately, and they make every later conversation start smoothly.</li>" +
         "<li><b>The sentence frame</b> (2–3). [[AはBです]], questions with か, and the particles は, の, も. The most frequent items in the language, and the skeleton everything else hangs on.</li>" +

@@ -375,7 +375,6 @@
     title: "Grammar",
     nav: "grammar",
     render() {
-      const F = NI.furi;
       const cell = (m) => "<td>" + ui.jp(m, { tokens: false, gaps: false }) + "</td>";
       const particles = NI.data.grammar.filter((g) => g.kind === "particle");
       let html = '<header class="page-head"><h1>Grammar reference</h1><p>The patterns from every unit in one place, plus tables you can come back to.</p></header>';

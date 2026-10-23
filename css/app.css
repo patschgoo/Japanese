@@ -149,7 +149,7 @@ ruby.kh rt { color: var(--ink-3); }
 .furi-hover .jp ruby:hover rt { visibility: visible; }
 .tl { white-space: nowrap; }
 /* big single words may be longer than a phone is wide */
-.word-big .tl, .prompt-word .tl, .sign-name .tl, .kana-word .tl, .greet .tl { white-space: normal; }
+.word-big .tl, .prompt-word .tl, .kana-word .tl, .greet .tl { white-space: normal; }
 .ex, .word-card, .rv-back, .sol, .opt-body { overflow-wrap: anywhere; }
 .gp { font-size: 0.55em; }
 .tok { cursor: pointer; border-radius: 4px; transition: background 0.15s; }
@@ -979,3 +979,4 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+.sounds li { margin-bottom: 8px; }

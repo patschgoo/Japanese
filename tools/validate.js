@@ -32,9 +32,7 @@ function loadContext() {
 }
 
 const errors = [];
-const warnings = [];
 const err = (where, msg) => errors.push(where + ": " + msg);
-const warn = (where, msg) => warnings.push(where + ": " + msg);
 
 function engineTests(NI) {
   const eq = (name, got, want) => {
@@ -256,7 +254,6 @@ function main() {
   }
 
   const fmt = (list) => list.map((l) => "  - " + l).join("\n");
-  if (warnings.length) console.log("Warnings (" + warnings.length + "):\n" + fmt(warnings));
   if (errors.length) {
     console.log("Errors (" + errors.length + "):\n" + fmt(errors));
     process.exitCode = 1;
