@@ -1,4 +1,4 @@
-/* はじめ線 — First Steps Line: units 1–5.
+/* はじめ線 (Hajime-sen) — Starting Line: units 1–5.
    Markup: {漢字|かんじ} adds furigana; spaces separate phrases (tiles).
    In grammar text, [[…]] is Japanese rendered with furigana. */
 (function (root) {
@@ -17,13 +17,13 @@
       { j: "こんにちは", pos: "exp", en: "hello; good afternoon", note: "The last は is read わ." },
       { j: "こんばんは", pos: "exp", en: "good evening", note: "The last は is read わ." },
       { j: "おやすみなさい", pos: "exp", en: "good night", note: "Said when going to bed. Casual: おやすみ." },
-      { j: "さようなら", pos: "exp", en: "goodbye", note: "Sounds final, like a long goodbye. Day to day, friends say じゃあね." },
+      { j: "さようなら", pos: "exp", en: "goodbye", note: "Sounds final, as if you won't meet again for a while. Day to day, friends say じゃあね." },
       { j: "じゃあね", pos: "exp", en: "bye! see you (casual)" },
       { j: "また{明日|あした}", pos: "exp", en: "see you tomorrow" },
       { j: "ありがとうございます", pos: "exp", en: "thank you" },
       { j: "ありがとう", pos: "exp", en: "thanks (casual)" },
       { j: "どういたしまして", pos: "exp", en: "you're welcome" },
-      { j: "すみません", pos: "exp", en: "excuse me; I'm sorry", note: "Gets attention, apologises lightly, and thanks someone who went to trouble for you." },
+      { j: "すみません", pos: "exp", en: "excuse me; I'm sorry", note: "Gets attention, apologises lightly, and thanks someone who has gone to some trouble for you." },
       { j: "ごめんなさい", pos: "exp", en: "I'm sorry", note: "A personal apology, mostly to friends and family." },
       { j: "お{願|ねが}いします", pos: "exp", en: "please (when asking for something)" },
       { j: "はい", pos: "int", en: "yes" },
@@ -69,7 +69,7 @@
       },
       {
         t: "はい, いいえ and 大丈夫です",
-        body: "<p>はい means yes, and also “I'm listening” or “here you are”. いいえ means no, but people often soften a no instead. 大丈夫です (“it's fine”) is the polite way to turn something down, or to say you are OK.</p>",
+        body: "<p>はい means yes, and also “I'm listening” or “here you are”. いいえ means no, but people often soften a no instead. 大丈夫です (“it's fine”) is a common, polite way to turn something down, or to say you are OK.</p>",
         ex: [
           ["はい、 {大丈夫|だいじょうぶ}です。", "Yes, I'm fine."],
           ["いいえ、 {大丈夫|だいじょうぶ}です。", "No thanks, I'm good."],
@@ -83,7 +83,7 @@
       { jp: "いいえ、 どういたしまして。", en: "Not at all, you're welcome." },
       { jp: "あっ、 すみません！", en: "Oh, sorry!" },
       { jp: "はい、 {大丈夫|だいじょうぶ}です。", en: "Yes, I'm fine." },
-      { jp: "いただきます！", en: "(before eating) Let's eat!" },
+      { jp: "いただきます！", en: "(before eating) Thank you for the food!" },
       { jp: "ごちそうさまでした。", en: "Thank you for the meal." },
       { jp: "おやすみなさい。", en: "Good night." },
       { jp: "じゃあね。また{明日|あした}！", en: "Bye! See you tomorrow!" },
@@ -111,21 +111,21 @@
         ["K", "あっ、 おはようございます。", "Oh, good morning."],
         ["*", "Ken holds the door open for Yuki."],
         ["Y", "ありがとうございます。", "Thank you."],
-        ["K", "いいえ、 どういたしまして。", "Not at all."],
+        ["K", "いいえ、 どういたしまして。", "Not at all, you're welcome."],
         ["*", "Evening. Yuki has invited Ken over for dinner."],
         ["K", "こんばんは。", "Good evening."],
         ["Y", "こんばんは。", "Good evening."],
-        ["K", "いただきます。", "(before eating)"],
+        ["K", "いただきます。", "Thank you for the food!"],
         ["*", "After dinner."],
         ["K", "ごちそうさまでした。", "Thank you for the meal."],
-        ["Y", "いいえ、 どういたしまして。", "You're very welcome."],
+        ["Y", "いいえ、 どういたしまして。", "Not at all, you're welcome."],
         ["K", "おやすみなさい。", "Good night."],
         ["Y", "おやすみなさい。また{明日|あした}。", "Good night. See you tomorrow."],
       ],
       q: [
         { q: "What does Ken say when Yuki thanks him for holding the door?", a: "いいえ、 どういたしまして。", o: ["ごちそうさまでした。", "おはようございます。", "すみません。"] },
         { q: "What does Ken say after dinner?", a: "ごちそうさまでした。", o: ["いただきます。", "こんばんは。", "おはようございます。"] },
-        { q: "When will they see each other again?", a: "Tomorrow", o: ["Next week", "Tonight", "On the weekend"] },
+        { q: "When will they see each other again?", a: "Tomorrow", o: ["Next week", "Tonight", "At the weekend"] },
       ],
     },
     culture: {
@@ -147,10 +147,10 @@
       { j: "こちらこそ", pos: "exp", en: "likewise; the pleasure is mine" },
       { j: "{私|わたし}", pos: "pron", en: "I, me" },
       { j: "あなた", pos: "pron", en: "you", note: "Can sound distant. Use the person's name + さん instead." },
-      { j: "さん", pos: "suffix", en: "Mr., Ms. (after a name)", note: "Never say it about yourself." },
+      { j: "さん", pos: "suffix", en: "Mr, Ms (after a name)", note: "Never say it about yourself." },
       { j: "{名前|なまえ}", pos: "n", en: "name", note: "お名前は？ — What's your name? (polite)" },
       { j: "{学生|がくせい}", pos: "n", en: "student" },
-      { j: "{先生|せんせい}", pos: "n", en: "teacher; doctor", note: "Also a title: 田中先生 = Teacher Tanaka." },
+      { j: "{先生|せんせい}", pos: "n", en: "teacher; doctor", note: "Also a title: 田中先生 = Tanaka-sensei." },
       { j: "{会社員|かいしゃいん}", pos: "n", en: "office worker" },
       { j: "{日本|にほん}", pos: "n", en: "Japan" },
       { j: "{日本人|にほんじん}", pos: "n", en: "Japanese person" },
@@ -186,7 +186,7 @@
       },
       {
         t: "Is not: じゃありません",
-        body: "<p>Replace です with じゃありません to say “is not”. Formal writing uses ではありません, relaxed conversation じゃないです. All three mean the same.</p>",
+        body: "<p>Replace です with じゃありません to say “is not”. Formal speech and writing use ではありません; relaxed conversation uses じゃないです. All three mean the same.</p>",
         ex: [
           ["{私|わたし}は {先生|せんせい}じゃありません。", "I'm not a teacher."],
           ["{日本人|にほんじん}じゃないです。", "I'm not Japanese."],
@@ -197,7 +197,7 @@
         body: "<p>[[AのB]] means “A's B” or “B of A”. The second noun is the main one. Use it for owners, groups and kinds.</p>",
         ex: [
           ["{私|わたし}の {名前|なまえ}", "my name"],
-          ["{日本語|にほんご}の {先生|せんせい}", "a Japanese teacher"],
+          ["{日本語|にほんご}の {先生|せんせい}", "a teacher of Japanese"],
           ["ゆきさんの {先生|せんせい}", "Yuki's teacher"],
         ],
       },
@@ -210,8 +210,8 @@
         t: "Names and さん",
         body: "<p>Put さん after other people's names, family or first name, but never after your own. For teachers and doctors use 先生 instead: [[{田中|たなか}{先生|せんせい}]].</p>",
         ex: [
-          ["{田中|たなか}さん", "Mr./Ms. Tanaka"],
-          ["{田中|たなか}{先生|せんせい}", "Teacher Tanaka"],
+          ["{田中|たなか}さん", "Mr/Ms Tanaka"],
+          ["{田中|たなか}{先生|せんせい}", "Tanaka-sensei"],
         ],
       },
     ],
@@ -226,7 +226,7 @@
       { jp: "{私|わたし}も {会社員|かいしゃいん}です。", en: "I'm an office worker too.", p: "も" },
       { jp: "{私|わたし}の {名前|なまえ}は エマです。", en: "My name is Emma.", p: "の" },
       { jp: "エマさんは イギリスから{来|き}ました。", en: "Emma is from the UK." },
-      { jp: "{田中|たなか}さんは {日本語|にほんご}の {先生|せんせい}です。", en: "Tanaka is a Japanese teacher.", p: "の" },
+      { jp: "{田中|たなか}さんは {日本語|にほんご}の {先生|せんせい}です。", en: "Tanaka is a teacher of Japanese.", p: "の" },
       { jp: "お{名前|なまえ}は？", en: "What's your name?" },
       { jp: "ゆきさんは {学生|がくせい}じゃありません。{会社員|かいしゃいん}です。", en: "Yuki isn't a student. She's an office worker." },
       { jp: "{中国|ちゅうごく}{人|じん}ですか。", en: "Are you Chinese?" },
@@ -272,7 +272,7 @@
     ja: "これは {何|なん}ですか",
     en: "Things around you",
     goal: "Ask what things are and whose they are, and point to things near and far.",
-    intro: "Japanese points at things in three distances: near me, near you, and over there. Learn the こ・そ・あ・ど family once and it works for things, nouns and (next unit) places.",
+    intro: "Japanese points at things at three distances: near me, near you, and over there. Learn the こ・そ・あ・ど family once and it works for things, before nouns and (next unit) for places.",
     words: [
       { j: "これ", pos: "pron", en: "this (thing near me)" },
       { j: "それ", pos: "pron", en: "that (thing near you)" },
@@ -350,7 +350,7 @@
       { jp: "あの {人|ひと}は {誰|だれ}ですか。", en: "Who's that person over there?" },
       { jp: "これは {日本語|にほんご}で {何|なん}ですか。", en: "What's this called in Japanese?", p: "で" },
       { jp: "「{時計|とけい}」は {英語|えいご}で {何|なん}ですか。", en: "What's 時計 in English?", p: "で" },
-      { jp: "あの {車|くるま}は {日本|にほん}の {車|くるま}ですか。", en: "Is that car a Japanese car?" },
+      { jp: "あの {車|くるま}は {日本|にほん}の {車|くるま}ですか。", en: "Is that a Japanese car?" },
       { jp: "{水|みず}、 お{願|ねが}いします。", en: "Water, please." },
       { jp: "この {写真|しゃしん}の {人|ひと}は {誰|だれ}ですか。", en: "Who's the person in this photo?" },
       { jp: "どの かばんですか。", en: "Which bag is it?" },
@@ -426,7 +426,7 @@
     grammar: [
       {
         t: "Numbers up to 10,000",
-        body: "<p>1–10: いち, に, さん, よん, ご, ろく, なな, はち, きゅう, じゅう. Bigger numbers are built like on a calculator: 十一 (じゅういち) = 11, 二十 (にじゅう) = 20, 二十五 (にじゅうご) = 25.</p><p>A few combinations change their sound. Say them aloud a few times:</p><table><tr><th>300</th><td>[[さんびゃく]]</td><th>3,000</th><td>[[さんぜん]]</td></tr><tr><th>600</th><td>[[ろっぴゃく]]</td><th>8,000</th><td>[[はっせん]]</td></tr><tr><th>800</th><td>[[はっぴゃく]]</td><th>10,000</th><td>[[いちまん]]</td></tr></table><p>Japanese groups big numbers by ten-thousands (万), not thousands: 50,000 is 五万 (ごまん), “five ten-thousands”.</p>",
+        body: "<p>1–10: いち, に, さん, よん, ご, ろく, なな, はち, きゅう, じゅう. Bigger numbers are built from these, piece by piece: 十一 (じゅういち) = 11, 二十 (にじゅう) = 20, 二十五 (にじゅうご) = 25.</p><p>A few combinations change their sound. Say them aloud a few times:</p><table><tr><th>300</th><td>[[さんびゃく]]</td><th>3,000</th><td>[[さんぜん]]</td></tr><tr><th>600</th><td>[[ろっぴゃく]]</td><th>8,000</th><td>[[はっせん]]</td></tr><tr><th>800</th><td>[[はっぴゃく]]</td><th>10,000</th><td>[[いちまん]]</td></tr></table><p>Japanese groups big numbers by ten-thousands (万), not thousands: 50,000 is 五万 (ごまん), “five ten-thousands”.</p>",
         ex: [
           ["{350|さんびゃくごじゅう}{円|えん}", "350 yen"],
           ["{1,200|せんにひゃく}{円|えん}", "1,200 yen"],
@@ -491,7 +491,7 @@
       { jp: "ここは どこですか。", en: "Where am I? (lit. Where is here?)" },
       { jp: "{水|みず}を {一|ひと}つ ください。", en: "One water, please.", p: "を" },
       { jp: "かばんは そこです。", en: "The bag is there, by you." },
-      { jp: "コーヒーは {一|ひと}つ {400|よんひゃく}{円|えん}です。", en: "Coffee is 400 yen each." },
+      { jp: "コーヒーは {一|ひと}つ {400|よんひゃく}{円|えん}です。", en: "Coffee is 400 yen a cup." },
       { jp: "{三|みっ}つで {1,000|せん}{円|えん}です。", en: "Three for 1,000 yen." },
     ],
     sit: [
@@ -579,7 +579,7 @@
       },
       {
         t: "From … to …: 〜から 〜まで",
-        body: "<p>から means “from” and まで means “until”. They work with times now, and with places later.</p>",
+        body: "<p>から means “from” and まで means “to” or “until”. They work with times now, and with places later.</p>",
         ex: [
           ["{仕事|しごと}は {9|く}{時|じ}から {5|ご}{時|じ}までです。", "Work is from 9 to 5."],
           ["{店|みせ}は {何時|なんじ}までですか。", "Until what time is the shop open?"],
@@ -603,7 +603,7 @@
       },
       {
         t: "よ: letting someone know",
-        body: "<p>ね asks for agreement. よ tells the listener something they may not know, like adding “you know”. Use it kindly and not in every sentence.</p>",
+        body: "<p>ね asks for agreement. よ tells the listener something they may not know, like adding “you know”. Use it sparingly, not in every sentence.</p>",
         ex: [["{店|みせ}は {9|く}{時|じ}までですよ。", "The shop is open until 9, you know."]],
       },
     ],
@@ -623,7 +623,7 @@
       { jp: "{午後|ごご} {2|に}{時|じ}{15|じゅうご}{分|ふん}です。", en: "It's 2:15 p.m." },
       { jp: "{朝|あさ} {7|しち}{時|じ}から {夜|よる} {10|じゅう}{時|じ}までです。", en: "It's from 7 in the morning until 10 at night." },
       { jp: "{昨日|きのう}は {日曜日|にちようび}でした。", en: "Yesterday was Sunday." },
-      { jp: "{週末|しゅうまつ}も {仕事|しごと}ですか。", en: "Do you work on weekends too?", p: "も" },
+      { jp: "{週末|しゅうまつ}も {仕事|しごと}ですか。", en: "Do you work at weekends too?", p: "も" },
       { jp: "{明日|あした}は テストですよ。", en: "There's a test tomorrow, you know." },
     ],
     dialogue: {
@@ -650,7 +650,7 @@
     },
     culture: {
       t: "Time in Japan",
-      body: "<p>Timetables use the 24-hour clock (13時 is 1 p.m.), while people usually say 午後1時 in conversation. Being on time matters: arriving five minutes early is normal, and trains are late by seconds rather than minutes. Banks close at 3 p.m., and many small shops close one day a week.</p>",
+      body: "<p>Timetables use the 24-hour clock (13時 is 1 p.m.), while people usually say 午後1時 in conversation. Being on time matters: arriving five minutes early is normal, and when trains are late, it's by seconds rather than minutes. Banks close at 3 p.m., and many small shops close one day a week.</p>",
     },
   });
 })(typeof window !== "undefined" ? window : globalThis);

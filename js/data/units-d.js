@@ -238,8 +238,8 @@
       lines: [
         ["K", "すみません、 {写真|しゃしん}を {撮|と}ってください。", "Excuse me, could you take our photo, please?"],
         ["W", "はい、 いいですよ。", "Sure, no problem."],
-        ["K", "ありがとうございます。この スマホで お{願|ねが}いします。", "Thank you. With this phone, please."],
-        ["W", "じゃあ、 {撮|と}りますよ。", "OK, here goes."],
+        ["K", "ありがとうございます。この スマホで お{願|ねが}いします。", "Thank you. Could you use this phone, please?"],
+        ["W", "じゃあ、 {撮|と}りますよ。", "OK, here we go!"],
         ["W", "もう{一度|いちど} {撮|と}りますね。", "I'll take one more."],
         ["K", "ありがとうございました！", "Thank you so much!"],
         ["*", "Monday, back at school."],
@@ -277,7 +277,7 @@
       { j: "{降|ふ}る", pos: "v5", noDrill: ["tai", "mashou"], en: "fall (rain, snow)" },
       { j: "{雨|あめ}", pos: "n", en: "rain" },
       { j: "{雪|ゆき}", pos: "n", en: "snow" },
-      { j: "{着|き}る", pos: "v1", en: "wear, put on (clothes)" },
+      { j: "{着|き}る", pos: "v1", en: "wear, put on (a shirt, coat or dress)", note: "For clothes on your top half or whole body. Trousers, skirts and shoes take はく instead." },
       { j: "{服|ふく}", pos: "n", en: "clothes" },
       { j: "{遊|あそ}ぶ", pos: "v5", en: "play, hang out" },
       { j: "{大学|だいがく}", pos: "n", en: "university" },
@@ -314,7 +314,7 @@
       },
       {
         t: "もう and まだ",
-        body: "<p>もう means “already”, まだ means “still” or “not yet”. [[もう〜ましたか]] asks whether something has happened yet. A short “not yet” is [[まだです]], or [[まだ〜ていません]].</p>",
+        body: "<p>もう means “already”, まだ means “still” or “not yet”. [[もう〜ましたか]] asks whether something has happened yet. “Not yet” is just [[まだです]], or in full, [[まだ〜ていません]].</p>",
         ex: [
           ["もう {昼|ひる}ご{飯|はん}を {食|た}べましたか。", "Have you had lunch yet?"],
           ["いいえ、 まだ {食|た}べていません。", "No, I haven't eaten yet."],
@@ -401,7 +401,7 @@
         body: "<p>The negative question [[〜ませんか]] (“won't you…?”) is the standard polite invitation. It sounds softer than “do you want to”, and leaves room to say no.</p>",
         ex: [
           ["{一緒|いっしょ}に {映画|えいが}を {見|み}ませんか。", "Would you like to watch a movie together?"],
-          ["コーヒーを {飲|の}みませんか。", "Shall we get a coffee?"],
+          ["コーヒーを {飲|の}みませんか。", "Would you like to get a coffee?"],
         ],
       },
       {
@@ -421,16 +421,16 @@
         ],
       },
       {
-        t: "Going to do something: 〜に行きます",
+        t: "Going somewhere to do something: 〜に行きます",
         body: "<p>To say why you're going somewhere, take the ます form, drop ます and add に: [[{飲|の}みに{行|い}きます]] (go for a drink). Activity nouns work directly: [[{買|か}い{物|もの}に{行|い}きます]].</p>",
         ex: [
-          ["{映画|えいが}を {見|み}に {行|い}きませんか。", "Shall we go and see a movie?"],
+          ["{映画|えいが}を {見|み}に {行|い}きませんか。", "Would you like to go and see a movie?"],
           ["{買|か}い{物|もの}に {行|い}きます。", "I'm going shopping."],
         ],
       },
       {
         t: "Saying no without saying no",
-        body: "<p>A direct いいえ sounds harsh in reply to an invitation. Start apologetic and let the sentence trail off: [[{土曜日|どようび}はちょっと…]], or [[{残念|ざんねん}ですが、 {予定|よてい}があります]]. Close with [[また{今度|こんど}]] (another time).</p>",
+        body: "<p>A direct いいえ sounds harsh in reply to an invitation. Sound apologetic, and either let the sentence trail off ([[{土曜日|どようび}はちょっと…]]) or give a reason ([[{残念|ざんねん}ですが、 {予定|よてい}があります]]). Close with [[また{今度|こんど}]] (another time).</p>",
         ex: [
           ["{残念|ざんねん}ですが、 {日曜日|にちようび}は {予定|よてい}が あります。", "Unfortunately, I have plans on Sunday."],
           ["また {今度|こんど} お{願|ねが}いします。", "Please ask me again another time."],
@@ -443,16 +443,16 @@
       { jp: "{土曜日|どようび}は ちょっと…。", en: "Saturday is a bit difficult…" },
       { jp: "{何時|なんじ}に {会|あ}いましょうか。", en: "What time shall we meet?" },
       { jp: "{駅|えき}の {前|まえ}で {会|あ}いましょう。", en: "Let's meet in front of the station.", p: "で" },
-      { jp: "{週末|しゅうまつ}、 {買|か}い{物|もの}に {行|い}きませんか。", en: "Would you like to go shopping on the weekend?", p: "に" },
+      { jp: "{週末|しゅうまつ}、 {買|か}い{物|もの}に {行|い}きませんか。", en: "Would you like to go shopping at the weekend?", p: "に" },
       { jp: "{今度|こんど} {飲|の}みに {行|い}きましょう。", en: "Let's go for a drink sometime." },
       { jp: "{荷物|にもつ}を {持|も}ちましょうか。", en: "Shall I carry your bags?", p: "を" },
       { jp: "{残念|ざんねん}ですが、 {日曜日|にちようび}は {予定|よてい}が あります。", en: "Unfortunately, I have plans on Sunday." },
       { jp: "ぜひ {行|い}きたいです。", en: "I'd love to go." },
-      { jp: "{公園|こうえん}へ お{花見|はなみ}に {行|い}きませんか。", en: "Shall we go to the park to see the cherry blossoms?" },
+      { jp: "{公園|こうえん}へ お{花見|はなみ}に {行|い}きませんか。", en: "Would you like to go to the park to see the cherry blossoms?" },
       { jp: "{明日|あした} {暇|ひま}ですか。", en: "Are you free tomorrow?" },
       { jp: "{何|なに}か {手伝|てつだ}いましょうか。", en: "Can I help with anything?" },
       { jp: "また {今度|こんど} {会|あ}いましょう。", en: "Let's meet again sometime." },
-      { jp: "{一緒|いっしょ}に {散歩|さんぽ}しませんか。", en: "Shall we go for a walk together?" },
+      { jp: "{一緒|いっしょ}に {散歩|さんぽ}しませんか。", en: "Would you like to go for a walk together?" },
       { jp: "{金曜日|きんようび}は ゆきさんの {誕生日|たんじょうび}パーティーです。", en: "Friday is Yuki's birthday party." },
       { jp: "カラオケに {行|い}きましょう！", en: "Let's go to karaoke!", p: "に" },
       { jp: "{一緒|いっしょ}に {食事|しょくじ}しませんか。", en: "Would you like to have dinner together?" },
@@ -517,7 +517,7 @@
       { j: "だめ", pos: "adj-na", en: "no good, not allowed", note: "Often written ダメ." },
       { j: "{試着|しちゃく}する", pos: "vs", en: "try on (clothes)" },
       { j: "いらっしゃい", pos: "exp", en: "welcome! (to a guest at home)" },
-      { j: "お{邪魔|じゃま}します", pos: "exp", en: "excuse me for coming in (entering a home)", note: "Literally “I will be in your way.”" },
+      { j: "お{邪魔|じゃま}します", pos: "exp", en: "sorry to intrude (said entering someone's home)", note: "Literally “I will be in your way.”" },
     ],
     grammar: [
       {
@@ -548,7 +548,7 @@
         t: "Shoes off: entering a home",
         body: "<p>Homes have an entrance area (玄関, げんかん) where shoes come off before you step up into the house. The host says いらっしゃい; you answer お邪魔します as you step up. Turn your shoes to face the door after taking them off.</p>",
         ex: [
-          ["お{邪魔|じゃま}します。", "Excuse me for coming in."],
+          ["お{邪魔|じゃま}します。", "Sorry to intrude."],
           ["{靴|くつ}を {脱|ぬ}いでください。", "Please take off your shoes."],
         ],
       },
@@ -585,13 +585,13 @@
       cast: { M: { ja: "ゆきさんの お{母|かあ}さん", en: "Yuki's mother" }, K: { ja: "ケン", en: "Ken" }, Y: { ja: "ゆき", en: "Yuki" } },
       lines: [
         ["M", "いらっしゃい。どうぞ、 {入|はい}ってください。", "Welcome! Please come in."],
-        ["K", "お{邪魔|じゃま}します。", "Thank you for having me."],
+        ["K", "お{邪魔|じゃま}します。", "Sorry to intrude."],
         ["Y", "ケンさん、 ここで {靴|くつ}を {脱|ぬ}いでください。", "Ken, please take your shoes off here."],
         ["K", "あっ、 はい。{荷物|にもつ}は ここに {置|お}いても いいですか。", "Oh, OK. May I leave my bag here?"],
         ["Y", "はい、 いいですよ。", "Yes, of course."],
         ["*", "In the living room."],
         ["K", "ここに {座|すわ}っても いいですか。", "May I sit here?"],
-        ["M", "はい、 どうぞ。", "Yes, please."],
+        ["M", "はい、 どうぞ。", "Yes, go ahead."],
         ["K", "すみません、 トイレを {使|つか}っても いいですか。", "Excuse me, may I use the toilet?"],
         ["M", "はい、 あそこです。", "Of course. It's over there."],
       ],

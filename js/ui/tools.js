@@ -58,7 +58,8 @@
       const pid = NI.lex.particleId(e);
       // Kanji written as in the course get its furigana; kana stays kana.
       const inner = !t.byReading && NI.furi.base(e.j) === t.text ? NI.furi.atomsHtml(NI.furi.atomsOf(e.j), ui.furiOpts()) : esc(t.text);
-      html += '<span class="tok" data-k="' + esc(e.key) + '" data-gl="' + esc(gl) + '"' + (pid ? ' data-p="' + pid + '"' : "") + ">" + inner + "</span>";
+      const ro = NI.lex.romajiOf(e, t.byReading ? t.text : null);
+      html += '<span class="tok" data-k="' + esc(e.key) + '" data-gl="' + esc(gl) + '" data-ro="' + esc(ro) + '"' + (pid ? ' data-p="' + pid + '"' : "") + '><span class="tw">' + inner + "</span></span>";
     }
     flush();
     return '<span class="jp" lang="ja">' + html + "</span>";
@@ -243,8 +244,23 @@
       return v.obj.map((o) => ({ jp: o[0], en: o[1] }));
     }
     if (slot === "verb") return D.verb.map((v) => ({ jp: v.j, en: v.en[0] }));
-    if (pattern === "adj" && slot === "adj") return D.adj.map((a) => ({ jp: a[0], en: a[2] }));
+    // Adjectives that don't suit the topic are greyed out (no hot 暑い ramen).
+    if (pattern === "adj" && slot === "adj") {
+      const topic = D.topic[Number(sel.topic) || 0];
+      return D.adj.map((a) => ({ jp: a[0], en: a[2], off: !NI.maker.fits(topic, a) }));
+    }
     return D[slot].map((f) => ({ jp: f[0], en: f[1] }));
+  }
+
+  // A filler that fits: the one chosen, or else the first that does.
+  function fitting(list, i) {
+    return list[i] && !list[i].off ? i : Math.max(0, list.findIndex((f) => !f.off));
+  }
+
+  // Moods a pattern offers with the chosen verb (no "Let's come").
+  function moodsFor(pattern, sel) {
+    const v = pattern === "go" ? NI.data.maker.go.verb[Number(sel.verb) || 0] : null;
+    return NI.maker.MOODS.filter((m) => !(v && v.noMood && v.noMood.indexOf(m[0]) >= 0));
   }
 
   pages.maker = {
@@ -278,7 +294,7 @@
             const list = fillers(pat.id, slot, sel);
             return (
               '<label for="mk-' + slot + '">' + esc(SLOT_LABEL[slot] || slot) + '<select id="mk-' + slot + '" data-slot="' + slot + '">' +
-              list.map((f, i) => '<option value="' + i + '"' + (String(sel[slot] || 0) === String(i) ? " selected" : "") + ">" + (f.jp ? esc(NI.furi.base(f.jp)) + " — " + esc(f.en) : "—") + "</option>").join("") +
+              list.map((f, i) => '<option value="' + i + '"' + (String(sel[slot] || 0) === String(i) ? " selected" : "") + (f.off ? " disabled" : "") + ">" + (f.jp ? esc(NI.furi.base(f.jp)) + " — " + esc(f.en) : "—") + "</option>").join("") +
               "</select></label>"
             );
           })
@@ -288,6 +304,12 @@
             sel[s.getAttribute("data-slot")] = Number(s.value);
             if (s.getAttribute("data-slot") === "verb") {
               sel.obj = 0;
+              drawSlots();
+              if (!moodsFor(pat.id, sel).some((m) => m[0] === (sel.mood || "statement"))) sel.mood = "statement";
+              drawControls();
+            }
+            if (pat.id === "adj" && s.getAttribute("data-slot") === "topic") {
+              sel.adj = fitting(fillers("adj", "adj", sel), Number(sel.adj) || 0);
               drawSlots();
             }
             if (s.getAttribute("data-slot") === "time") {
@@ -304,7 +326,7 @@
         const moods = pat.moods;
         const noTense = sel.mood === "lets" || sel.mood === "please";
         ctlBox.innerHTML =
-          (moods ? '<div class="ctl"><span>Mood</span>' + seg("mood", NI.maker.MOODS, sel.mood || "statement") + "</div>" : "") +
+          (moods ? '<div class="ctl"><span>Mood</span>' + seg("mood", moodsFor(pat.id, sel), sel.mood || "statement") + "</div>" : "") +
           '<div class="ctl"><span>Style</span>' + seg("style", [["polite", "Polite です/ます"], ["plain", "Casual"]], sel.style || "polite") + "</div>" +
           (noTense ? "" : '<div class="ctl"><span>Time</span>' + seg("tense", [["present", "Now / future"], ["past", "Past"]], sel.tense || "present") + "</div>") +
           (sel.mood === "lets" ? "" : '<div class="ctl"><span>Yes / no</span>' + seg("pol", [["aff", "Yes"], ["neg", "No (negative)"]], sel.pol || "aff") + "</div>") +
@@ -324,8 +346,11 @@
             draw(true);
           });
         ctlBox.querySelector("[data-dice]").addEventListener("click", () => {
-          for (const slot of pat.slots) sel[slot] = Math.floor(Math.random() * fillers(pat.id, slot, sel).length);
-          if (pat.moods) sel.mood = U.pick(NI.maker.MOODS)[0];
+          for (const slot of pat.slots) {
+            const list = fillers(pat.id, slot, sel);
+            sel[slot] = fitting(list, Math.floor(Math.random() * list.length));
+          }
+          if (pat.moods) sel.mood = U.pick(moodsFor(pat.id, sel))[0];
           sel.tense = Math.random() < 0.5 ? "present" : "past";
           sel.pol = Math.random() < 0.7 ? "aff" : "neg";
           drawSlots();

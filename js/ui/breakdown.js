@@ -11,7 +11,7 @@
 
   const PARTICLE_NAMES = {
     wa: ["は", "topic: what the sentence is about"], ga: ["が", "subject: who or what does it / is it"], o: ["を", "object: what the action is done to"],
-    ni: ["に", "target: to, at (a time), into"], e: ["へ", "direction: toward"], de: ["で", "place of action, or means: at, by, in"],
+    ni: ["に", "target: to, at (a time), into"], e: ["へ", "direction: towards"], de: ["で", "place of action, or means: at, by, in"],
     to: ["と", "and, with"], mo: ["も", "also, too"], no: ["の", "links nouns: ’s, of"], ka: ["か", "question"],
     kara: ["から", "from; after a sentence: because"], made: ["まで", "until, as far as"], yori: ["より", "than"], ne: ["ね", "right? (seeks agreement)"], yo: ["よ", "you know (tells something new)"],
   };

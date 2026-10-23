@@ -177,7 +177,7 @@ function makerTests(NI) {
   D.action.verb.forEach((v, vi) => v.obj.forEach((o, oi) => variants({ pattern: "action", verb: vi, obj: oi, time: (vi + oi) % D.action.time.length, place: (vi * 2 + oi) % D.action.place.length, who: oi % 2 === 0 }, MOODS)));
   D.go.verb.forEach((v, vi) => D.go.place.forEach((p, pi) => variants({ pattern: "go", verb: vi, place: pi, how: pi % D.go.how.length, with: (pi + vi) % D.go.with.length }, MOODS)));
   D.is.topic.forEach((t, ti) => D.is.noun.forEach((x, ni) => variants({ pattern: "is", topic: ti, noun: ni }, ["statement"])));
-  D.adj.topic.forEach((t, ti) => D.adj.adj.forEach((x, ai) => variants({ pattern: "adj", topic: ti, adj: ai }, ["statement"])));
+  D.adj.topic.forEach((t, ti) => D.adj.adj.forEach((x, ai) => NI.maker.fits(t, x) && variants({ pattern: "adj", topic: ti, adj: ai }, ["statement"])));
   D.exist.place.forEach((p, pi) => D.exist.thing.forEach((x, ti) => variants({ pattern: "exist", place: pi, thing: ti }, ["statement"])));
   D.like.thing.forEach((t, ti) => D.like.feel.forEach((x, fi) => variants({ pattern: "like", thing: ti, feel: fi, who: ti % 2 === 0 }, ["statement"])));
   return n;

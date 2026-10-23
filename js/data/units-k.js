@@ -130,7 +130,7 @@
     },
     culture: {
       t: "When to go casual",
-      body: "<p>Switching to plain speech signals closeness. Japanese people usually stay polite with new acquaintances, older people and anyone at work, sometimes for years. Let the other person switch first. If someone says タメ口でいいよ (“you can talk casually with me”), take it as a compliment.</p>",
+      body: "<p>Switching to plain speech signals closeness. Japanese people usually stay polite with new acquaintances, older people and senior colleagues, sometimes for years. Let the other person switch first. If someone says タメ口でいいよ (“you can talk casually with me”), take it as a compliment.</p>",
     },
   });
 
@@ -272,7 +272,7 @@
       { j: "{秋|あき}", pos: "n", en: "autumn, fall" },
       { j: "{冬|ふゆ}", pos: "n", en: "winter" },
       { j: "{夏|なつ}{休|やす}み", pos: "n", en: "summer holidays" },
-      { j: "{最高|さいこう}", pos: "n", en: "the best, amazing", note: "最高！ or 最高でした！ = It was amazing! Before a noun it takes の: 最高の一日 (さいこうのいちにち), the best day." },
+      { j: "{最高|さいこう}", pos: "n", en: "the best, amazing", note: "最高！ = Amazing! The best! 最高でした！ = It was amazing! Before a noun it takes の: 最高の一日 (さいこうのいちにち), the best day." },
       { j: "{掃除|そうじ}する", pos: "vs", en: "clean" },
       { j: "{洗濯|せんたく}する", pos: "vs", en: "do the laundry" },
       { j: "なる", pos: "v5", en: "become", note: "寒くなりました = it's got cold. 上手になりました = has got better." },
@@ -313,7 +313,7 @@
       {
         t: "Things like… 〜たり〜たりします",
         body: "<p>To give a few examples of what you did, put each verb in the た-form + り, and finish with します (or しました).</p>",
-        ex: [["{週末|しゅうまつ}は {掃除|そうじ}したり、 {洗濯|せんたく}したり しました。", "On the weekend I cleaned, did laundry and so on."]],
+        ex: [["{週末|しゅうまつ}は {掃除|そうじ}したり、 {洗濯|せんたく}したり しました。", "At the weekend I cleaned, did the laundry and so on."]],
       },
     ],
     sentences: [
@@ -324,7 +324,7 @@
       { jp: "{富士山|ふじさん}に {登|のぼ}った ことが ありますか。", en: "Have you ever climbed Mount Fuji?", p: "が" },
       { jp: "いいえ、 {一度|いちど}も ありません。", en: "No, never." },
       { jp: "{着物|きもの}を {着|き}た ことが あります。", en: "I've worn a kimono before.", p: "を" },
-      { jp: "{週末|しゅうまつ}は {掃除|そうじ}したり、 {洗濯|せんたく}したり しました。", en: "On the weekend I cleaned, did laundry and so on." },
+      { jp: "{週末|しゅうまつ}は {掃除|そうじ}したり、 {洗濯|せんたく}したり しました。", en: "At the weekend I cleaned, did the laundry and so on." },
       { jp: "{京都|きょうと}で お{寺|てら}を {見|み}たり、 {温泉|おんせん}に {入|はい}ったり しました。", en: "In Kyoto I visited temples, went to hot springs and so on." },
       { jp: "{初|はじ}めて すしを {食|た}べました。", en: "I ate sushi for the first time." },
       { jp: "{昨日|きのう}は {暑|あつ}かったですね。", en: "It was hot yesterday, wasn't it?" },
@@ -354,7 +354,7 @@
         ["T", "{温泉|おんせん}に {入|はい}りましたか。", "Did you go in a hot spring?"],
         ["K", "はい、 {初|はじ}めて {入|はい}りました。{最高|さいこう}でした！", "Yes, for the first time. It was amazing!"],
         ["T", "いいですね。{魚|さかな}も おいしかったですか。", "Lovely. Was the fish good too?"],
-        ["K", "はい。すしを {食|た}べたり、 ラーメンを {食|た}べたり しました。これ、 お{土産|みやげ}です。どうぞ。", "Yes. I had sushi, ramen and so on. This is a souvenir for you. Here."],
+        ["K", "はい。すしを {食|た}べたり、 ラーメンを {食|た}べたり しました。これ、 お{土産|みやげ}です。どうぞ。", "Yes. I had sushi, ramen and so on. This is a souvenir for you. Here you are."],
         ["T", "わあ、 ありがとうございます！", "Oh wow, thank you!"],
         ["T", "ケンさん、 {日本語|にほんご}が {上手|じょうず}に なりましたね。", "Ken, your Japanese has really improved."],
         ["K", "ありがとうございます。{毎日|まいにち} {練習|れんしゅう}しています。", "Thank you. I practise every day."],
@@ -362,7 +362,7 @@
       q: [
         { q: "Where did Ken go?", a: "Hokkaido", o: ["Okinawa", "Kyoto", "Mount Fuji"] },
         { q: "What was the weather like?", a: "Very cold, with lots of snow", o: ["Hot and sunny", "Rainy", "Warm"] },
-        { q: "What did Ken do for the first time?", a: "Go into a hot spring", o: ["Eat sushi", "See snow", "Climb a mountain"] },
+        { q: "What did Ken do for the first time?", a: "Went into a hot spring", o: ["Ate sushi", "Saw snow", "Climbed a mountain"] },
         { q: "What does Ken give Tanaka-sensei?", a: "A souvenir", o: ["A photo", "Some fish", "A kimono"] },
         { q: "What does Tanaka-sensei say about Ken's Japanese?", a: "It has got better", o: ["It's still difficult", "He speaks too fast", "He should practise more"] },
       ],
@@ -424,7 +424,7 @@
       },
       {
         t: "Particles on the move",
-        body: "<p>を marks the place you go through or along: [[{道|みち}を{渡|わた}る]], [[{角|かど}を{曲|ま}がる]]. You get on <i>to</i> a vehicle with に and off it with を: [[{電車|でんしゃ}に{乗|の}る]], [[{電車|でんしゃ}を{降|お}りる]]. The station where you change takes で.</p>",
+        body: "<p>を marks the place you move through, along, across or round: [[{道|みち}を{渡|わた}る]] (cross the road), [[{角|かど}を{曲|ま}がる]] (turn the corner). You get on <i>to</i> a vehicle with に and off it with を: [[{電車|でんしゃ}に{乗|の}る]], [[{電車|でんしゃ}を{降|お}りる]]. The station where you change takes で.</p>",
         ex: [
           ["{二|ふた}つ{目|め}の {角|かど}を {右|みぎ}に {曲|ま}がってください。", "Turn right at the second corner."],
           ["{渋谷|しぶや}で {乗|の}り{換|か}えてください。", "Change trains at Shibuya."],
@@ -434,7 +434,7 @@
         t: "How long does it take? どのぐらいかかりますか",
         body: "<p>かかる means “take” (time or money). ぐらい after a number means “about”.</p>",
         ex: [
-          ["{駅|えき}まで どのぐらい かかりますか。", "How long does it take to the station?"],
+          ["{駅|えき}まで どのぐらい かかりますか。", "How long does it take to get to the station?"],
           ["{歩|ある}いて {10|じゅっ}{分|ぷん}ぐらいです。", "About ten minutes on foot."],
         ],
       },
@@ -472,7 +472,7 @@
         ["K", "どのぐらい かかりますか。", "How long does it take?"],
         ["S", "{20|にじゅっ}{分|ぷん}ぐらいです。", "About 20 minutes."],
         ["K", "ありがとうございます。", "Thank you."],
-        ["*", "At Asakusa station, Ken asks a passer-by."],
+        ["*", "At Asakusa Station, Ken asks a passer-by."],
         ["K", "すみません、 {浅草寺|せんそうじ}は どこですか。", "Excuse me, where is Sensō-ji?"],
         ["W", "この {道|みち}を まっすぐ {行|い}って、 {信号|しんごう}を {右|みぎ}に {曲|ま}がってください。", "Go straight along this road and turn right at the lights."],
         ["K", "{遠|とお}いですか。", "Is it far?"],
@@ -496,7 +496,7 @@
     ja: "どうしましたか",
     en: "Health & help",
     goal: "Say how you feel, describe simple symptoms, and ask for help in an emergency.",
-    intro: "The last unit covers the phrases you hope you won't need but should know: what hurts, how to give and take advice, and how to call for help.",
+    intro: "The last stop on this line covers the phrases you hope you won't need but should know: what hurts, how to give and take advice, and how to call for help.",
     words: [
       { j: "どうしましたか", pos: "exp", en: "what's wrong? what happened?" },
       { j: "{体|からだ}", pos: "n", en: "body; health" },
@@ -562,7 +562,7 @@
       { jp: "{熱|ねつ}が あります。", en: "I have a fever.", p: "が" },
       { jp: "{風邪|かぜ}を ひきました。", en: "I've caught a cold.", p: "を" },
       { jp: "{薬|くすり}を {飲|の}んだ ほうが いいですよ。", en: "You should take some medicine." },
-      { jp: "{今日|きょう}は {早|はや}く {寝|ね}た ほうが いいです。", en: "You'd better go to bed early today." },
+      { jp: "{今日|きょう}は {早|はや}く {寝|ね}た ほうが いいです。", en: "You'd better get an early night tonight." },
       { jp: "{無理|むり}を しない ほうが いいです。", en: "You shouldn't overdo it." },
       { jp: "{大丈夫|だいじょうぶ}ですか。", en: "Are you all right?" },
       { jp: "{助|たす}けて！", en: "Help!" },
@@ -604,7 +604,7 @@
     },
     culture: {
       t: "If you get sick in Japan",
-      body: "<p>Pharmacies (薬局, やっきょく, or a ドラッグストア) sell most everyday medicines, and pharmacists will help if you point and describe your symptoms. People with a cold wear a mask out of courtesy. In an emergency dial <b>119</b> for an ambulance or fire and <b>110</b> for the police, from any phone.</p>",
+      body: "<p>Pharmacies (薬局, やっきょく) and drugstores (ドラッグストア) sell most everyday medicines, and pharmacists will help if you point and describe your symptoms. People with a cold wear a mask out of courtesy. In an emergency dial <b>119</b> for an ambulance or fire and <b>110</b> for the police, from any phone.</p>",
     },
   });
 })(typeof window !== "undefined" ? window : globalThis);

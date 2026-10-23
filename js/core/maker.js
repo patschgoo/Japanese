@@ -54,10 +54,24 @@
     }
   }
 
+  // Whether an adjective suits a topic: hot weather is 暑い, but hot ramen is 熱い.
+  function fits(topic, adj) {
+    return !adj[3] || !topic[2] || adj[3].split(" ").indexOf(topic[2]) >= 0;
+  }
+
+  // "my homework" is yours in a question or a request, and ours with “let's”.
+  function whose(en, mood) {
+    if (mood === "question" || mood === "please") return en.replace(/\bmy\b/, "your");
+    if (mood === "lets") return en.replace(/\bmy\b/, "our");
+    return en;
+  }
+
   function verbEnglish(v, sel, rest) {
     const [base, pastEn] = v.en;
     const neg = sel.pol === "neg";
     const past = sel.tense === "past";
+    // 明日 and 来週 need “will” in English: I'll drink coffee tomorrow.
+    const will = sel.future && !past;
     const r = rest ? " " + rest : "";
     switch (sel.mood) {
       case "want":
@@ -70,8 +84,9 @@
         return "I " + (past ? (neg ? "couldn’t " : "could ") : neg ? "can’t " : "can ") + base + r + ".";
       case "question":
         if (neg && !past) return "Won’t you " + base + r + "? (an invitation)";
-        return (past ? (neg ? "Didn’t you " : "Did you ") : "Do you ") + base + r + "?";
+        return (past ? (neg ? "Didn’t you " : "Did you ") : will ? "Will you " : "Do you ") + base + r + "?";
       default:
+        if (will) return "I" + (neg ? " won’t " : "’ll ") + base + r + ".";
         return "I " + (past ? (neg ? "didn’t " + base : pastEn) : neg ? "don’t " + base : base) + r + ".";
     }
   }
@@ -122,13 +137,16 @@
       en = t[1] + " " + be(s, "is", "was") + " " + a[2] + ".";
       if (a[1] === "adj-na") note = a[0].replace(/\{([^|]+)\|[^}]+\}/g, "$1") + " is a な-adjective: it works like a noun with です.";
       if (a[1] === "adj-ix") note = "いい is irregular: its other forms come from よい (よくない, よかった).";
+      if (/^\{(暑|寒)/.test(a[0])) note = "暑い and 寒い are for the weather and places. Hot or cold food and drinks are 熱い and 冷たい.";
+      if (/^\{(熱|冷)/.test(a[0])) note = "熱い and 冷たい are for things you touch, eat or drink. For the weather, use 暑い and 寒い.";
+      if (a[2].indexOf(" (") > 0) en = en.replace(/ \(.*\)\.$/, ".");
     } else if (s.pattern === "action") {
       const v = pick(D.action.verb, s.verb);
       const o = pick(v.obj, s.obj);
       const t = pick(D.action.time, s.time);
       const p = pick(D.action.place, s.place);
       jp = join(who, t[0], p[0] ? p[0] + "で" : "", o[0] + "を", verbForm(v, s)) + END(s);
-      en = verbEnglish(v, s, join(o[1], p[1], t[1]));
+      en = verbEnglish(o[2] ? Object.assign({}, v, { en: o[2] }) : v, Object.assign({}, s, { future: !!t[3] }), join(whose(o[1], s.mood), p[1], t[1]));
       if (s.mood === "question" && s.pol === "neg" && s.tense !== "past") note = "〜ませんか (won't you…?) is the polite way to invite someone.";
       if (s.mood === "can" && v.j === "する") note = "The potential of する is the separate verb できる.";
     } else if (s.pattern === "go") {
@@ -136,8 +154,9 @@
       const p = pick(D.go.place, s.place);
       const h = pick(D.go.how, s.how);
       const w = pick(D.go.with, s.with);
+      if (v.noMood && v.noMood.indexOf(s.mood) >= 0) s.mood = "statement";
       jp = join(who, w[0], p[0] + "に", h[0], verbForm(v, s)) + END(s);
-      en = verbEnglish(v, s, join(p[1], h[1], w[1]));
+      en = verbEnglish(v, s, join(p[1], h[1], whose(w[1], s.mood)));
       if (s.mood === "question" && s.pol === "neg" && s.tense !== "past") note = "〜ませんか (won't you…?) is the polite way to invite someone.";
     } else if (s.pattern === "exist") {
       const p = pick(D.exist.place, s.place);
@@ -167,5 +186,5 @@
     return PATTERNS.find((p) => p.id === id) || null;
   }
 
-  NI.maker = { PATTERNS, MOODS, build, verbForm, pattern };
+  NI.maker = { PATTERNS, MOODS, build, verbForm, pattern, fits };
 })(typeof window !== "undefined" ? window : globalThis);

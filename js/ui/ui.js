@@ -30,10 +30,16 @@
     return { mode: s.furigana === "kana" ? "kana" : "furigana", kataHelp: !!s.kataHelp, gaps: !!s.gaps };
   }
 
-  // Japanese text with furigana and tappable words.
+  /* Japanese text with furigana and tappable words. With ro, text that has
+     no word tokens (line and station names) carries its romaji as a whole,
+     for the romaji aid: はじめ線 Hajime-sen. */
   function jp(markup, opts) {
-    return '<span class="jp" lang="ja">' + NI.furi.render(markup, Object.assign(furiOpts(), opts || {})) + "</span>";
+    const ro = opts && opts.ro && NI.lex.ready ? ' data-ro="' + esc(NI.lex.romajiMarkup(markup)) + '"' : "";
+    return '<span class="jp" lang="ja"' + ro + ">" + NI.furi.render(markup, Object.assign(furiOpts(), opts || {})) + "</span>";
   }
+
+  // Whether pop-ups show romaji (with romaji under words, or on its own).
+  const romajiOn = () => !!(NI.store.settings.romaji || NI.store.settings.romajiPop);
 
   // HTML that may contain [[markup]] for inline Japanese.
   function rich(html) {
@@ -124,7 +130,10 @@
     if (!d || !pop || mode === "closed") return;
     let html = '<div class="pop-head">' + (d.em && !mode ? '<span class="em" aria-hidden="true">' + d.em + "</span>" : "") + jp(d.title, { tokens: false, gaps: false }) + say(d.audio, d.reading) + "</div>";
     if (d.reading !== NI.furi.base(d.title)) html += '<div class="pop-reading" lang="ja">' + esc(d.reading) + "</div>";
+    if (romajiOn()) html += '<div class="pop-ro">' + esc(NI.lex.romajiOf(entry)) + "</div>";
     let meaning = '<div class="pop-en">' + esc(d.en) + "</div>";
+    // The words a name or compound is made of: はじめ "beginning" + 線 "line".
+    if (entry.parts) meaning += '<div class="pop-parts">' + entry.parts.map(([j, en], i) => '<span class="pp">' + (i ? '<span class="pp-plus" aria-hidden="true">+</span>' : "") + jp(j, { tokens: false, gaps: false }) + ' <span class="pp-en">' + esc(en) + "</span></span>").join("") + "</div>";
     if (d.form) meaning += '<div class="pop-form">' + esc(d.form) + (d.base ? " of " + jp(d.base, { tokens: false, gaps: false }) : "") + "</div>";
     const meta = [];
     if (d.pos) meta.push(esc(NI.course.posLabel(d.pos)));
@@ -228,5 +237,5 @@
      to fit on one line (よろしくお願いします) instead of wrapping one character. */
   const fit = (markup) => ' style="--n:' + Math.max(3, Array.from(NI.furi.base(String(markup))).length) + '"';
 
-  NI.ui = { ICON, esc, jp, rich, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
+  NI.ui = { ICON, esc, jp, rich, romajiOn, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
 })(typeof window !== "undefined" ? window : globalThis);

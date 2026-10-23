@@ -318,6 +318,7 @@
     pop.innerHTML =
       '<div class="pop-head"><span lang="ja">' + esc(clean.length > 40 ? clean.slice(0, 40) + "…" : clean) + "</span>" + ui.say(clean) + "</div>" +
       (reading && reading !== NI.kana.fold(clean) && NI.kana.hasKanji(clean) ? '<div class="pop-reading" lang="ja">' + esc(reading) + "</div>" : "") +
+      (ui.romajiOn() ? '<div class="pop-ro">' + esc(NI.lex.romajiText(clean, reading)) + "</div>" : "") +
       (m ? hiddenNote(m) + '<div class="pop-hidden" hidden>' + meaning + "</div>" : meaning);
     ui.placePop(pop, anchor);
     if (NI.store.settings.tapSpeak !== false) NI.speech.speak(clean);

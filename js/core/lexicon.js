@@ -34,7 +34,7 @@
 
   // Word-by-word glosses: a short meaning, plus what a form adds (飲みました → "drink · past").
   const ROLE = {
-    は: "topic", が: "subject", を: "object", に: "to / at", で: "at / by", へ: "toward", と: "and / with", も: "also",
+    は: "topic", が: "subject", を: "object", に: "to / at", で: "at / by", へ: "towards", と: "and / with", も: "also",
     の: "’s / of", か: "?", ね: "right?", よ: "you know", から: "from / so", まで: "until", より: "than", だけ: "only",
     ぐらい: "about", けど: "but", です: "is", でした: "was", じゃありません: "isn’t", ではありません: "isn’t", じゃないです: "isn’t",
     じゃありませんでした: "wasn’t", じゃなかったです: "wasn’t", だ: "is", だった: "was", じゃない: "isn’t", じゃなかった: "wasn’t",
@@ -75,6 +75,73 @@
   }
   const DIGITS = /^[0-9０-９,，]+$/;
   const KIND_RANK = { word: 0, form: 1, grammar: 2, name: 3, extra: 4 };
+  // Romaji for particles as they're said: は is wa, へ is e, を is o.
+  const FUNC = { は: "wa", へ: "e", を: "o", では: "dewa", には: "niwa", とは: "towa" };
+  /* Where a set phrase breaks into words: a polite ending or a particle at the
+     end (ohayō gozaimasu, sō desu ka), or a word at the start (ja arimasen).
+     Each rule is (start)(end); both parts are split again. */
+  const PHRASE = [
+    /^(.+(?:です|でした|でしょう|ます|ました|ません|ましょう))([かねよが])$/,
+    /^(.{2,}|ん|で)(です|でした|でしょう)$/,
+    /^(.{2,}|で)(ございます|ございました|ございません)$/,
+    /^(.{2,})(なさい|ください)$/,
+    /^(.{2,})(します|しました|しません|しましょう)$/,
+    /^(じゃ)(あり.+)$/,
+    /^(じゃあ)(.+)$/,
+    /^(じゃ)([^あ].*)$/,
+    /^(では)(あ.+)$/,
+    /^(から)(き.+)$/,
+    /^(かも)(しれ.+)$/,
+    /^(どう)((?:いた|し).+)$/,
+    /^(また)(.{2,})$/,
+    /^(よろしく)(お.+)$/,
+    /^(だ)(そう)$/,
+    /^(な)(ので)$/,
+    /^(まで)(に)$/,
+    /^(に)(よると)$/,
+    /^(よる)(と)$/,
+    /^(どの)(ぐらい|くらい)$/,
+    /^(.{3,})(もの)$/,
+    /^(.{2,})(なし)$/,
+    /^(.{2,})([でに])$/,
+  ];
+  function phrase(s) {
+    for (const re of PHRASE) {
+      const m = re.exec(s);
+      if (m) return phrase(m[1]).concat(phrase(m[2]));
+    }
+    return [s];
+  }
+  // Honorifics join the name with a hyphen: Tanaka-san.
+  const SUFFIX = new Set(["さん", "さま", "様", "ちゃん", "くん"]);
+  // Countries are capitalised in romaji too (Nihon, Igirisu); filled in build().
+  const PROPER = new Set(["日本"]);
+  const PUNCT_RO = { "、": ",", "。": ".", "？": "?", "！": "!", "・": " ", "〜": "~", "「": "“", "」": "”", "…": "…", "（": "(", "）": ")" };
+
+  /* Words in romaji joined into a line: spaces between words, none before
+     punctuation or a hyphenated honorific, and a capital to start a sentence. */
+  function joinRomaji(items) {
+    let out = "";
+    let prev = null;
+    for (const t of items) {
+      let w = t.punct ? (PUNCT_RO[t.text] != null ? PUNCT_RO[t.text] : t.w) : t.w;
+      // 先生 after a name is a title (Tanaka-sensei), and a counter joins its number (9-ji).
+      if (t.entry && t.entry.s === "先生" && prev && prev.kind === "name") w = "-" + w;
+      if (t.entry && t.entry.pos === "ctr" && prev && prev.kind === "number" && w) w = "-" + w;
+      prev = t.punct ? null : t.entry || null;
+      if (w == null || w === "" || /^\s+$/.test(t.text || "")) {
+        if (out && !/ $/.test(out)) out += " ";
+        continue;
+      }
+      if (t.punct && /^[“(]$/.test(w)) out += (out && !/ $/.test(out) ? " " : "") + w;
+      else if (t.punct) out = out.replace(/ $/, "") + w + (/[,.?!”)…]$/.test(w) ? " " : "");
+      else out += (out && !/[ “(]$/.test(out) && !w.startsWith("-") ? " " : "") + w;
+    }
+    out = out.trim().replace(/ {2,}/g, " ").replace(/([.?!] )(\S)/g, (m, a, b) => a + b.toUpperCase());
+    return /[.?!]$/.test(out) ? out.replace(/^([“(]?)(\S)/, (m, a, b) => a + b.toUpperCase()) : out;
+  }
+  // Na-adjective forms written as two words: shizuka na, shizuka ja nai.
+  const NA_APART = /^(na|ni|de|da|datta|janai|janakatta|nara|tara)$/;
   const KANA = /[ぁ-ゖァ-ヺ]/;
   // Symbols in plain text that are never part of a word: い-adjective, です/ます, 飲む → 飲まない.
   const SYMBOL = /[\-\/+=→←↔*&%#|"“”‘’[\]{}<>]/;
@@ -86,13 +153,19 @@
   function extras() {
     const D = NI.data || {};
     const out = (D.glossary || []).slice();
-    const add = (j, en, pos) => out.push({ j, en, pos: pos || "n" });
-    for (const l of D.lines || []) add(l.ja, l.en);
-    if (NI.srs) for (const t of NI.srs.TIERS) add("{" + t.ja + "|" + t.kana + "}", t.en + " (a train; also a review stage here)");
-    if (NI.game && NI.game.TITLES) for (const t of NI.game.TITLES) add(t[1], t[2] + " (a level title)");
-    if (D.omikuji) for (const o of D.omikuji.levels) add(o[0], o[1] + " (an omikuji fortune)");
+    const add = (j, en, more) => out.push(Object.assign({ j, en, pos: "n" }, more));
+    // Line names are written like real ones in romaji: はじめ線 is Hajime-sen.
+    const lineRo = (kana) => {
+      const r = NI.kana.romaji(kana.replace(/せん$/, ""));
+      return r.charAt(0).toUpperCase() + r.slice(1) + "-sen";
+    };
+    for (const l of D.lines || []) add(l.ja, l.en, { ro: lineRo(l.kana), parts: l.parts });
+    if (NI.srs) for (const t of NI.srs.TIERS) add("{" + t.ja + "|" + t.kana + "}", t.en + " (a train; also a review stage here)", { parts: t.parts });
+    if (NI.game && NI.game.TITLES) for (const t of NI.game.TITLES) add(t[1], t[2] + " (a level title)", { parts: t[3] });
+    if (D.omikuji) for (const o of D.omikuji.levels) add(o[0], o[1] + " (an omikuji fortune)", { parts: o[4] });
     if (D.kana) for (const w of D.kana.LOANWORDS) add(w.k, w.en);
     if (D.builder) for (const w of D.builder.COUNTRIES.concat(D.builder.JOBS, D.builder.HOBBIES)) add(w.j, w.en);
+    if (D.builder) for (const c of D.builder.COUNTRIES) PROPER.add(NI.furi.base(c.j));
     if (NI.num) {
       const N = NI.num;
       const what = (c) => {
@@ -180,7 +253,7 @@
       const r = x.r || F.reading(x.j);
       const key = "x:" + s;
       if (this.byKey.has(key) || (this.index.get(s) || []).some((e) => e.r === r)) return;
-      this.add({ key, kind: "extra", unit: 0, s, r, j: x.j || s, en: x.en, pos: x.pos || "n" });
+      this.add({ key, kind: "extra", unit: 0, s, r, j: x.j || s, en: x.en, pos: x.pos || "n", ro: x.ro, parts: x.parts });
       if (!NI.conj.isVerb(x.pos) && !NI.conj.isAdj(x.pos)) return;
       const forms = NI.conj.forms({ j: x.j, pos: x.pos });
       for (const f in forms) {
@@ -192,6 +265,87 @@
 
     get(key) {
       return this.byKey.get(key) || null;
+    },
+
+    /* An entry in romaji, as it's said: particles は へ を are wa, e, o (and so
+       is the は that ends こんにちは), names are capitalised, honorifics hang on
+       with a hyphen (-san), set phrases are split into their words (arigatō
+       gozaimasu) and set names keep their own spelling (Hajime-sen). */
+    romajiOf(e, reading) {
+      const K = NI.kana;
+      const rd = reading || (e && e.r) || "";
+      if (!e) return K.romaji(rd);
+      if (e.ro) return e.ro;
+      if (e.kind === "grammar" && FUNC[rd]) return FUNC[rd];
+      const words = this.romajiWords(e, rd);
+      const verb = NI.conj.isVerb(e.pos) && (!e.form || e.form === "dict");
+      let r = words
+        .map((w, i) => {
+          if (FUNC[w] && (words.length > 1 || e.kind === "grammar")) return FUNC[w];
+          const one = K.romaji(w, { verb: verb && i === words.length - 1 });
+          return /は$/.test(w) && (e.kind === "grammar" || /^(exp|int|conj)$/.test(e.pos)) ? one.replace(/ha$/, "wa") : one;
+        })
+        .join(" ")
+        .replace(/masendeshita$/, "masen deshita");
+      if (e.kind === "name" || PROPER.has(e.s)) r = r.charAt(0).toUpperCase() + r.slice(1);
+      if (SUFFIX.has(e.s) || e.pos === "suffix") r = "-" + r;
+      return r;
+    },
+
+    // The words an entry is written as in romaji: お願いします is onegai shimasu.
+    romajiWords(e, rd) {
+      const base = e.kind === "form" && e.id ? this.byKey.get(e.id) : null;
+      let words = [rd];
+      // する verbs are a noun and する: benkyō suru, benkyō shimasu.
+      const br = (base || e).r || "";
+      if (e.pos === "vs" && br.length > 2 && /する$/.test(br) && rd.startsWith(br.slice(0, -2)) && rd.length > br.length - 2) words = [br.slice(0, -2), rd.slice(br.length - 2)];
+      // Na-adjectives stand apart from what follows: shizuka na, shizuka ja nai.
+      else if (e.pos === "adj-na" && base && NA_APART.test(e.form) && rd.startsWith(base.r) && rd.length > base.r.length) {
+        const rest = rd.slice(base.r.length);
+        words = [base.r].concat(phrase(rest));
+      } else if (e.kind !== "form" && (/^(exp|int)$/.test(e.pos) || (e.kind === "grammar" && /^(copula|ending|expression|question|particle)$/.test(e.pos)))) {
+        words = phrase(rd);
+      }
+      // Endings that are words of their own: tabete imasu, tabete kudasai, takaku arimasen.
+      if (e.kind === "form") {
+        const last = words.pop();
+        const f = e.form;
+        let m;
+        if (/^tei/.test(f) && (m = /^(.*[てで])(い.*)$/.exec(last))) words.push(m[1], m[2]);
+        else if (f === "tekudasai" && /ください$/.test(last)) words.push(last.slice(0, -4), "ください");
+        else if ((f === "temo" || f === "tewa") && last.length > 2) words.push(last.slice(0, -1), last.slice(-1));
+        else if (f === "stemni" && last.length > 1) words.push(last.slice(0, -1), "に");
+        else if (f === "souna" && last.length > 2) words.push(last.slice(0, -1), "な");
+        else if (/^kuarimasen/.test(f) && (m = /^(.*く)(ありません.*)$/.exec(last))) words.push(m[1], m[2]);
+        else words.push(last);
+      }
+      return words.filter(Boolean);
+    },
+
+    // Romaji for a phrase or sentence in plain text: one word at a time, as above.
+    romajiText(text, reading) {
+      return joinRomaji(
+        this.readPlain(reading || text).map((t) => ({
+          text: t.text,
+          punct: t.punct,
+          entry: t.entry,
+          w: t.punct ? null : t.number ? t.text : t.entry ? this.romajiOf(t.entry, t.byReading ? t.text : null) : NI.kana.romaji(t.text),
+        }))
+      );
+    },
+
+    // The same for course markup, reading its furigana: {何|なん}ですか is nan desu ka.
+    romajiMarkup(markup) {
+      const F = NI.furi;
+      return joinRomaji(
+        this.tokens(markup).map((t) => {
+          const text = F.baseOfAtoms(t.atoms);
+          const rd = F.readingOfAtoms(t.atoms);
+          const e = t.entry;
+          if (!e || e.kind === "punct") return { text, punct: !e || /^[\s、。？！・〜「」…（）]+$/.test(text), w: e ? null : NI.kana.romaji(rd) };
+          return { text, entry: e, w: e.kind === "number" ? text : this.romajiOf(e, rd) };
+        })
+      );
     },
 
     // Short English label for an entry, for word-by-word reading aids.
@@ -272,28 +426,34 @@
       return out;
     },
 
+    // Kana readings to entries (わたし → 私), built on first use.
+    readIdx() {
+      if (this.readIndex) return this.readIndex;
+      const K = NI.kana;
+      this.readIndex = new Map();
+      this.maxRead = 1;
+      for (const e of this.byKey.values()) {
+        // Other readings count too (七 しち), and katakana words in hiragana (ごみ for ゴミ).
+        const reads = new Set([e.r].concat(e.rs || []));
+        if (K.hasKatakana(e.s)) reads.add(K.toHiragana(e.s));
+        for (const r of reads) {
+          if (!r || r === e.s) continue;
+          const list = this.readIndex.get(r) || [];
+          if (list.indexOf(e) < 0) list.push(e);
+          this.readIndex.set(r, list);
+          if (r.length > this.maxRead) this.maxRead = r.length;
+        }
+      }
+      return this.readIndex;
+    },
+
     /* Splits plain text (no furigana markup, e.g. pasted from elsewhere) into
        words. Matches both written forms and kana readings, so わたしは finds
        私 + は. Fewest unknown characters wins, then fewest words. Returns
        [{ text, entry, unknown, punct }]. */
     readPlain(text) {
       const K = NI.kana;
-      if (!this.readIndex) {
-        this.readIndex = new Map();
-        this.maxRead = 1;
-        for (const e of this.byKey.values()) {
-          // Other readings count too (七 しち), and katakana words in hiragana (ごみ for ゴミ).
-          const reads = new Set([e.r].concat(e.rs || []));
-          if (K.hasKatakana(e.s)) reads.add(K.toHiragana(e.s));
-          for (const r of reads) {
-            if (!r || r === e.s) continue;
-            const list = this.readIndex.get(r) || [];
-            if (list.indexOf(e) < 0) list.push(e);
-            this.readIndex.set(r, list);
-            if (r.length > this.maxRead) this.maxRead = r.length;
-          }
-        }
-      }
+      this.readIdx();
       const chars = Array.from(String(text));
       const n = chars.length;
       const best = new Array(n + 1).fill(null);

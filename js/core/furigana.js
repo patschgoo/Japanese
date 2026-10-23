@@ -78,7 +78,8 @@
 
   /* Renders markup to HTML. Known words become tappable spans (data-k is the
      lexicon key) when the lexicon is loaded, carrying a short English gloss
-     (data-gl) and, for particles, an id for colour-coding (data-p).
+     (data-gl), its romaji (data-ro) and, for particles, an id for
+     colour-coding (data-p). The word sits in .tw so the aids can stack under it.
      opts.onToken may replace a token, which is how exercises blank out a
      particle. */
   function render(markup, opts) {
@@ -94,7 +95,8 @@
         if (tok.entry && tok.entry.kind !== "punct") {
           const gl = NI.lex.gloss ? NI.lex.gloss(tok.entry) : "";
           const pid = NI.lex.particleId ? NI.lex.particleId(tok.entry) : null;
-          h = "<span class=\"tok\" data-k=\"" + esc(tok.entry.key) + "\"" + (gl ? " data-gl=\"" + esc(gl) + "\"" : "") + (pid ? " data-p=\"" + pid + "\"" : "") + ">" + h + "</span>";
+          const ro = !NI.lex.romajiOf ? "" : tok.entry.kind === "number" ? baseOfAtoms(slice) : NI.lex.romajiOf(tok.entry, readingOfAtoms(slice));
+          h = "<span class=\"tok\" data-k=\"" + esc(tok.entry.key) + "\"" + (gl ? " data-gl=\"" + esc(gl) + "\"" : "") + (ro ? " data-ro=\"" + esc(ro) + "\"" : "") + (pid ? " data-p=\"" + pid + "\"" : "") + "><span class=\"tw\">" + h + "</span></span>";
         }
         if (o.onToken) {
           const r = o.onToken(tok, h, ti, ki, slice);

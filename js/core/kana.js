@@ -1,6 +1,6 @@
 /* Kana utilities: script detection, hiragana⇄katakana, a romaji→kana input
-   method (so answers can be typed without a Japanese keyboard), and the
-   normalisation used to compare typed answers. */
+   method (so answers can be typed without a Japanese keyboard), romaji for
+   reading aids, and the normalisation used to compare typed answers. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
@@ -27,6 +27,63 @@
     for (const ch of s) {
       const c = ch.charCodeAt(0);
       out += c >= 0x3041 && c <= 0x3096 ? String.fromCharCode(c + 0x60) : ch;
+    }
+    return out;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Kana → romaji (Hepburn), for reading aids: とうきょう → tōkyō, コーヒー → kōhī.
+  const HEP = (() => {
+    const m = {};
+    const rows = { "": "あいうえお", k: "かきくけこ", s: "さしすせそ", t: "たちつてと", n: "なにぬねの", h: "はひふへほ", m: "まみむめも", r: "らりるれろ", g: "がぎぐげご", z: "ざじずぜぞ", d: "だぢづでど", b: "ばびぶべぼ", p: "ぱぴぷぺぽ" };
+    for (const c in rows) Array.from(rows[c]).forEach((k, i) => (m[k] = c + "aiueo"[i]));
+    Object.assign(m, { し: "shi", ち: "chi", つ: "tsu", ふ: "fu", じ: "ji", ぢ: "ji", づ: "zu", や: "ya", ゆ: "yu", よ: "yo", わ: "wa", を: "o", ん: "n", ゔ: "vu" });
+    Object.assign(m, { ぁ: "a", ぃ: "i", ぅ: "u", ぇ: "e", ぉ: "o", ゃ: "ya", ゅ: "yu", ょ: "yo", ゎ: "wa" });
+    const yoon = { き: "ky", ぎ: "gy", に: "ny", ひ: "hy", び: "by", ぴ: "py", み: "my", り: "ry", し: "sh", じ: "j", ち: "ch", ぢ: "j" };
+    for (const k in yoon) [["ゃ", "a"], ["ゅ", "u"], ["ょ", "o"]].forEach(([s, v]) => (m[k + s] = yoon[k] + v));
+    // Sounds from other languages, written in katakana.
+    Object.assign(m, { ふぁ: "fa", ふぃ: "fi", ふぇ: "fe", ふぉ: "fo", ふゅ: "fyu", てぃ: "ti", でぃ: "di", とぅ: "tu", どぅ: "du", でゅ: "dyu", うぃ: "wi", うぇ: "we", うぉ: "wo", いぇ: "ye", しぇ: "she", じぇ: "je", ちぇ: "che", つぁ: "tsa", つぃ: "tsi", つぇ: "tse", つぉ: "tso", ゔぁ: "va", ゔぃ: "vi", ゔぇ: "ve", ゔぉ: "vo", くぁ: "kwa", ぐぁ: "gwa" });
+    return m;
+  })();
+  const MACRON = { a: "ā", i: "ī", u: "ū", e: "ē", o: "ō" };
+
+  /* Hepburn romaji with long vowels marked. Kanji and other characters pass
+     through. opts.verb: a final う is the verb's ending, not a long vowel
+     (思う is omou, not omō). */
+  function romaji(text, opts) {
+    const s = Array.from(toHiragana(String(text)));
+    const syl = [];
+    for (let i = 0; i < s.length; i++) {
+      const two = s[i] + (s[i + 1] || "");
+      if (HEP[two] && /[ぁぃぅぇぉゃゅょゎ]/.test(s[i + 1] || "")) {
+        syl.push(HEP[two]);
+        i++;
+      } else syl.push(HEP[s[i]] != null ? HEP[s[i]] : s[i]);
+    }
+    let out = "";
+    for (let i = 0; i < syl.length; i++) {
+      const r = syl[i];
+      const prev = out.slice(-1);
+      if (r === "っ") {
+        const n = syl[i + 1] || "";
+        if (/^[a-z]/.test(n)) out += n.startsWith("ch") ? "t" : n[0];
+        continue;
+      }
+      if (r === "ー") {
+        out = out.replace(/[aiueo]$/, (v) => MACRON[v]);
+        continue;
+      }
+      if (r === "n" && /^[aiueoy]/.test(syl[i + 1] || "")) {
+        out += "n'";
+        continue;
+      }
+      // おう after お is the long ending (思おう omoō), so the first お stays short.
+      const long = (r === "u" && (prev === "o" || prev === "u")) || (r === "o" && prev === "o" && syl[i + 1] !== "u") || (r === "a" && prev === "a") || (r === "e" && prev === "e");
+      if (long && !(opts && opts.verb && i === syl.length - 1)) {
+        out = out.slice(0, -1) + MACRON[prev];
+        continue;
+      }
+      out += r;
     }
     return out;
   }
@@ -251,6 +308,7 @@
     toHiragana,
     toKatakana,
     romajiToHiragana,
+    romaji,
     bindIme,
     fold,
   };

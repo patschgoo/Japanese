@@ -25,6 +25,8 @@
     focus: "balanced", // balanced | listening | speaking | reading | exam
     textSize: "m", // s | m | l | xl
     gloss: false, // English meaning under each Japanese word
+    romaji: false, // romaji under each Japanese word (and in pop-ups)
+    romajiPop: false, // romaji in word pop-ups only
     particles: true, // colour-code particles
   };
 

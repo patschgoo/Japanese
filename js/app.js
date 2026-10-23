@@ -108,6 +108,7 @@
     }
     doc.body.classList.toggle("furi-hover", s.furigana === "hover");
     doc.body.classList.toggle("show-gloss", !!s.gloss);
+    doc.body.classList.toggle("show-romaji", !!s.romaji);
     doc.body.classList.toggle("pcolor", !!s.particles);
     if (s.textSize && s.textSize !== "m") el.setAttribute("data-size", s.textSize);
     else el.removeAttribute("data-size");

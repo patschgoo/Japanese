@@ -1,7 +1,8 @@
 /* Sentence Maker patterns. Fillers are [markup, English, …]; verbs are
    dictionary-form markup with their English [base, past] and the objects
-   that make sense with them. Only words taught in the course are used, and
-   tools/validate.js builds sentences from every filler to check them. */
+   that make sense with them (an object can bring its own English verb: you
+   look at photos but watch films). Only words taught in the course are used,
+   and tools/validate.js builds sentences from every filler to check them. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
@@ -26,34 +27,37 @@
         ["{日本人|にほんじん}", "Japanese"],
       ],
     },
-    // A は [adjective] です
+    // A は [adjective] です. Each topic has a kind, and an adjective lists the
+    // kinds it suits (none: all): hot weather is 暑い, but hot ramen is 熱い.
     adj: {
       topic: [
-        ["この {町|まち}", "This town"],
-        ["{今日|きょう}", "Today"],
-        ["{日本語|にほんご}", "Japanese"],
-        ["この ラーメン", "This ramen"],
-        ["{私|わたし}の {部屋|へや}", "My room"],
-        ["この {本|ほん}", "This book"],
+        ["この {町|まち}", "This town", "place"],
+        ["{今日|きょう}", "Today", "day"],
+        ["{日本語|にほんご}", "Japanese", "subject"],
+        ["この ラーメン", "This ramen", "food"],
+        ["{私|わたし}の {部屋|へや}", "My room", "place"],
+        ["この {本|ほん}", "This book", "thing"],
       ],
       adj: [
-        ["{大|おお}きい", "adj-i", "big"],
-        ["{小|ちい}さい", "adj-i", "small"],
-        ["{新|あたら}しい", "adj-i", "new"],
-        ["{古|ふる}い", "adj-i", "old"],
-        ["{高|たか}い", "adj-i", "expensive"],
-        ["{安|やす}い", "adj-i", "cheap"],
-        ["おいしい", "adj-i", "delicious"],
-        ["{暑|あつ}い", "adj-i", "hot"],
-        ["{寒|さむ}い", "adj-i", "cold"],
-        ["{楽|たの}しい", "adj-i", "fun"],
-        ["{難|むずか}しい", "adj-i", "difficult"],
+        ["{大|おお}きい", "adj-i", "big", "place thing food"],
+        ["{小|ちい}さい", "adj-i", "small", "place thing food"],
+        ["{新|あたら}しい", "adj-i", "new", "place thing"],
+        ["{古|ふる}い", "adj-i", "old", "place thing"],
+        ["{高|たか}い", "adj-i", "expensive", "place thing food"],
+        ["{安|やす}い", "adj-i", "cheap", "place thing food"],
+        ["おいしい", "adj-i", "delicious", "food"],
+        ["{暑|あつ}い", "adj-i", "hot (weather)", "place day"],
+        ["{寒|さむ}い", "adj-i", "cold (weather)", "place day"],
+        ["{熱|あつ}い", "adj-i", "hot (to the touch)", "food"],
+        ["{冷|つめ}たい", "adj-i", "cold (to the touch)", "food"],
+        ["{楽|たの}しい", "adj-i", "fun", "place day subject thing"],
+        ["{難|むずか}しい", "adj-i", "difficult", "subject thing"],
         ["いい", "adj-ix", "good"],
-        ["{静|しず}か", "adj-na", "quiet"],
-        ["きれい", "adj-na", "pretty"],
-        ["{有名|ゆうめい}", "adj-na", "famous"],
-        ["{便利|べんり}", "adj-na", "convenient"],
-        ["{簡単|かんたん}", "adj-na", "easy"],
+        ["{静|しず}か", "adj-na", "quiet", "place day"],
+        ["きれい", "adj-na", "pretty", "place thing"],
+        ["{有名|ゆうめい}", "adj-na", "famous", "place food thing"],
+        ["{便利|べんり}", "adj-na", "convenient", "place thing"],
+        ["{簡単|かんたん}", "adj-na", "easy", "subject thing"],
       ],
     },
     // [time] [place]で [object]を [verb]
@@ -62,9 +66,10 @@
         ["", "", null],
         ["{毎日|まいにち}", "every day", "present"],
         ["{毎朝|まいあさ}", "every morning", "present"],
-        ["{明日|あした}", "tomorrow", "present"],
-        ["{週末|しゅうまつ}に", "on the weekend", null],
-        ["{来週|らいしゅう}", "next week", "present"],
+        // [markup, English, the tense it sets, whether English needs "will"]
+        ["{明日|あした}", "tomorrow", "present", true],
+        ["{週末|しゅうまつ}に", "at the weekend", null],
+        ["{来週|らいしゅう}", "next week", "present", true],
         ["{昨日|きのう}", "yesterday", "past"],
         ["{先週|せんしゅう}", "last week", "past"],
       ],
@@ -75,26 +80,27 @@
         ["{駅|えき}", "at the station"],
         ["{公園|こうえん}", "in the park"],
         ["{図書館|としょかん}", "at the library"],
-        ["{会社|かいしゃ}", "at work"],
+        ["{会社|かいしゃ}", "at the office"],
       ],
       verb: [
         { j: "{飲|の}む", pos: "v5", en: ["drink", "drank"], obj: [["コーヒー", "coffee"], ["お{茶|ちゃ}", "tea"], ["{水|みず}", "water"]] },
         { j: "{食|た}べる", pos: "v1", en: ["eat", "ate"], obj: [["すし", "sushi"], ["ラーメン", "ramen"], ["パン", "bread"], ["{肉|にく}", "meat"], ["{魚|さかな}", "fish"], ["おにぎり", "rice balls"], ["{野菜|やさい}", "vegetables"]] },
-        { j: "{見|み}る", pos: "v1", en: ["watch", "watched"], obj: [["{映画|えいが}", "a film"], ["テレビ", "TV"], ["{写真|しゃしん}", "photos"]] },
+        { j: "{見|み}る", pos: "v1", en: ["watch", "watched"], obj: [["{映画|えいが}", "a film"], ["テレビ", "TV"], ["{写真|しゃしん}", "photos", ["look at", "looked at"]]] },
         { j: "{読|よ}む", pos: "v5", en: ["read", "read"], obj: [["{本|ほん}", "a book"]] },
         { j: "{買|か}う", pos: "v5", en: ["buy", "bought"], obj: [["{本|ほん}", "a book"], ["{傘|かさ}", "an umbrella"], ["お{土産|みやげ}", "souvenirs"], ["{服|ふく}", "clothes"], ["{靴|くつ}", "shoes"], ["パン", "bread"]] },
         { j: "{聞|き}く", pos: "v5", en: ["listen to", "listened to"], obj: [["{音楽|おんがく}", "music"]] },
         { j: "{勉強|べんきょう}する", pos: "vs", en: ["study", "studied"], obj: [["{日本語|にほんご}", "Japanese"], ["{英語|えいご}", "English"]] },
-        { j: "{作|つく}る", pos: "v5", en: ["make", "made"], obj: [["{料理|りょうり}", "food"], ["{晩|ばん}ご{飯|はん}", "dinner"]] },
+        { j: "{作|つく}る", pos: "v5", en: ["make", "made"], obj: [["{料理|りょうり}", "a meal"], ["{晩|ばん}ご{飯|はん}", "dinner"]] },
         { j: "{撮|と}る", pos: "v5", en: ["take", "took"], obj: [["{写真|しゃしん}", "photos"]] },
-        { j: "する", pos: "vs", en: ["do", "did"], obj: [["{宿題|しゅくだい}", "my homework"], ["ゲーム", "games"], ["{仕事|しごと}", "my work"]] },
+        { j: "する", pos: "vs", en: ["do", "did"], obj: [["{宿題|しゅくだい}", "my homework"], ["ゲーム", "games", ["play", "played"]], ["{仕事|しごと}", "my work"]] },
       ],
     },
     // [with] [place]に [how] [go / come / go back]
     go: {
       verb: [
         { j: "{行|い}く", pos: "v5k-s", en: ["go", "went"] },
-        { j: "{来|く}る", pos: "vk", en: ["come", "came"] },
+        // "Let's come to the park" isn't something people say, in either language.
+        { j: "{来|く}る", pos: "vk", en: ["come", "came"], noMood: ["lets"] },
         { j: "{帰|かえ}る", pos: "v5", en: ["go back", "went back"] },
       ],
       place: [

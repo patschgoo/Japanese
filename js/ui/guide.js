@@ -216,7 +216,7 @@
 
         '<section id="g-helpers"><h2>Helpers for beginners</h2><ul class="helpers">' +
         "<li><b>Tap any Japanese</b>, wherever it appears, to hear it and see its reading and meaning, with links to Jisho, Google Translate and DeepL. That includes headings, the phrasebook and the culture notes, and grammar written in English text such as い-adjective or 〜ませんか, which opens its grammar point. <b>Select</b> a longer stretch to hear it, slowly too, or to see each word’s meaning. During a question the meaning stays hidden until you ask for it, and then counts as a hint.</li>" +
-        "<li><b>Reading aids</b> above Japanese text: meanings under every word, colour-coded particles, furigana only on tap.</li>" +
+        "<li><b>Reading aids</b> above Japanese text: meanings or romaji under every word, colour-coded particles, furigana only on tap. Tapping a name or compound shows what it's made of: はじめ線 is はじめ “the start” + 線 “line”.</li>" +
         "<li><b>🔍 Break it down</b> on any sentence: word by word, what each particle does, which verb form is used, slow audio, and record-and-compare.</li>" +
         '<li><b><a href="#reader">Reader</a>:</b> paste any Japanese text to see how much of it you know, look up the rest, or send it to Google Translate or DeepL. It also finds course words and sentences for English you type.</li>' +
         '<li><b><a href="#maker">Sentence Maker</a>:</b> pick a pattern and the parts, and it builds a correct sentence in any tense, polite or casual, as a question or a request.</li>' +
@@ -256,7 +256,7 @@
         '<dl class="choices">' +
         "<dt>Polite form first</dt><dd>です/ます forms are regular, safe with anyone, and what you need with strangers. Casual forms arrive in unit 16, once the system makes sense.</dd>" +
         "<dt>Kanji with furigana from day one</dt><dd>Real Japanese is written with kanji, so words appear the way you'll meet them, with the reading on top. You don't have to study kanji yet; you'll absorb the common ones as you go. If it feels like too much, switch to kana only in Options.</dd>" +
-        "<dt>No romaji</dt><dd>You already read hiragana. Romaji would make you read Japanese with English spelling habits and hide details like long vowels. You only type romaji, and it turns into kana as you type.</dd>" +
+        "<dt>Kana, not romaji</dt><dd>You already read hiragana. Romaji would make you read Japanese with English spelling habits and hide details like long vowels, so the course is written in kana and you only type romaji (it turns into kana as you type). If you'd like to see how something is written in romaji, such as a line name (はじめ線 is Hajime-sen), switch on <b>Romaji</b> in the reading aids or in Options: under every word, or only in the pop-up when you tap a word. Use it as a stepping stone, not a crutch.</dd>" +
         "<dt>Katakana soon</dt><dd>Katakana writes loanwords such as [[コーヒー]], [[テレビ]] and [[ホテル]]. It has the same 46 sounds you know from hiragana, so it takes days, not months. Until then, “Katakana help” shows hiragana above every katakana word; the Kana trainer gets you reading it.</dd>" +
         "<dt>One story</dt><dd>The conversations follow the same people, Ken, Yuki, Emma and Tanaka-sensei, through everyday situations, so each unit gives context to the next.</dd>" +
         "<dt>Rewards that follow the learning</dt><dd>XP, stamps and badges are there to make the daily habit fun. They count practice, not time spent or taps, so the quickest way up is the one that also teaches you the most.</dd>" +

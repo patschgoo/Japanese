@@ -233,7 +233,7 @@
         '<div class="today-actions">' + reviewBtn + stepBtn + '<a class="btn ghost" href="#play">Play</a></div></div>' +
         '<div class="today-goal"><div class="ring-box big">' + NI.session.ring(g.frac, g.done ? "✓" : g.xp + '<small>/' + g.target + "</small>") + "</div>" +
         '<div class="tg-text"><b>' + (g.done ? "Goal reached!" : "Daily goal") + '</b><span class="small muted">' + g.xp + " of " + g.target + " XP today</span>" +
-        '<a class="lvl-chip" href="#stamps" title="Level ' + L.n + '"><span class="lvl-badge">Lv ' + L.n + "</span>" + ui.jp(L.title.ja, { tokens: false }) + "</a></div></div>" +
+        '<a class="lvl-chip" href="#stamps" title="Level ' + L.n + '"><span class="lvl-badge">Lv ' + L.n + "</span>" + ui.jp(L.title.ja, { tokens: false, ro: true }) + "</a></div></div>" +
         '<dl class="stats">' +
         '<div><dt>Due now</dt><dd>' + c.due + "</dd></div>" +
         '<div><dt>Words learned</dt><dd>' + c.words + "</dd></div>" +
@@ -257,7 +257,7 @@
         html +=
           '<section class="line line-' + line.color + (pct >= 80 ? " gold" : "") + '" aria-labelledby="line-' + line.id + '">' +
           '<header class="line-head"><span class="line-badge" aria-hidden="true">' + line.id + "</span>" +
-          '<div><h2 id="line-' + line.id + '">' + ui.jp(line.ja, { tokens: false }) + ' <span class="line-en">' + esc(line.en) + "</span>" + (pct >= 80 ? ' <span class="gold-badge" title="Line exam passed">★</span>' : "") + "</h2>" +
+          '<div><h2 id="line-' + line.id + '">' + ui.jp(line.ja, { tokens: false, ro: true }) + ' <span class="line-en">' + esc(line.en) + "</span>" + (pct >= 80 ? ' <span class="gold-badge" title="Line exam passed">★</span>' : "") + "</h2>" +
           '<p class="line-blurb">' + esc(line.blurb) + ' <span class="muted">' + done + "/" + units.length + " stations</span>" +
           (done === units.length && units.length && !(pct >= 80) ? ' · <a href="#exam-' + line.id + '">Take the line exam</a>' : "") + "</p></div></header>" +
           '<ol class="stations">';
@@ -270,7 +270,7 @@
             '<li class="station ' + state + '"><a href="#unit-' + u.n + '">' +
             '<span class="node" aria-hidden="true"></span>' +
             ui.stationCode(u.n) +
-            '<span class="st-text"><span class="st-name">' + ui.jp(u.ja, { tokens: false, gaps: false }) + '</span><span class="st-en">' + esc(u.en) + "</span></span>" +
+            '<span class="st-text"><span class="st-name">' + ui.jp(u.ja, { tokens: false, gaps: false, ro: true }) + '</span><span class="st-en">' + esc(u.en) + "</span></span>" +
             (cur ? '<span class="here" title="You are here">' + ui.jp("{現在地|げんざいち}", { tokens: false }) + "</span>" : "") +
             (state === "done" ? '<span class="mini-stamp" title="Stamp collected" aria-label="Stamp collected">' + esc(stampEm[u.n]) + "</span>" : "") +
             '<span class="st-prog" aria-label="' + d + " of " + parts.length + ' parts done">' +
@@ -279,7 +279,7 @@
         }
         html += "</ol></section>";
         const nextLine = NI.course.lines[li + 1];
-        if (nextLine) html += '<div class="transfer" aria-hidden="true"><span>' + ui.jp("{乗|の}り{換|か}え", { tokens: false }) + "</span> Transfer to " + ui.jp(nextLine.ja, { tokens: false }) + "</div>";
+        if (nextLine) html += '<div class="transfer" aria-hidden="true"><span>' + ui.jp("{乗|の}り{換|か}え", { tokens: false }) + "</span> Transfer to " + ui.jp(nextLine.ja, { tokens: false, ro: true }) + "</div>";
       });
       html += "</section>";
 
@@ -340,8 +340,9 @@
     const lines = [
       ["はじめまして。", "Nice to meet you."],
       [(name || "＿＿") + "です。", "I'm " + (name ? name : "…") + "."],
-      [c.j + "から{来|き}ました。", "I'm from " + c.en + "."],
-      [j.j + "です。", "I'm " + (/^[aeiou]/i.test(j.en) ? "an " : "a ") + j.en.replace(/ \(.*\)$/, "") + "."],
+      [c.j + "から{来|き}ました。", "I'm from " + (/^(USA|UK|Netherlands|Philippines)$/.test(c.en) ? "the " : "") + c.en + "."],
+      // "an engineer", but "a university student"
+      [j.j + "です。", "I'm " + (/^([aeio]|u(?!ni))/i.test(j.en) ? "an " : "a ") + j.en.replace(/ \(.*\)$/, "") + "."],
     ];
     if (h) lines.push([h.j + "が {好|す}きです。", "I like " + h.en + "."]);
     lines.push(["よろしくお{願|ねが}いします。", "I look forward to getting to know you."]);
@@ -657,6 +658,8 @@
         toggle("kataHelp", "Katakana help", "Show hiragana above katakana until you can read it.") +
         toggle("gaps", "Space between phrases", "Japanese has no spaces; small gaps make sentences easier to split at first.") +
         toggle("gloss", "Word meanings under Japanese", "A small English gloss under every word. Great for reading longer texts; turn it off to test yourself.") +
+        toggle("romaji", "Romaji under Japanese", "Each word in Latin letters, as it's said: はじめ線 is Hajime-sen. A stepping stone: kana sticks faster without it, so turn it off when you can.") +
+        toggle("romajiPop", "Romaji in word pop-ups", "Tap a word and its romaji appears with the reading, without romaji under every word.") +
         toggle("particles", "Colour-code particles", "は topic, が subject, を object, に/へ direction, で place or means…") +
         toggle("tapSpeak", "Say words when you tap them", "Tap any Japanese word to see what it means; this also plays it.") +
         toggle("selBar", "Listen and translate selected text", "Select some Japanese (press and hold on a phone) for Listen, Slowly, Meaning and Translate.") +

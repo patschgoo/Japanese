@@ -49,7 +49,7 @@
       },
       {
         t: "How many times: 〜回",
-        body: "<p>[[{回|かい}]] counts times. The number changes its sound at 1, 6, 8 and 10: [[{1|いっ}{回|かい}]], [[{2|に}{回|かい}]], [[{3|さん}{回|かい}]], [[{6|ろっ}{回|かい}]], [[{8|はっ}{回|かい}]], [[{10|じゅっ}{回|かい}]]. How many times? [[{何回|なんかい}]]. With 〜たことがあります it says how often you've done something: [[{2|に}{回|かい}{行|い}ったことがあります]]. [[{何回|なんかい}も]] means “again and again”.</p>",
+        body: "<p>[[{回|かい}]] counts times. The number changes its sound at 1, 6, 8 and 10: [[{1|いっ}{回|かい}]], [[{2|に}{回|かい}]], [[{3|さん}{回|かい}]], [[{6|ろっ}{回|かい}]], [[{8|はっ}{回|かい}]], [[{10|じゅっ}{回|かい}]]. How many times? [[{何回|なんかい}]]. With 〜たことがあります it says how many times you've done something: [[{2|に}{回|かい}{行|い}ったことがあります]]. [[{何回|なんかい}も]] means “again and again”.</p>",
         ex: [
           ["{京都|きょうと}には {3|さん}{回|かい} {行|い}った ことが あります。", "I've been to Kyoto three times."],
           ["この {映画|えいが}は {何回|なんかい}も {見|み}ました。", "I've seen this film again and again."],
@@ -270,7 +270,7 @@
       { j: "{今夜|こんや}", pos: "n-t", en: "tonight" },
       { j: "{冷|つめ}たい", pos: "adj-i", en: "cold (to the touch), chilled", note: "For cold weather, use 寒い." },
       { j: "{相談|そうだん}する", pos: "vs", en: "talk over, ask for advice", note: "相談があるんですが… = Could I ask your advice about something?" },
-      { j: "{助|たす}かる", pos: "v5", noDrill: ["tai", "mashou"], en: "be a big help; be saved", note: "助かります！ = That's a big help!" },
+      { j: "{助|たす}かる", pos: "v5", noDrill: ["tai", "mashou"], en: "be helped, be saved", note: "助かります！ = That's a big help!" },
       { j: "{用事|ようじ}", pos: "n", en: "something to do, an errand" },
       { j: "{遅|おそ}い", pos: "adj-i", en: "late; slow", note: "Being late for something is 遅れる." },
       { j: "{問題|もんだい}", pos: "n", en: "problem; question (in a test)", note: "問題ありません = no problem." },
@@ -333,7 +333,7 @@
       { jp: "{道|みち}に {迷|まよ}ったら、 {交番|こうばん}で {聞|き}けば いいです。", en: "If you get lost, you can ask at a police box." },
       { jp: "{問題|もんだい}が あれば、 いつでも {相談|そうだん}してください。", en: "If there's a problem, come and talk to me any time." },
       { jp: "{海|うみ}なら、 {沖縄|おきなわ}が いいですよ。", en: "If it's the sea you want, Okinawa's the place." },
-      { jp: "{京都|きょうと}なら、 {私|わたし}が {案内|あんない}しますよ。", en: "If it's Kyoto, I can show you around." },
+      { jp: "{京都|きょうと}なら、 {私|わたし}が {案内|あんない}しますよ。", en: "If it's Kyoto you're visiting, I can show you around." },
       { jp: "{富士山|ふじさん}に {登|のぼ}るなら、 {暖|あたた}かい {服|ふく}が {必要|ひつよう}です。", en: "If you're going to climb Mount Fuji, you'll need warm clothes." },
       { jp: "{用事|ようじ}が あるので、 {早|はや}く {帰|かえ}っても いいですか。", en: "I have something to take care of, so may I leave early?" },
       { jp: "もう {遅|おそ}いので、 {帰|かえ}ります。", en: "It's getting late, so I'll head home." },
@@ -517,7 +517,7 @@
     ja: "いらっしゃいませ",
     en: "Service Japanese",
     goal: "Understand the polite phrases shop and restaurant staff use, answer them simply, and find your way around a department store's floors.",
-    intro: "Shop and restaurant staff speak keigo (敬語), a very polite style, with set phrases you'll hear all over Japan. Nobody expects customers to talk like that: recognise the phrases, and answer in the polite Japanese you already know. And 階 counts floors, so you can find the shoe department.",
+    intro: "Shop and restaurant staff speak keigo (敬語) in its most polite forms, with set phrases you'll hear all over Japan. Nobody expects customers to talk like that: recognise the phrases, and answer in the polite Japanese you already know. And 階 counts floors, so you can find the shoe department.",
     drill: { num: "ctr:floor,kai" },
     words: [
       { j: "かしこまりました", pos: "exp", en: "certainly; of course (staff to a customer)" },
@@ -544,7 +544,7 @@
     grammar: [
       {
         t: "Phrases you'll hear in shops",
-        body: "<p>A handful of set phrases come up in almost every shop, café and restaurant:</p><table><tr><td>[[いらっしゃいませ]]</td><td>welcome (no reply needed: a nod is fine)</td></tr><tr><td>[[{何名様|なんめいさま}ですか]]</td><td>how many are you?</td></tr><tr><td>[[かしこまりました]]</td><td>certainly</td></tr><tr><td>[[{少々|しょうしょう}お{待|ま}ちください]]</td><td>one moment, please</td></tr><tr><td>[[お{待|ま}たせしました]]</td><td>sorry to keep you waiting</td></tr><tr><td>[[ありがとうございました]]</td><td>thank you (as you leave)</td></tr></table>",
+        body: "<p>A handful of set phrases come up in almost every shop, café and restaurant:</p><table><tr><td>[[いらっしゃいませ]]</td><td>welcome (no reply needed: a nod is fine)</td></tr><tr><td>[[{何名様|なんめいさま}ですか]]</td><td>how many of you are there?</td></tr><tr><td>[[かしこまりました]]</td><td>certainly</td></tr><tr><td>[[{少々|しょうしょう}お{待|ま}ちください]]</td><td>one moment, please</td></tr><tr><td>[[お{待|ま}たせしました]]</td><td>sorry to keep you waiting</td></tr><tr><td>[[ありがとうございました]]</td><td>thank you (as you leave)</td></tr></table>",
         ex: [
           ["かしこまりました。{少々|しょうしょう} お{待|ま}ちください。", "Certainly. One moment, please."],
           ["お{待|ま}たせしました。", "Sorry to keep you waiting."],
@@ -568,7 +568,7 @@
       },
       {
         t: "Answering: keep it simple",
-        body: "<p>Customers don't need keigo, so the polite Japanese you already know is just right. [[はい、 お{願|ねが}いします]] accepts an offer, and [[いいえ、 {大丈夫|だいじょうぶ}です]] turns it down politely (no, thank you). To call staff, say [[すみません]]; to pay at a restaurant, [[お{会計|かいけい}お{願|ねが}いします]]. Asked [[お{弁当|べんとう}、 {温|あたた}めますか]] (shall I heat up your bento?), just say はい、お願いします or いいえ、大丈夫です.</p>",
+        body: "<p>Customers don't need these forms: the polite です/ます Japanese you already know is just right. [[はい、 お{願|ねが}いします]] accepts an offer, and [[いいえ、 {大丈夫|だいじょうぶ}です]] turns it down politely (no, thank you). To call staff, say [[すみません]]; to pay at a restaurant, [[お{会計|かいけい}お{願|ねが}いします]]. Asked [[お{弁当|べんとう}、 {温|あたた}めますか]] (shall I heat up your bento?), just say はい、お願いします or いいえ、大丈夫です.</p>",
         ex: [
           ["いいえ、 {大丈夫|だいじょうぶ}です。", "No, thank you."],
           ["カードで お{願|ねが}いします。", "By card, please."],
@@ -584,7 +584,7 @@
       },
     ],
     sentences: [
-      { jp: "いらっしゃいませ。{何名様|なんめいさま}ですか。", en: "Welcome. How many are you?" },
+      { jp: "いらっしゃいませ。{何名様|なんめいさま}ですか。", en: "Welcome. How many of you are there?" },
       { jp: "{二人|ふたり}です。", en: "Two." },
       { jp: "こちらへ どうぞ。", en: "This way, please." },
       { jp: "こちらで {少々|しょうしょう} お{待|ま}ちください。", en: "Please wait here a moment." },
@@ -601,7 +601,7 @@
       { jp: "すみません、 {靴|くつ}{売|う}り{場|ば}は {何階|なんがい}ですか。", en: "Excuse me, which floor is the shoe department on?" },
       { jp: "{靴|くつ}{売|う}り{場|ば}は {5|ご}{階|かい}でございます。", en: "The shoe department is on the fifth floor." },
       { jp: "エレベーターで {3|さん}{階|がい}へ {行|い}きましょう。", en: "Let's take the lift up to the third floor.", p: "で" },
-      { jp: "デパートの {地下|ちか}には おいしい {物|もの}が たくさん あります。", en: "There's lots of good food in a department store's basement." },
+      { jp: "デパートの {地下|ちか}には おいしい {物|もの}が たくさん あります。", en: "Department store basements are full of good food." },
       { jp: "{分|わ}からなければ、 {店員|てんいん}さんに {聞|き}いてみましょう。", en: "If we're not sure, let's ask a member of staff." },
       { jp: "{敬語|けいご}は {難|むずか}しいですが、 {聞|き}けば {分|わ}かります。", en: "Keigo is hard, but I can understand it when I hear it." },
     ],
@@ -639,7 +639,7 @@
     },
     culture: {
       t: "Keigo at work",
-      body: "<p>Shop and restaurant staff speak keigo (敬語, けいご), the most polite level of Japanese. Many part-timers learn the phrases from a staff manual before their first shift, which is why you hear the same words in convenience stores from Hokkaido to Okinawa. Keigo here isn't about the staff being lower than you: it marks a professional role, and the customer, お客様 (おきゃくさま), is treated as an honoured guest. Some manual phrases, such as 1000円からお預かりします (せんえんからおあずかりします, “out of 1,000 yen”), are criticised as not quite correct, but you'll hear them everywhere.</p><p>Nobody expects a customer, let alone a learner, to answer in keigo. Ordinary です/ます Japanese is exactly right, and a nod or a smile is all いらっしゃいませ needs.</p><p>This is the last station on the map, but not the end of the line. You now have the core of everyday Japanese, from JLPT N5 well into N4: keep reviewing, keep listening and keep talking. お疲れさまでした！</p>",
+      body: "<p>Shop and restaurant staff speak keigo (敬語, けいご) in its most polite forms. Many part-timers learn the phrases from a staff manual before their first shift, which is why you hear the same words in convenience stores from Hokkaido to Okinawa. Keigo here isn't about the staff being lower than you: it marks a professional role, and the customer, お客様 (おきゃくさま), is treated as an honoured guest. Some manual phrases, such as 1000円からお預かりします (せんえんからおあずかりします, “out of 1,000 yen”), are criticised as not quite correct, but you'll hear them everywhere.</p><p>Nobody expects a customer, let alone a learner, to answer in keigo. Ordinary です/ます Japanese is exactly right, and a nod or a smile is all いらっしゃいませ needs.</p><p>This is the last station on the map, but not the end of the line. You now have the core of everyday Japanese, from JLPT N5 well into N4: keep reviewing, keep listening and keep talking. お疲れさまでした！</p>",
     },
   });
 
@@ -656,7 +656,7 @@
       ["{7|しち}{月|がつ}には、 ゆきさんと {夏|なつ}{祭|まつ}りに {行|い}きました。{初|はじ}めて {浴衣|ゆかた}を {着|き}てみました。", "In July I went to a summer festival with Yuki. I wore a yukata for the first time."],
       ["でも、 {財布|さいふ}を {忘|わす}れてしまいました。ゆきさんが {払|はら}ってくれました。", "But I forgot my wallet, so Yuki paid for me."],
       ["{8|はち}{月|がつ}には {富士山|ふじさん}に {登|のぼ}りました。{頂上|ちょうじょう}は とても {寒|さむ}かったですが、 {日|ひ}の{出|で}は {最高|さいこう}でした。", "In August I climbed Mount Fuji. It was freezing at the top, but the sunrise was amazing."],
-      ["{暑|あつ}い {夜|よる}に エアコンが {壊|こわ}れてしまいましたが、 {大家|おおや}さんが {直|なお}してくれました。", "One hot night my air conditioner broke, but my landlady got it fixed."],
+      ["{暑|あつ}い {夜|よる}に エアコンが {壊|こわ}れてしまいましたが、 {大家|おおや}さんが {直|なお}してくれました。", "One hot night my air conditioner broke, but my landlady fixed it for me."],
       ["{日本|にほん}では、 ゴミを {分|わ}けなければ なりません。{大変|たいへん}ですが、 もう {覚|おぼ}えました。", "In Japan you have to sort your rubbish. It's a lot of work, but I've learned the rules now."],
       ["カフェの アルバイトも {頑張|がんば}っています。{敬語|けいご}は {難|むずか}しいですが、 {毎日|まいにち} {練習|れんしゅう}しています。", "I'm working hard at the café, too. Keigo is difficult, but I practise every day."],
       ["{昨日|きのう}、 {田中|たなか}{先生|せんせい}と エマさんと ゆきさんが {店|みせ}に {来|き}てくれました。", "Yesterday Tanaka-sensei, Emma and Yuki came to see me at the café."],

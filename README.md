@@ -21,7 +21,7 @@ shinkansen (新幹線) as you remember them.
 | **Games** | Time Attack (meanings, listening or pictures), Kana Rain, Memory Match and Sentence Sprint, built from the words and sentences you've met; a relaxed mode takes out clocks and hearts |
 | **More ways to practise** | Role-play any course conversation (pick or say your lines), Listen on the go (hands-free audio with pauses to recall, Japanese or English first), write kana by hand on a tracing pad, and a pronunciation check with the browser's speech recognition that marks the sounds it missed |
 | **Motivation** | XP and levels, a daily goal and streak with rest days that cover a missed day, combos, 30 badges, three daily missions, an omikuji fortune once the goal is reached, a stamp for every station, a gold exam for every line, a mistakes notebook |
-| **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings under every word, colour-coded particles; tap any Japanese anywhere to hear it and see its meaning, or select a stretch to listen (slowly, too) or translate it. That covers the site's own Japanese too: headings, line names, the phrasebook and culture notes (a glossary), grammar written into English (い-adjective, 〜ませんか, linked to its unit) and single kana. During a question the meaning stays hidden until you ask, and counts as a hint |
+| **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings or romaji (Hepburn, as it's said: Hajime-sen, ohayō gozaimasu) under every word or just in pop-ups, colour-coded particles; tap any Japanese anywhere to hear it and see its meaning, or select a stretch to listen (slowly, too) or translate it. That covers the site's own Japanese too: headings, line names, the phrasebook and culture notes (a glossary), grammar written into English (い-adjective, 〜ませんか, linked to its unit) and single kana. Names and compounds show their parts (はじめ線 = はじめ “the start” + 線 “line”). During a question the meaning stays hidden until you ask, and counts as a hint |
 | **Sentence breakdown** | Any sentence, word by word: each particle's job, each verb form, slow audio, and record-and-compare for your own pronunciation |
 | **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
@@ -68,7 +68,8 @@ learner. The main points:
    course adapts to goals and preferences instead, and everyone sees, hears
    and says every word.
 9. **Polite form first, plain forms later** (unit 16); **kanji with furigana
-   from day one**; **no romaji** (you type romaji, it becomes kana);
+   from day one**; **kana, not romaji** (you type romaji, it becomes kana;
+   romaji under words is an option, off by default);
    **katakana soon**, with hiragana help until then.
 
 Grammar order: greetings → AはBです, か, の, も → こそあど and question words →

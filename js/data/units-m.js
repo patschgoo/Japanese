@@ -57,8 +57,8 @@
         ],
       },
       {
-        t: "Clock times take に",
-        body: "<p>A specific time or day takes に: [[{7|しち}{時|じ}に]], [[{月曜日|げつようび}に]]. Words that count from today, like 今日, 明日, 昨日 and 今, take no particle, and neither do 毎日 and 毎朝.</p>",
+        t: "Times and days take に",
+        body: "<p>A specific time or day takes に: [[{7|しち}{時|じ}に]], [[{月曜日|げつようび}に]]. Words relative to now, like 今日, 明日, 昨日 and 今, take no particle, and neither do 毎日 and 毎朝.</p>",
         ex: [
           ["{6|ろく}{時|じ}に {起|お}きます。", "I get up at six."],
           ["{毎朝|まいあさ} {6|ろく}{時|じ}に {起|お}きます。", "I get up at six every morning."],
@@ -75,7 +75,7 @@
       {
         t: "何をしますか: what do you do?",
         body: "<p>する means “do”. [[{何|なに}をしますか]] asks what someone does or will do. Before を, 何 is read なに.</p>",
-        ex: [["{明日|あした} {何|なに}を しますか。", "What will you do tomorrow?"]],
+        ex: [["{明日|あした} {何|なに}を しますか。", "What are you doing tomorrow?"]],
       },
       {
         t: "は for contrast",
@@ -95,11 +95,11 @@
       { jp: "{夜|よる} {11|じゅういち}{時|じ}に {寝|ね}ます。", en: "I go to bed at 11 at night.", p: "に" },
       { jp: "{本|ほん}を {読|よ}みますか。", en: "Do you read books?" },
       { jp: "いいえ、 {全然|ぜんぜん} {読|よ}みません。", en: "No, I don't read at all." },
-      { jp: "{明日|あした} {何|なに}を しますか。", en: "What will you do tomorrow?" },
+      { jp: "{明日|あした} {何|なに}を しますか。", en: "What are you doing tomorrow?" },
       { jp: "いつも {朝|あさ} {7|しち}{時|じ}に {起|お}きます。", en: "I always get up at 7 in the morning." },
       { jp: "{晩|ばん}ご{飯|はん}は {何|なに}を {食|た}べますか。", en: "What do you have for dinner?" },
       { jp: "{水|みず}を {買|か}います。", en: "I'll buy some water.", p: "を" },
-      { jp: "ここに {名前|なまえ}を {書|か}きます。", en: "I write my name here." },
+      { jp: "ここに {名前|なまえ}を {書|か}きます。", en: "I'll write my name here." },
       { jp: "すみません、 {分|わ}かりません。", en: "Sorry, I don't understand." },
       { jp: "{早|はや}いですね。", en: "That's early!" },
     ],
@@ -203,7 +203,7 @@
         body: "<p>Add も to a question word and use a negative verb: [[どこへも{行|い}きません]] (I'm not going anywhere), [[{何|なに}もしません]] (I'm not doing anything).</p>",
         ex: [
           ["{昨日|きのう}は どこへも {行|い}きませんでした。", "I didn't go anywhere yesterday."],
-          ["{週末|しゅうまつ}は {何|なに}も しませんでした。", "I didn't do anything on the weekend."],
+          ["{週末|しゅうまつ}は {何|なに}も しませんでした。", "I didn't do anything at the weekend."],
         ],
       },
     ],
@@ -220,7 +220,7 @@
       { jp: "{駅|えき}まで {歩|ある}いて {行|い}きます。", en: "I walk to the station.", p: "まで" },
       { jp: "{来週|らいしゅう} {大阪|おおさか}に {帰|かえ}ります。", en: "I'm going back to Osaka next week.", p: "に" },
       { jp: "スーパーで {水|みず}を {買|か}いました。", en: "I bought water at the supermarket.", p: "で" },
-      { jp: "{週末|しゅうまつ}は {何|なに}も しませんでした。", en: "I didn't do anything on the weekend." },
+      { jp: "{週末|しゅうまつ}は {何|なに}も しませんでした。", en: "I didn't do anything at the weekend." },
       { jp: "{自転車|じてんしゃ}で {学校|がっこう}に {来|き}ます。", en: "I come to school by bike.", p: "で" },
       { jp: "{一緒|いっしょ}に {帰|かえ}りました。", en: "We went home together." },
       { jp: "{新幹線|しんかんせん}で {京都|きょうと}へ {行|い}きました。", en: "I went to Kyoto by shinkansen." },
@@ -230,7 +230,7 @@
       setting: "Monday morning at school.",
       cast: { E: { ja: "エマ", en: "Emma" }, K: { ja: "ケン", en: "Ken" } },
       lines: [
-        ["E", "ケンさん、 {週末|しゅうまつ}は どこへ {行|い}きましたか。", "Ken, where did you go on the weekend?"],
+        ["E", "ケンさん、 {週末|しゅうまつ}は どこへ {行|い}きましたか。", "Ken, where did you go at the weekend?"],
         ["K", "{京都|きょうと}へ {行|い}きました。", "I went to Kyoto."],
         ["E", "いいですね！{誰|だれ}と {行|い}きましたか。", "Nice! Who did you go with?"],
         ["K", "{一人|ひとり}で {行|い}きました。", "I went on my own."],
@@ -410,7 +410,7 @@
     grammar: [
       {
         t: "My family, your family",
-        body: "<p>When you talk about your own family to others, use the plain, humble words. For someone else's family, use the polite お〜さん words. Inside a family, people address each other with the polite words: a child calls out お母さん!</p><table><tr><th></th><th>my …</th><th>your / their …</th></tr><tr><th>father</th><td>[[{父|ちち}]]</td><td>[[お{父|とう}さん]]</td></tr><tr><th>mother</th><td>[[{母|はは}]]</td><td>[[お{母|かあ}さん]]</td></tr><tr><th>older brother</th><td>[[{兄|あに}]]</td><td>[[お{兄|にい}さん]]</td></tr><tr><th>older sister</th><td>[[{姉|あね}]]</td><td>[[お{姉|ねえ}さん]]</td></tr><tr><th>younger brother</th><td>[[{弟|おとうと}]]</td><td>[[{弟|おとうと}さん]]</td></tr><tr><th>younger sister</th><td>[[{妹|いもうと}]]</td><td>[[{妹|いもうと}さん]]</td></tr></table>",
+        body: "<p>When you talk about your own family to others, use the plain, humble words. For someone else's family, use the polite 〜さん words. At home, people use these polite words for older family members: a child calls out お母さん!</p><table><tr><th></th><th>my …</th><th>your / their …</th></tr><tr><th>father</th><td>[[{父|ちち}]]</td><td>[[お{父|とう}さん]]</td></tr><tr><th>mother</th><td>[[{母|はは}]]</td><td>[[お{母|かあ}さん]]</td></tr><tr><th>older brother</th><td>[[{兄|あに}]]</td><td>[[お{兄|にい}さん]]</td></tr><tr><th>older sister</th><td>[[{姉|あね}]]</td><td>[[お{姉|ねえ}さん]]</td></tr><tr><th>younger brother</th><td>[[{弟|おとうと}]]</td><td>[[{弟|おとうと}さん]]</td></tr><tr><th>younger sister</th><td>[[{妹|いもうと}]]</td><td>[[{妹|いもうと}さん]]</td></tr></table>",
         ex: [
           ["{私|わたし}の {母|はは}です。", "This is my mother."],
           ["ゆきさんの お{母|かあ}さんは {先生|せんせい}です。", "Yuki's mother is a teacher."],
@@ -437,7 +437,7 @@
         body: "<p>Ages use 歳 (さい). Watch these: 1 <b>いっさい</b>, 8 <b>はっさい</b>, 10 <b>じゅっさい</b>, and 20 is <b>はたち</b>. To ask, say [[{何歳|なんさい}ですか]], or more politely おいくつですか.</p>",
         ex: [
           ["{25|にじゅうご}{歳|さい}です。", "I'm 25."],
-          ["お{兄|にい}さんは {何歳|なんさい}ですか。", "How old is your brother?"],
+          ["お{兄|にい}さんは {何歳|なんさい}ですか。", "How old is your older brother?"],
         ],
       },
     ],

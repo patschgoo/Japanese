@@ -24,8 +24,8 @@
         : '<span class="' + dir + ' end">' + (dir === "prev" ? "Start of the line" : "End of the line") + "</span>";
     return (
       '<header class="sign line-' + line.color + '">' +
-      '<div class="sign-top">' + ui.stationCode(u.n) + '<span class="sign-line">' + ui.jp(line.ja, { tokens: false }) + " · " + esc(line.en) + "</span></div>" +
-      '<h1 class="sign-name">' + ui.jp(u.ja, { tokens: false, gaps: true }) + "</h1>" +
+      '<div class="sign-top">' + ui.stationCode(u.n) + '<span class="sign-line">' + ui.jp(line.ja, { tokens: false, ro: true }) + " · " + esc(line.en) + "</span></div>" +
+      '<h1 class="sign-name">' + ui.jp(u.ja, { tokens: false, gaps: true, ro: true }) + "</h1>" +
       '<p class="sign-en">' + esc(u.en) + "</p>" +
       '<div class="sign-band" aria-hidden="true"></div>' +
       '<nav class="sign-nav" aria-label="Neighbouring units">' + link(prev, "prev") + link(next, "next") + "</nav>" +
@@ -62,8 +62,8 @@
     return '<ul class="examples">' + ex.map(([jp, en]) => '<li><div class="s-jp">' + ui.jp(jp) + tools(jp, en) + '</div><p class="en">' + esc(en) + "</p></li>").join("") + "</ul>";
   }
 
-  /* Reading aids: switches for word meanings under the text and particle
-     colours. They only toggle classes, so the page doesn't reload. */
+  /* Reading aids: switches for word meanings and romaji under the text and
+     particle colours. They only toggle classes, so the page doesn't reload. */
   function aids(extra) {
     const s = NI.store.settings;
     const chip = (key, label, title) =>
@@ -71,6 +71,7 @@
     return (
       '<div class="aids" role="group" aria-label="Reading aids"><span class="aids-label">Reading aids</span>' +
       chip("gloss", "Aa Word meanings", "Show the English meaning under each Japanese word") +
+      chip("romaji", "Rō Romaji", "Show each Japanese word in romaji (Latin letters) under it") +
       chip("particles", '<span class="pdot" aria-hidden="true"></span>Particle colours', "Colour-code particles: は topic, が subject, を object …") +
       chip("furiOff", "Hide furigana", "Hide readings above kanji (tap a word to see it)") +
       (extra || "") +

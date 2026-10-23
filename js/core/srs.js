@@ -13,11 +13,11 @@
   const MAX = INTERVALS.length - 1;
 
   const TIERS = [
-    { id: "local", ja: "各停", kana: "かくてい", en: "Local", stages: [1, 2] },
-    { id: "rapid", ja: "快速", kana: "かいそく", en: "Rapid", stages: [3, 4] },
-    { id: "express", ja: "急行", kana: "きゅうこう", en: "Express", stages: [5, 6] },
-    { id: "limited", ja: "特急", kana: "とっきゅう", en: "Limited express", stages: [7] },
-    { id: "shinkansen", ja: "新幹線", kana: "しんかんせん", en: "Shinkansen", stages: [8] },
+    { id: "local", ja: "各停", kana: "かくてい", en: "Local", stages: [1, 2], parts: [["{各|かく}", "each"], ["{停|てい}", "stop (it stops at each station)"]] },
+    { id: "rapid", ja: "快速", kana: "かいそく", en: "Rapid", stages: [3, 4], parts: [["{快|かい}", "brisk"], ["{速|そく}", "speed"]] },
+    { id: "express", ja: "急行", kana: "きゅうこう", en: "Express", stages: [5, 6], parts: [["{急|きゅう}", "hurry"], ["{行|こう}", "go"]] },
+    { id: "limited", ja: "特急", kana: "とっきゅう", en: "Limited express", stages: [7], parts: [["{特|とく}", "special (とく becomes とっ here)"], ["{急|きゅう}", "hurry"]] },
+    { id: "shinkansen", ja: "新幹線", kana: "しんかんせん", en: "Shinkansen", stages: [8], parts: [["{新|しん}", "new"], ["{幹|かん}", "trunk, main"], ["{線|せん}", "line"]] },
   ];
 
   function tierOf(stage) {

@@ -62,7 +62,7 @@
         '<header class="page-head"><h1>Stamp book <span class="sub">' + ui.jp("スタンプ{帳|ちょう}", { tokens: false }) + "</span></h1>" +
         "<p>Finish every part of a unit to collect its station stamp, like the rubber stamps at Japanese railway stations. Pass a line exam to turn its line gold.</p></header>" +
         '<section class="u-sec stat-cards">' +
-        '<div class="stat-card"><span class="lvl-badge big">Lv ' + L.n + "</span><div><b>" + ui.jp(L.title.ja, { tokens: false }) + " · " + esc(L.title.en) + "</b>" + ui.progressBar(L.frac, "Progress to the next level") + '<span class="small muted">' + st.xp + " XP in total · " + (L.need - L.into) + " to level " + (L.n + 1) + "</span></div></div>" +
+        '<div class="stat-card"><span class="lvl-badge big">Lv ' + L.n + "</span><div><b>" + ui.jp(L.title.ja, { tokens: false, ro: true }) + " · " + esc(L.title.en) + "</b>" + ui.progressBar(L.frac, "Progress to the next level") + '<span class="small muted">' + st.xp + " XP in total · " + (L.need - L.into) + " to level " + (L.n + 1) + "</span></div></div>" +
         '<div class="stat-card"><span class="big-num">' + NI.store.streak() + '</span><div><b>Day streak</b><span class="small muted">Best: ' + NI.game.bestStreak() + " days</span>" + weekDots() + "</div></div>" +
         '<div class="stat-card"><span class="big-num">' + got + '</span><div><b>Stamps</b><span class="small muted">of ' + stamps.length + " stations · " + earned + " of " + NI.game.BADGES.length + " badges</span></div></div>" +
         "</section>";
@@ -71,7 +71,7 @@
         const pct = st.exams[line.id];
         const gold = pct >= 80;
         html +=
-          '<section class="u-sec stamp-line line-' + line.color + (gold ? " gold" : "") + '"><h2><span class="line-badge" aria-hidden="true">' + line.id + "</span> " + ui.jp(line.ja, { tokens: false }) + ' <span class="line-en">' + esc(line.en) + "</span>" +
+          '<section class="u-sec stamp-line line-' + line.color + (gold ? " gold" : "") + '"><h2><span class="line-badge" aria-hidden="true">' + line.id + "</span> " + ui.jp(line.ja, { tokens: false, ro: true }) + ' <span class="line-en">' + esc(line.en) + "</span>" +
           (gold ? ' <span class="gold-badge" title="Line exam passed: ' + pct + '%">★ ' + pct + "%</span>" : "") + "</h2>" +
           '<ol class="stamp-grid">' +
           line.units

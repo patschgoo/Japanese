@@ -994,6 +994,12 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
 .pop-head { display: flex; align-items: center; gap: 4px; font-size: 1.5rem; line-height: 1.6; }
 .pop-reading { font-family: var(--f-jp); color: var(--ink-2); font-size: 0.9rem; }
 .pop-en { font-weight: 500; margin-top: 2px; }
+.pop-ro { font-size: 0.9rem; color: var(--ink-2); font-style: italic; }
+.pop-parts { display: grid; gap: 2px; margin-top: 6px; font-size: 0.86rem; }
+.pop-parts .jp { font-size: 1.1rem; }
+.pop-parts .jp rt { font-size: 0.55em; }
+.pp-en { color: var(--ink-2); }
+.pp-plus { color: var(--ink-3); margin-right: 6px; }
 .pop-form { font-size: 0.86rem; color: var(--ink-2); margin-top: 4px; }
 .pop-form .jp rt { font-size: 0.55em; }
 .pop-meta { font-size: 0.78rem; color: var(--ink-3); margin-top: 6px; }
@@ -1075,8 +1081,20 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
 .pcolor .jp .tok[data-p="ka"], .pcolor .jp .tok[data-p="ne"], .pcolor .jp .tok[data-p="yo"], [data-p="ka"] .bd-jp, [data-p="ne"] .bd-jp, [data-p="yo"] .bd-jp { color: var(--p-ka); }
 .opt .jp .tok[data-p], .tile .jp .tok[data-p] { color: inherit; font-weight: inherit; }
 
-.show-gloss .jp .tok[data-gl] { display: inline-flex; flex-direction: column; align-items: center; vertical-align: top; }
+/* Word meanings and romaji under each word: the word, then its romaji, then
+   its meaning (the word is one .tw box, so kanji and kana stay together). */
+.show-gloss .jp .tok[data-gl], .show-romaji .jp .tok[data-ro] { display: inline-flex; flex-direction: column; align-items: center; vertical-align: top; margin: 0 0.14em; }
+.show-romaji .jp .tok[data-ro]::before {
+  content: attr(data-ro);
+  order: 1;
+  font: italic 500 0.45em/1.25 var(--f-ui);
+  color: var(--ink-2);
+  white-space: nowrap;
+  margin-top: 0.05em;
+  letter-spacing: 0;
+}
 .show-gloss .jp .tok[data-gl]::after {
+  order: 2;
   content: attr(data-gl);
   font: 500 0.42em/1.25 var(--f-ui);
   color: var(--ink-3);
@@ -1085,7 +1103,12 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
   letter-spacing: 0;
 }
 .show-gloss .opt .jp .tok[data-gl]::after, .show-gloss .tile .jp .tok[data-gl]::after, .show-gloss .prompt-word .tok::after { content: none; }
-.show-gloss .s-jp, .show-gloss .b-jp, .show-gloss .reader-text { line-height: 2.5; }
+.show-gloss .s-jp, .show-gloss .b-jp, .show-gloss .reader-text, .show-romaji .s-jp, .show-romaji .b-jp, .show-romaji .reader-text { line-height: 2.5; }
+.show-romaji .opt .jp .tok[data-ro]::before, .show-romaji .tile .jp .tok[data-ro]::before, .show-romaji .prompt-word .tok::before { content: none; }
+.show-gloss.show-romaji .s-jp, .show-gloss.show-romaji .b-jp, .show-gloss.show-romaji .reader-text { line-height: 3; }
+/* Names without word tokens (lines, stations, level titles) show romaji after them. */
+.jp[data-ro]::after { content: none; }
+.show-romaji .jp[data-ro]::after { content: attr(data-ro); margin-left: 0.35em; font: italic 500 0.62em var(--f-ui); color: var(--ink-3); letter-spacing: 0; white-space: nowrap; }
 
 .aids { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 4px; }
 .aids-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); font-weight: 600; margin-right: 2px; }

@@ -96,7 +96,7 @@
             const done = units.filter((u) => NI.game.stamps().find((s) => s.unit.n === u.n && s.done)).length;
             return (
               '<li class="line-' + l.color + (pct >= 80 ? " passed" : "") + '"><span class="line-badge" aria-hidden="true">' + l.id + "</span>" +
-              '<span class="ex-t"><b>' + ui.jp(l.ja, { tokens: false }) + "</b><span>" + esc(l.en) + " · " + done + "/" + units.length + " stations" + (pct != null ? " · best " + pct + "%" : "") + "</span></span>" +
+              '<span class="ex-t"><b>' + ui.jp(l.ja, { tokens: false, ro: true }) + "</b><span>" + esc(l.en) + " · " + done + "/" + units.length + " stations" + (pct != null ? " · best " + pct + "%" : "") + "</span></span>" +
               '<a class="btn small ' + (done === units.length && !(pct >= 80) ? "primary" : "ghost") + '" href="#exam-' + l.id + '">' + (pct >= 80 ? "★ Retake" : "Take exam") + "</a></li>"
             );
           })

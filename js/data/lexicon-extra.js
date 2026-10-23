@@ -1,18 +1,20 @@
 /* Grammar words, names and the six course "lines".
    Grammar words are not review cards; they are glossed when tapped and are
-   taught in the unit given by u. */
+   taught in the unit given by u. A line's parts say what its name is made of
+   (はじめ "the start" + 線 "line"); its romaji is made from the kana, the way
+   real line names are written: Hajime-sen. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
   NI.data = NI.data || { units: [], grammar: [], names: [], phrases: [], lines: [] };
 
   NI.data.lines = [
-    { id: "H", ja: "はじめ{線|せん}", kana: "はじめせん", en: "First Steps Line", color: "h", units: [1, 2, 3, 4, 5], blurb: "Greetings, introductions, things, numbers and time — the survival kit." },
-    { id: "M", ja: "まいにち{線|せん}", kana: "まいにちせん", en: "Everyday Line", color: "m", units: [6, 7, 8, 9, 10], blurb: "Verbs, going places, where things are, family and describing the world." },
-    { id: "D", ja: "できる{線|せん}", kana: "できるせん", en: "Can-Do Line", color: "d", units: [11, 12, 13, 14, 15], blurb: "Likes and wants, requests, what's happening now, invitations and permission." },
-    { id: "K", ja: "かいわ{線|せん}", kana: "かいわせん", en: "Conversation Line", color: "k", units: [16, 17, 18, 19, 20], blurb: "Casual speech, opinions, past experiences, directions and getting help." },
-    { id: "T", ja: "つながる{線|せん}", kana: "つながるせん", en: "Connections Line", color: "t", units: [21, 22, 23, 24, 25], blurb: "Giving and receiving, can and can't, if and when, before and after, and making plans." },
-    { id: "S", ja: "すすむ{線|せん}", kana: "すすむせん", en: "Onward Line", color: "s", units: [26, 27, 28, 29, 30], blurb: "Trying things, how things look, asking for advice, rules, and the polite Japanese of shops and work." },
+    { id: "H", ja: "はじめ{線|せん}", kana: "はじめせん", en: "Starting Line", parts: [["はじめ", "the beginning, the start (as in はじめまして)"], ["{線|せん}", "line"]], color: "h", units: [1, 2, 3, 4, 5], blurb: "Greetings, introductions, things, numbers and time — the survival kit." },
+    { id: "M", ja: "まいにち{線|せん}", kana: "まいにちせん", en: "Everyday Line", parts: [["まいにち", "every day"], ["{線|せん}", "line"]], color: "m", units: [6, 7, 8, 9, 10], blurb: "Verbs, going places, where things are, family and describing the world." },
+    { id: "D", ja: "できる{線|せん}", kana: "できるせん", en: "Can-Do Line", parts: [["できる", "can do, be able to"], ["{線|せん}", "line"]], color: "d", units: [11, 12, 13, 14, 15], blurb: "Likes and wants, requests, what's happening now, invitations and permission." },
+    { id: "K", ja: "かいわ{線|せん}", kana: "かいわせん", en: "Conversation Line", parts: [["かいわ", "conversation"], ["{線|せん}", "line"]], color: "k", units: [16, 17, 18, 19, 20], blurb: "Casual speech, opinions, past experiences, directions and getting help." },
+    { id: "T", ja: "つながる{線|せん}", kana: "つながるせん", en: "Connections Line", parts: [["つながる", "to connect, link up"], ["{線|せん}", "line"]], color: "t", units: [21, 22, 23, 24, 25], blurb: "Giving and receiving, can and can't, if and when, before and after, and making plans." },
+    { id: "S", ja: "すすむ{線|せん}", kana: "すすむせん", en: "Onward Line", parts: [["すすむ", "to go forward"], ["{線|せん}", "line"]], color: "s", units: [26, 27, 28, 29, 30], blurb: "Trying things, how things look, asking for advice, rules, and the polite Japanese of shops and work." },
   ];
 
   NI.data.grammar = [
@@ -22,10 +24,10 @@
     { s: "を", u: 4, kind: "particle", en: "marks the object of an action (read お); also a route or a place you leave (道を渡る, 電車を降りる)" },
     { s: "に", u: 6, kind: "particle", en: "at (a time); to (a place or person); in/at (where something is); for (a purpose: 飲みに行く); from (someone you receive from: 友達にもらう)" },
     { s: "で", u: 3, kind: "particle", en: "in/by (a language or means); at (where an action happens)" },
-    { s: "へ", u: 7, kind: "particle", en: "to, toward (direction; read え)" },
+    { s: "へ", u: 7, kind: "particle", en: "to, towards (direction; read え)" },
     { s: "と", u: 4, kind: "particle", en: "and (between nouns); with (someone); quotes what is said or thought" },
     { s: "も", u: 2, kind: "particle", en: "also, too; with a negative: (not) … either" },
-    { s: "の", u: 2, kind: "particle", en: "’s, of — links two nouns; alone: “the one, mine”" },
+    { s: "の", u: 2, kind: "particle", en: "’s, of — links two nouns; with no noun after it: “the one” (私の = mine)" },
     { s: "か", u: 2, kind: "particle", en: "question marker (a spoken question mark)" },
     { s: "ね", u: 4, kind: "particle", en: "“…, isn’t it? / right?” — invites agreement" },
     { s: "よ", u: 5, kind: "particle", en: "“…, you know” — tells the listener something new" },

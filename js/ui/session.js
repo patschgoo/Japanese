@@ -117,7 +117,7 @@
     const L = NI.game.level(NI.store.state.xp);
     return (
       '<div class="lvl-row' + (up ? " up" : "") + '"><span class="lvl-badge">Lv ' + L.n + "</span>" +
-      '<div class="lvl-text">' + (up ? '<span class="lvl-up">Level up!</span>' : "") + "<b>" + ui.jp(L.title.ja, { tokens: false }) + " · " + esc(L.title.en) + "</b>" + ui.progressBar(L.frac, "Progress to the next level") +
+      '<div class="lvl-text">' + (up ? '<span class="lvl-up">Level up!</span>' : "") + "<b>" + ui.jp(L.title.ja, { tokens: false, ro: true }) + " · " + esc(L.title.en) + "</b>" + ui.progressBar(L.frac, "Progress to the next level") +
       '<span class="small muted">' + (L.need - L.into) + " XP to level " + (L.n + 1) + "</span></div></div>"
     );
   }

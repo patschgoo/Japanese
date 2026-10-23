@@ -29,13 +29,14 @@
   // Level n starts at 100(n−1) + 25(n−1)(n−2) XP: each level takes 50 XP more than the one before.
   const levelStart = (n) => 100 * (n - 1) + 25 * (n - 1) * (n - 2);
   const TITLES = [
-    [1, "{見習|みなら}い", "Trainee"],
-    [3, "{乗客|じょうきゃく}", "Passenger"],
-    [6, "{旅人|たびびと}", "Traveller"],
-    [10, "{車掌|しゃしょう}", "Conductor"],
-    [15, "{運転士|うんてんし}", "Driver"],
-    [20, "{駅長|えきちょう}", "Station master"],
-    [30, "{名人|めいじん}", "Master"],
+    // [from level, title, English, the parts of the title]
+    [1, "{見習|みなら}い", "Trainee", [["{見|み}る", "watch"], ["{習|なら}う", "learn"]]],
+    [3, "{乗客|じょうきゃく}", "Passenger", [["{乗|じょう}", "ride"], ["{客|きゃく}", "guest, customer"]]],
+    [6, "{旅人|たびびと}", "Traveller", [["{旅|たび}", "journey"], ["{人|ひと}", "person (ひと becomes びと here)"]]],
+    [10, "{車掌|しゃしょう}", "Conductor", [["{車|しゃ}", "vehicle, car"], ["{掌|しょう}", "be in charge of"]]],
+    [15, "{運転士|うんてんし}", "Driver", [["{運転|うんてん}", "driving"], ["{士|し}", "someone with a skill"]]],
+    [20, "{駅長|えきちょう}", "Station master", [["{駅|えき}", "station"], ["{長|ちょう}", "head, chief"]]],
+    [30, "{名人|めいじん}", "Master", [["{名|めい}", "name, fame"], ["{人|じん}", "person"]]],
   ];
 
   function titleFor(n) {
