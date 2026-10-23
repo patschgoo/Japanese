@@ -36,6 +36,13 @@
     { id: "sprint", icon: "🧩", t: "Sentence Sprint", ja: "{文|ぶん}づくり", d: "Build five sentences from their pieces, against the clock.", best: (v) => v + " s" },
   ];
 
+  // Other ways to practise, linked from Play.
+  const WAYS = [
+    { href: "roleplays", icon: "🎭", t: "Role-play", ja: "ロールプレイ", d: "Take a part in a conversation: your partner speaks, you answer." },
+    { href: "listen", icon: "🎧", t: "Listen on the go", ja: "{聞|き}き{流|なが}し", d: "Hands-free audio of your words and sentences, with pauses to answer." },
+    { href: "kana-write", icon: "🖌️", t: "Write kana", ja: "{書|か}く", d: "Trace and write hiragana and katakana with your finger." },
+  ];
+
   function missionsCard() {
     const list = NI.game.missions();
     const bonusDone = !!NI.store.today().mb;
@@ -72,6 +79,9 @@
             '<span class="g-text"><b>' + esc(g.t) + '</b><span class="g-ja">' + ui.jp(g.ja, { tokens: false }) + "</span><span>" + esc(g.d) + "</span>" +
             (best[g.id] != null ? '<span class="g-best">Best: ' + esc(g.best(best[g.id])) + "</span>" : "") + "</span></a>"
         ).join("") +
+        "</div></section>" +
+        '<section class="u-sec"><h2>More ways to practise</h2><div class="game-grid">' +
+        WAYS.map((w) => '<a class="game-card" href="#' + w.href + '"><span class="g-icon" aria-hidden="true">' + w.icon + "</span>" + '<span class="g-text"><b>' + esc(w.t) + '</b><span class="g-ja">' + ui.jp(w.ja, { tokens: false }) + "</span><span>" + esc(w.d) + "</span></span></a>").join("") +
         "</div></section>" +
         '<section class="u-sec"><h2>Mistakes notebook <span class="sub">' + ui.jp("{間違|まちが}いノート", { tokens: false }) + "</span></h2>" +
         "<p>" + (nm ? "You have " + U.plural(nm, "item") + " to practise. Get each one right twice and it leaves the notebook." : "Nothing here yet. Anything you get wrong in lessons, reviews and games is collected here to practise later.") + "</p>" +
@@ -160,7 +170,7 @@
     box.querySelector(".game-area").innerHTML =
       '<div class="game-intro"><span class="g-icon big" aria-hidden="true">' + g.icon + "</span><h2>" + esc(g.t) + "</h2>" + rulesHtml +
       (best != null ? '<p class="g-best">Your best: ' + esc(g.best(best)) + "</p>" : "") +
-      (options || "") +
+      (options ? '<div class="g-setup">' + options + "</div>" : "") +
       '<div class="row center"><button class="btn primary big" type="button" data-start>Start</button></div></div>';
     box.querySelector("[data-quit]").addEventListener("click", () => NI.app.go("play"));
     const start = box.querySelector("[data-start]");
@@ -210,6 +220,7 @@
       '<label class="radio"><input type="radio" name="ta-mode" value="jp"><span><b>Japanese → English</b></span></label>' +
       '<label class="radio"><input type="radio" name="ta-mode" value="en"><span><b>English → Japanese</b></span></label>' +
       (listenOk ? '<label class="radio"><input type="radio" name="ta-mode" value="ear"><span><b>Listening</b><small>Hear the word, pick its meaning</small></span></label>' : "") +
+      '<label class="radio"><input type="radio" name="ta-mode" value="pic"><span><b>Pictures</b><small>See a picture, pick the Japanese word</small></span></label>' +
       "</fieldset>";
     intro(box, g, "<p>Answer as many as you can in 60 seconds. A wrong answer costs a moment while the right one is shown.</p>", opts + relaxedBox("No clock: " + TA_RELAXED + " questions at your own pace."), (el) => {
       const mode = (el.querySelector('input[name="ta-mode"]:checked') || {}).value || "mix";
@@ -217,7 +228,11 @@
     });
 
     function play(mode, relaxed) {
-      const pool = wordPool(12).filter((w) => w.en && w.pos !== "int");
+      const words = wordPool(12).filter((w) => w.en && w.pos !== "int");
+      // Picture mode needs words with a picture; fall back to every one taught so far.
+      const pics = words.filter((w) => w.em);
+      const step = NI.nextStep();
+      const pool = mode !== "pic" ? words : pics.length >= 8 ? pics : NI.course.words.filter((w) => w.em && w.unit <= Math.max(3, step ? step.u.n : 99));
       const area = box.querySelector(".game-area");
       const stats = box.querySelector(".g-stats");
       const barBox = box.querySelector(".sess-bar");
@@ -259,17 +274,19 @@
       function ask() {
         if (over) return;
         const w = order[k++ % order.length];
-        const m = mode === "mix" ? (rng() < 0.5 ? "jp" : "en") : mode;
+        const m = mode === "mix" ? U.pick(w.em ? ["jp", "en", "pic"] : ["jp", "en"], rng) : mode;
         const opts = U.shuffle([w].concat(NI.exercises.wordDistractors(w, 3, rng)), rng);
         const prompt =
           m === "ear"
             ? '<div class="prompt-audio"><button class="big-play" type="button" data-say="' + esc(ui.wordAudio(w)) + '" aria-label="Play again">' + ui.ICON.speaker + "</button></div>"
-            : m === "jp"
-              ? '<div class="prompt-word hand">' + ui.em(w) + ui.jp(w.head, { tokens: false }) + "</div>"
+            : m === "pic"
+              ? '<div class="prompt-pic" role="img" aria-label="' + esc(w.en) + '">' + w.em + "</div>"
+              : m === "jp"
+              ? '<div class="prompt-word hand"' + ui.fit(w.head) + ">" + ui.em(w) + ui.jp(w.head, { tokens: false }) + "</div>"
               : '<p class="prompt-en">' + ui.em(w) + esc(w.en) + "</p>";
         area.innerHTML =
           '<div class="ex ta-card">' + prompt +
-          '<div class="opts">' + opts.map((o, i) => '<button class="opt" type="button" data-i="' + i + '"><span class="key" aria-hidden="true">' + (i + 1) + '</span><span class="opt-body">' + (m === "en" ? ui.jp(o.head, { tokens: false }) : esc(o.en)) + "</span></button>").join("") + "</div></div>";
+          '<div class="opts">' + opts.map((o, i) => '<button class="opt" type="button" data-i="' + i + '"><span class="key" aria-hidden="true">' + (i + 1) + '</span><span class="opt-body">' + (m === "en" || m === "pic" ? ui.jp(o.head, { tokens: false }) : esc(o.en)) + "</span></button>").join("") + "</div></div>";
         if (m === "ear") NI.speech.speak(ui.wordAudio(w));
         const btns = Array.from(area.querySelectorAll(".opt"));
         const ci = opts.indexOf(w);

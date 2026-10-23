@@ -91,6 +91,43 @@
     return n + " " + (n === 1 ? one : many || one + "s");
   }
 
+  // Longest common subsequence table of two short strings.
+  function lcs(a, b) {
+    const m = a.length;
+    const n = b.length;
+    const t = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) t[i][j] = a[i] === b[j] ? t[i + 1][j + 1] + 1 : Math.max(t[i + 1][j], t[i][j + 1]);
+    return t;
+  }
+
+  /* How close b is to a, from 0 to 1: shared characters in order, against the
+     longer of the two (so missing and extra sounds both count). */
+  function similarity(a, b) {
+    const x = Array.from(a);
+    const y = Array.from(b);
+    if (!x.length && !y.length) return 1;
+    return lcs(x, y)[0][0] / Math.max(x.length, y.length);
+  }
+
+  // The characters of a, each marked found (in order) in b or not.
+  function align(a, b) {
+    const x = Array.from(a);
+    const y = Array.from(b);
+    const t = lcs(x, y);
+    const out = [];
+    let i = 0;
+    let j = 0;
+    while (i < x.length) {
+      if (j < y.length && x[i] === y[j]) {
+        out.push({ ch: x[i], ok: true });
+        i++;
+        j++;
+      } else if (j < y.length && t[i][j + 1] >= t[i + 1][j]) j++;
+      else out.push({ ch: x[i++], ok: false });
+    }
+    return out;
+  }
+
   NI.util = {
     HOUR,
     DAY,
@@ -105,5 +142,7 @@
     dayKey,
     formatInterval,
     plural,
+    similarity,
+    align,
   };
 })(typeof window !== "undefined" ? window : globalThis);

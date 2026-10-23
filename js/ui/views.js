@@ -201,6 +201,7 @@
       '<div class="dlg-head"><h3>' + esc(d.title) + "</h3>" + (d.setting ? '<p class="setting">' + esc(d.setting) + "</p>" : "") +
       '<div class="row wrap">' + playerButtons() +
       '<button class="btn small ghost" type="button" data-dlg-en aria-pressed="' + (o.hideEn ? "false" : "true") + '">' + (o.hideEn ? "Show English" : "Hide English") + "</button>" +
+      (o.roleplay && NI.roleplay && NI.roleplay.roles(u).length ? '<a class="btn small ghost" href="#roleplay-' + u.n + '"><span aria-hidden="true">🎭</span><span>Role-play</span></a>' : "") +
       "</div></div>" +
       '<ol class="dlg-lines">' + lines + "</ol></div>"
     );

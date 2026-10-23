@@ -62,8 +62,17 @@
     chime: () => [659, 523, 587, 392, 392, 587, 659, 523].forEach((f, i) => tone(f, i * 0.2, 0.45, "sine", 0.05)),
   };
 
+  // A short buzz on phones that support it (Android); off with sound effects.
+  const BUZZ = { right: 12, wrong: [30, 50, 30], combo: [12, 40, 12, 40, 12], level: [20, 60, 40], badge: [15, 40, 15] };
   function play(name) {
     if (SOUNDS[name]) SOUNDS[name]();
+    if (BUZZ[name] && NI.store.settings.sound && NI.store.settings.buzz !== false && root.navigator && navigator.vibrate) {
+      try {
+        navigator.vibrate(BUZZ[name]);
+      } catch (e) {
+        /* not allowed */
+      }
+    }
   }
 
   const calm = () => root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -153,6 +162,7 @@
     for (const b of r.badges || []) banner('<span class="rw-icon" aria-hidden="true">' + b.icon + "</span><span><b>Badge: " + ui.esc(b.t) + "</b> " + ui.esc(b.d) + "</span>", "rw-badge");
     if (r.bonus) banner('<span class="rw-icon" aria-hidden="true">🎯</span><span><b>Daily missions complete!</b> +' + r.bonus + " XP</span>", "rw-bonus");
     if (r.goal) banner('<span class="rw-icon" aria-hidden="true">🎉</span><span><b>Daily goal reached!</b> Come back tomorrow to keep your streak.</span>', "rw-goal");
+    if (r.rest) banner('<span class="rw-icon" aria-hidden="true">🎫</span><span><b>Rest day earned!</b> ' + NI.store.streak() + " days in a row. If you miss a day, it keeps your streak going.</span>", "rw-bonus");
   }
 
   /* Gives XP and works out everything that follows from it: level-ups, newly
@@ -167,7 +177,7 @@
     const bonus = NI.game.missionBonus();
     const after = NI.game.level(NI.store.state.xp);
     const badges = NI.game.check().concat(o.badges || []);
-    const res = { xp: xp + bonus, bonus, badges, level: after.n > before ? after : null, goal: !goalBefore && NI.game.goal().done };
+    const res = { xp: xp + bonus, bonus, badges, level: after.n > before ? after : null, goal: !goalBefore && NI.game.goal().done, rest: NI.store.earnRestDay() };
     if (!o.quiet) reward(res, { inline: o.inline });
     return res;
   }

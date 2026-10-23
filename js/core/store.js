@@ -17,6 +17,7 @@
     theme: "system", // system | light | dark
     sound: true, // sound effects for right/wrong answers and rewards
     relaxed: false, // no clocks or lives in games, softer sound for mistakes
+    buzz: true, // vibrate on answers where the phone supports it
     dailyGoal: 60, // XP per day
     goal: "", // travel | media | work | exam | people | curious
     focus: "balanced", // balanced | listening | speaking | reading | exam
@@ -30,6 +31,7 @@
       v: 1, settings: Object.assign({}, DEFAULT_SETTINGS), onboarded: false, planned: false,
       parts: {}, srs: {}, days: {}, kana: {}, intro: {}, created: Date.now(),
       xp: 0, badges: {}, exams: {}, games: {}, mistakes: {}, stories: {},
+      rest: { n: 0, days: {}, earned: {} },
     };
   }
 
@@ -66,6 +68,7 @@
     if (!saved || typeof saved !== "object") return s;
     s.settings = Object.assign({}, DEFAULT_SETTINGS, saved.settings || {});
     for (const k of ["parts", "srs", "days", "kana", "intro", "badges", "exams", "games", "mistakes", "stories"]) if (saved[k] && typeof saved[k] === "object") s[k] = saved[k];
+    if (saved.rest && typeof saved.rest === "object") s.rest = Object.assign({ n: 0, days: {}, earned: {} }, saved.rest);
     s.xp = Number(saved.xp) || 0;
     s.onboarded = !!saved.onboarded;
     s.planned = !!saved.planned;
@@ -272,15 +275,48 @@
       return first;
     },
     // Consecutive days with any activity, counting today or yesterday as the end.
+    // Practised that day, or covered by a rest day.
+    active(key) {
+      return !!(state.days[key] || state.rest.days[key]);
+    },
     streak() {
       let n = 0;
       const t = new Date();
-      if (!state.days[NI.util.dayKey(t)]) t.setDate(t.getDate() - 1);
-      while (state.days[NI.util.dayKey(t)]) {
+      if (!this.active(NI.util.dayKey(t))) t.setDate(t.getDate() - 1);
+      while (this.active(NI.util.dayKey(t))) {
         n++;
         t.setDate(t.getDate() - 1);
       }
       return n;
+    },
+    /* Rest days keep a streak alive over a missed day or two: when the learner
+       comes back, missed days since the streak use up rest days, if there are
+       enough to cover them all. Returns how many were used. */
+    useRestDays() {
+      const r = state.rest;
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      const missed = [];
+      while (missed.length <= r.n && !this.active(NI.util.dayKey(d))) {
+        missed.push(NI.util.dayKey(d));
+        d.setDate(d.getDate() - 1);
+      }
+      if (!missed.length || missed.length > r.n || !this.active(NI.util.dayKey(d))) return 0;
+      for (const k of missed) r.days[k] = true;
+      r.n -= missed.length;
+      this.save();
+      return missed.length;
+    },
+    // Every 7 days in a row earn a rest day (holding at most 2). True when one was earned.
+    earnRestDay() {
+      const r = state.rest;
+      const today = NI.util.dayKey();
+      const s = this.streak();
+      if (!state.days[today] || s === 0 || s % 7 !== 0 || r.earned[today] || r.n >= 2) return false;
+      r.earned[today] = true;
+      r.n++;
+      this.save();
+      return true;
     },
 
     setIntro(key, value) {

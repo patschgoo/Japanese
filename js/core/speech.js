@@ -74,6 +74,63 @@
     stop() {
       if (this.supported) synth.cancel();
     },
+    // English, for hands-free listening (meaning after the Japanese).
+    speakEn(text, opts) {
+      if (!this.supported || !text) return false;
+      const o = opts || {};
+      try {
+        synth.cancel();
+        const u = new root.SpeechSynthesisUtterance(text);
+        u.lang = "en-US";
+        const en = synth.getVoices().find((v) => /^en(-|_|$)/i.test(v.lang));
+        if (en) u.voice = en;
+        u.rate = 1;
+        if (o.onend) {
+          u.onend = o.onend;
+          u.onerror = o.onend;
+        }
+        synth.speak(u);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+    /* Speech recognition (Chrome, Edge, Safari): listens once in Japanese and
+       calls back with the possible transcripts, or with an error code.
+       Browsers may send the audio to their speech service to transcribe it. */
+    get canRecognize() {
+      return !!(root.SpeechRecognition || root.webkitSpeechRecognition);
+    },
+    recognize(cb) {
+      const SR = root.SpeechRecognition || root.webkitSpeechRecognition;
+      if (!SR) return cb({ error: "unsupported" }) || null;
+      let done = false;
+      const finish = (res) => {
+        if (done) return;
+        done = true;
+        cb(res);
+      };
+      try {
+        this.stop();
+        const rec = new SR();
+        rec.lang = "ja-JP";
+        rec.interimResults = false;
+        rec.maxAlternatives = 5;
+        rec.onresult = (e) => {
+          const r = e.results[0];
+          const texts = [];
+          for (let i = 0; i < r.length; i++) texts.push(r[i].transcript);
+          finish({ texts });
+        };
+        rec.onerror = (e) => finish({ error: e.error || "error" });
+        rec.onend = () => finish({ texts: [] });
+        rec.start();
+        return { stop: () => rec.stop() };
+      } catch (e) {
+        finish({ error: "error" });
+        return null;
+      }
+    },
   };
 
   NI.speech = speech;

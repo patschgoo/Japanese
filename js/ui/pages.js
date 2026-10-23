@@ -161,6 +161,44 @@
     );
   }
 
+  /* Omikuji: once the daily goal is reached, a paper fortune like the ones
+     drawn at shrines. Today's draw is kept in the day's log (ok = fortune,
+     om = message, both counted from 1). */
+  function omikujiCard() {
+    if (!NI.game.goal().done) return "";
+    const O = NI.data.omikuji;
+    const day = NI.store.today();
+    if (!day.ok) {
+      return (
+        '<section class="omikuji" aria-labelledby="omi-h"><span class="omi-box" aria-hidden="true">🎋</span><div>' +
+        '<h2 id="omi-h">' + ui.jp("おみくじ", { tokens: false }) + ' <span class="sub">Today’s fortune</span></h2>' +
+        "<p>Goal reached! At shrines people draw a paper fortune, an omikuji. Draw yours for today.</p>" +
+        '<button class="btn primary small" type="button" data-omikuji>Draw a fortune</button></div></section>'
+      );
+    }
+    const [lv, lvEn] = O.levels[day.ok - 1] || O.levels[3];
+    const [msg, msgEn] = O.messages[(day.om || 1) - 1] || O.messages[0];
+    return (
+      '<section class="omikuji drawn" aria-labelledby="omi-h"><div class="omi-paper">' +
+      '<p class="omi-kicker" id="omi-h">' + ui.jp("おみくじ", { tokens: false }) + "</p>" +
+      '<p class="omi-level">' + ui.jp(lv, { tokens: false }) + ui.say(NI.furi.reading(lv)) + '<span class="omi-en">' + esc(lvEn) + "</span></p>" +
+      '<p class="omi-msg">' + ui.jp(msg) + ui.say(ui.sentenceAudio(msg)) + '</p><p class="omi-msg-en">' + esc(msgEn) + "</p>" +
+      '<p class="small muted">A new fortune tomorrow, once you reach your goal.</p></div></section>'
+    );
+  }
+
+  function drawOmikuji() {
+    const O = NI.data.omikuji;
+    let roll = Math.random() * 100;
+    let i = 0;
+    while (i < O.levels.length - 1 && roll >= O.levels[i][2]) roll -= O.levels[i++][2];
+    NI.store.log("ok", i + 1);
+    NI.store.log("om", 1 + Math.floor(Math.random() * O.messages.length));
+    NI.fx.gain(O.levels[i][3], { badges: i === 0 ? NI.game.event("daikichi") : [] });
+    NI.fx.play(i === 0 ? "level" : "chime");
+    if (i === 0) NI.fx.confetti();
+  }
+
   // Once a goal is set, the home page keeps its tip and shortcuts in view.
   function routeCard() {
     const g = PLAN.GOALS.find((x) => x.id === NI.store.settings.goal);
@@ -199,12 +237,14 @@
         '<dl class="stats">' +
         '<div><dt>Due now</dt><dd>' + c.due + "</dd></div>" +
         '<div><dt>Words learned</dt><dd>' + c.words + "</dd></div>" +
-        '<div><dt>Day streak</dt><dd>' + c.streak + (c.streak ? ' <span aria-hidden="true">🔥</span>' : "") + "</dd></div>" +
+        '<div><dt>Day streak</dt><dd>' + c.streak + (c.streak ? ' <span aria-hidden="true">🔥</span>' : "") +
+        (NI.store.state.rest.n ? ' <span class="rest-n" title="Rest days: if you miss a day, one keeps your streak going. You earn one for every 7 days in a row.">🎫' + NI.store.state.rest.n + "</span>" : "") + "</dd></div>" +
         "</dl>" +
         '<div class="today-week">' + NI.weekDots() + "</div>" +
         tierSummary() + "</section>";
 
       if (!NI.store.state.planned) html += planCard();
+      html += omikujiCard();
       html += '<div class="home-row">' + NI.missionsCard() + wotdCard() + "</div>" + routeCard();
 
       html += '<section class="routemap" aria-label="Course route map">';
@@ -256,6 +296,16 @@
     },
     mount(el) {
       mountPlan(el);
+      const omi = el.querySelector("[data-omikuji]");
+      if (omi)
+        omi.addEventListener("click", () => {
+          omi.disabled = true;
+          el.querySelector(".omikuji").classList.add("shake");
+          setTimeout(() => {
+            drawOmikuji();
+            NI.app.render();
+          }, 700);
+        });
     },
   };
 
@@ -388,7 +438,7 @@
           "</section>";
       }
       html += '<section class="u-sec" aria-labelledby="s-h"><h2 id="s-h">Example sentences</h2><p class="small muted">Tap any word for its meaning.</p>' + NI.views.sentenceList(u.sentences) + "</section>";
-      if (u.dialogue) html += '<section class="u-sec" aria-labelledby="d-h"><h2 id="d-h">Conversation</h2>' + NI.views.dialogue(u) + "</section>";
+      if (u.dialogue) html += '<section class="u-sec" aria-labelledby="d-h"><h2 id="d-h">Conversation</h2>' + NI.views.dialogue(u, { roleplay: true }) + "</section>";
       if (u.builder) html += builderHtml();
       if (u.culture) html += '<aside class="culture"><h2>' + ui.jp("{豆知識|まめちしき}", { tokens: false }) + " · " + esc(u.culture.t) + "</h2>" + ui.rich(u.culture.body) + "</aside>";
       const nu = NI.course.unit(u.n + 1);
@@ -613,6 +663,7 @@
         '<section class="u-sec opt-sec"><h2>Audio</h2>' +
         toggle("autoplay", "Play audio automatically", "Words and sentences are spoken as they appear.") +
         toggle("sound", "Sound effects", "A chime for right answers, combos and rewards.") +
+        (navigator.vibrate ? toggle("buzz", "Vibration", "A short buzz for right and wrong answers (with sound effects on).") : "") +
         '<label for="rate">Speed <output id="rate-out">' + Number(s.rate).toFixed(2) + "×</output></label>" +
         '<input id="rate" type="range" min="0.5" max="1.2" step="0.05" value="' + esc(s.rate) + '">' +
         voices +

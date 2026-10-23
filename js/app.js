@@ -41,7 +41,9 @@
     if (tab) tab.innerHTML = NAV.filter((n) => !n.wide).map((n) => item(n, "tab-link")).join("");
   }
 
+  let shows = 0; // pages shown so far
   function show(r) {
+    shows++;
     if (current && current.page && current.page.unmount) {
       try {
         current.page.unmount();
@@ -77,13 +79,14 @@
       render();
       return;
     }
+    const before = shows;
     root.location.hash = h;
-    // Some embedded viewers don't fire hashchange; render directly if so.
+    // Some embedded viewers don't fire hashchange; render directly if so,
+    // unless a page has been shown since (this one, or one opened after it).
     setTimeout(() => {
-      if (!current || current.name + (current.args.length ? "-" + current.args.join("-") : "") !== route) {
-        const r = parse(h);
-        if (r) show(r);
-      }
+      if (shows !== before) return;
+      const r = parse(h);
+      if (r) show(r);
     }, 60);
   }
 
@@ -203,7 +206,10 @@
       if (doc.visibilityState === "hidden") NI.store.flush();
       else renderNav();
     });
+    // Back after a missed day or two: rest days keep the streak going.
+    const rested = NI.store.useRestDays();
     render();
+    if (rested) NI.fx.banner('<span class="rw-icon" aria-hidden="true">🎫</span><span><b>Welcome back!</b> ' + (rested === 1 ? "A rest day" : rested + " rest days") + " kept your " + NI.store.streak() + "-day streak going.</span>", "rw-bonus");
     registerWorker();
   }
 

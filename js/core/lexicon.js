@@ -286,6 +286,19 @@
       return out;
     },
 
+    /* What a speech recogniser heard, as hiragana: known words give their
+       reading (私 → わたし), digits their number reading, kana stays. */
+    kanaOf(text) {
+      let out = "";
+      for (const t of this.readPlain(String(text).normalize ? String(text).normalize("NFKC") : String(text))) {
+        if (t.punct) continue;
+        if (t.number) out += NI.num.toKana(Number(t.text.replace(/[,，]/g, "")));
+        else if (t.entry && NI.kana.hasKanji(t.text)) out += t.entry.r;
+        else out += t.text;
+      }
+      return NI.kana.fold(out);
+    },
+
     // All tokens of a markup string, flattened across tiles.
     tokens(markup) {
       const tiles = NI.furi.parse(markup);

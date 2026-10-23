@@ -14,8 +14,10 @@
 
   // "If you …": preferences and worries, and the parts of the site that suit them.
   const IF_YOU = [
-    ["like to listen", "Play conversations and stories with <b>Play all</b>, then <b>Shadow</b> them. Time Attack has a listening mode, and the 🔍 breakdown plays any sentence slowly.", [["#stories", "Stories"], ["#game-timeattack", "Time Attack"]]],
-    ["like to talk", "Lessons include <b>Say it</b> cards: say the sentence aloud before checking. In the 🔍 breakdown you can record yourself and compare with the model. Say every sentence you build in the Sentence Maker out loud.", [["#maker", "Sentence Maker"]]],
+    ["like to listen", "Play conversations and stories with <b>Play all</b>, then <b>Shadow</b> them. <b>Listen on the go</b> plays your words and sentences hands-free, with pauses to answer. Time Attack has a listening mode, and the 🔍 breakdown plays any sentence slowly.", [["#listen", "Listen on the go"], ["#stories", "Stories"]]],
+    ["like to talk", "Take a part in a <b>role-play</b> and answer Ken, Yuki and the others. Lessons include <b>Say it</b> cards, and where your browser can recognise speech, a microphone check shows which sounds it heard. In the 🔍 breakdown you can also record yourself and compare.", [["#roleplays", "Role-play"], ["#maker", "Sentence Maker"]]],
+    ["like to do things with your hands", "Write kana with your finger or a mouse in the Kana trainer, build sentences from tiles, and match cards in Memory Match.", [["#kana-write", "Write kana"], ["#game-memory", "Memory Match"]]],
+    ["are often on the move", "Use <b>Listen on the go</b> on a walk or a commute, and keep a few reviews for the bus. Everything works offline once the site has loaded.", [["#listen", "Listen on the go"], ["#review", "Reviews"]]],
     ["like to read", "Read the graded <b>Stories</b>, or paste any Japanese into the <b>Reader</b> to see how much of it you know. Turn on word meanings when a text is a stretch.", [["#stories", "Stories"], ["#reader", "Reader"]]],
     ["like rules and systems", "The <b>Grammar</b> list collects every pattern. Tap 🔍 on any sentence for a word-by-word breakdown with each particle’s job and each verb form named.", [["#grammar", "Grammar list"]]],
     ["like games and goals", "Daily missions, XP and levels, a stamp for every station, line exams for gold, and four games with personal bests.", [["#play", "Play"], ["#stamps", "Stamp book"]]],
@@ -117,6 +119,11 @@
           "<b>Say it</b> cards in lessons ask you to say a sentence aloud before you check it, and the 🔍 breakdown lets you record yourself and compare with the model voice."
         ) +
         principle(
+          "Write new characters by hand",
+          "<p>Adults learning an unfamiliar script recognised the characters better later when they had practised writing them by hand than when they had typed them (Longcamp et al., 2008). Writing builds a memory of how each character is formed, not just how it looks.</p>",
+          "the Kana trainer has a <b>Write</b> tab: trace each kana over a guide, then write it from memory and compare with the model."
+        ) +
+        principle(
           "Pictures can help, a little",
           "<p>Concrete words that call up a mental image are easier to learn, and a picture next to a word can help it stick (Sadoski, 2005). The evidence is mixed for abstract words and for long-term memory, so pictures are a bonus, not a method.</p>",
           "concrete words show an emoji next to them; the sentence and the sound do the real work."
@@ -161,18 +168,33 @@
           "conversations and stories have a <b>Shadow</b> button that plays each line, then gives you time to say it."
         ) +
         principle(
+          "Read while you listen",
+          "<p>Reading a text while hearing it read aloud improved learners’ reading speed and comprehension more than reading silently, and the gains lasted (Chang &amp; Millett, 2015).</p>",
+          "stories and conversations highlight each line as it’s read, and every sentence has audio at normal or slow speed."
+        ) +
+        principle(
+          "Feedback on your pronunciation",
+          "<p>Across 15 studies, practice with automatic speech recognition improved learners’ pronunciation (g = 0.69), most of all when it showed them clearly what was wrong (Ngo, Chen &amp; Lai, 2024).</p>",
+          "where your browser can recognise speech, a microphone check shows what it heard and marks the sounds it missed."
+        ) +
+        principle(
           "Use it, too",
           "<p>Listening and reading build understanding, but trying to say something yourself shows you what you can't say yet, and pushes you to notice how Japanese does it (Swain, 1985).</p>",
-          "you type answers from memory, build sentences from tiles, and make your own in the Sentence Maker, with every grammar point you've reached."
+          "you type answers from memory, build sentences from tiles, make your own in the Sentence Maker, and take a part in role-plays of the course conversations."
         ) +
         "</div>" +
 
         "<h3>Keeping going</h3>" +
         '<div class="principles">' +
         principle(
+          "A phone is a good place to learn",
+          "<p>A meta-analysis of 44 studies found that learning a language with mobile devices beat comparable teaching without them (d = 0.55) (Sung, Chang &amp; Yang, 2015). Short sessions fit into the gaps of a day.</p>",
+          "everything works on a phone and offline: a lesson part takes a few minutes, a game one or two, and Listen on the go needs no hands at all."
+        ) +
+        principle(
           "Habits take about two months",
           "<p>When people built a new daily habit, it took a median of 66 days to become automatic, from 18 to over 250 depending on the person and the habit, and missing a single day made no real difference (Lally et al., 2010). Making an if-then plan (“after breakfast, I’ll do my reviews”) makes people clearly more likely to follow through: a medium-to-large effect (d = 0.65) across 94 studies (Gollwitzer &amp; Sheeran, 2006).</p>",
-          "a daily goal, a streak and this week's dots. Pick a fixed moment for Japanese, and if you miss a day, just carry on."
+          "a daily goal, a streak and this week's dots. Every 7 days in a row earn a <b>rest day</b> 🎫, which keeps your streak alive if you miss a day. Pick a fixed moment for Japanese, and if you miss a day, just carry on."
         ) +
         principle(
           "Games help when the game is the learning",
@@ -200,6 +222,9 @@
         "<li><b>Hints</b> in every lesson (press H): fewer options, or the first letters of the answer, for half the XP.</li>" +
         '<li><b><a href="#mistakes">Mistakes notebook</a>:</b> everything you get wrong, until you get it right twice.</li>' +
         '<li><b><a href="#phrases">Phrasebook</a>:</b> ready-made phrases for shops, restaurants, stations and emergencies.</li>' +
+        '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +
+        '<li><b><a href="#listen">Listen on the go</a>:</b> hands-free audio with pauses to recall, Japanese first or English first.</li>' +
+        '<li><b><a href="#kana-write">Write kana</a>:</b> trace and write hiragana and katakana with your finger.</li>' +
         "</ul></section>" +
 
         '<section><h2>Sounds to watch when reading kana</h2><p>You can read hiragana, but a few spellings don\'t sound the way they look:</p><ul class="sounds">' +
@@ -263,18 +288,21 @@
         "<li>Erman, B., &amp; Warren, B. (2000). The idiom principle and the open choice principle. <i>Text</i>, 20(1), 29–62.</li>" +
         "<li>Forrin, N. D., &amp; MacLeod, C. M. (2018). This time it’s personal: The memory benefit of hearing oneself. <i>Memory</i>, 26(4), 574–579.</li>" +
         "<li>Gollwitzer, P. M., &amp; Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. <i>Advances in Experimental Social Psychology</i>, 38, 69–119.</li>" +
+        "<li>Chang, A. C.-S., &amp; Millett, S. (2015). Improving reading rates and comprehension through audio-assisted extensive reading for beginner learners. <i>System</i>, 52, 91–102.</li>" +
         "<li>Hamada, Y. (2016). Shadowing: Who benefits and how? Uncovering a booming EFL teaching technique for listening comprehension. <i>Language Teaching Research</i>, 20(1), 35–52. See also Hamada (2019), " + ext("https://journals.sagepub.com/doi/10.1177/0033688218771380", "Shadowing: What is it? How to use it. Where will it go?") + " <i>RELC Journal</i>.</li>" +
         "<li>Hu, M., &amp; Nation, I. S. P. (2000). Unknown vocabulary density and reading comprehension. <i>Reading in a Foreign Language</i>, 13(1), 403–430.</li>" +
         "<li>Jeon, E.-Y., &amp; Day, R. R. (2016). The effectiveness of ER on reading proficiency: A meta-analysis. <i>Reading in a Foreign Language</i>, 28(2), 246–265. " + ext("https://scholarspace.manoa.hawaii.edu/items/b52a5591-ec04-4026-816f-434361a4e899", "open access") + "</li>" +
         "<li>Komori, K., Mikuni, J., &amp; Kondo, A. (2004). 文章理解を促進する語彙知識の量的側面: 既知語率の閾値探索の試み [Quantitative aspects of vocabulary knowledge that support text comprehension: Looking for a threshold of known-word coverage]. <i>日本語教育</i>, 120.</li>" +
         "<li>Kornell, N., &amp; Bjork, R. A. (2008). Learning concepts and categories: Is spacing the “enemy of induction”? <i>Psychological Science</i>, 19(6), 585–592.</li>" +
         "<li>Krashen, S. (1982). <i>Principles and Practice in Second Language Acquisition</i>. Pergamon.</li>" +
+        "<li>Longcamp, M., Boucard, C., Gilhodes, J.-C., Anton, J.-L., Roth, M., Nazarian, B., &amp; Velay, J.-L. (2008). Learning through hand- or typewriting influences visual recognition of new graphic shapes: Behavioral and functional imaging evidence. <i>Journal of Cognitive Neuroscience</i>, 20(5), 802–815.</li>" +
         "<li>Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W., &amp; Wardle, J. (2010). How are habits formed: Modelling habit formation in the real world. <i>European Journal of Social Psychology</i>, 40(6), 998–1009. " + ext("https://doi.org/10.1002/ejsp.674", "doi") + "</li>" +
         "<li>Laufer, B. (1989). What percentage of text-lexis is essential for comprehension? In C. Laurén &amp; M. Nordman (Eds.), <i>Special Language: From Humans Thinking to Thinking Machines</i>. Multilingual Matters.</li>" +
         "<li>Lee, S.-K., &amp; Huang, H.-T. (2008). Visual input enhancement and grammar learning: A meta-analytic review. <i>Studies in Second Language Acquisition</i>, 30(3), 307–331.</li>" +
         "<li>Lewis, M. (1993). <i>The Lexical Approach</i>. Language Teaching Publications.</li>" +
         "<li>MacLeod, C. M., Gopie, N., Hourihan, K. L., Neary, K. R., &amp; Ozubko, J. D. (2010). The production effect: Delineation of a phenomenon. <i>Journal of Experimental Psychology: Learning, Memory, and Cognition</i>, 36(3), 671–685.</li>" +
         "<li>Matsunaga, S. (2003). Effects of mnemonics on immediate and delayed recalls of hiragana by learners of Japanese as a foreign language. <i>世界の日本語教育</i>, 13, 19–40. " + ext("https://jpf.repo.nii.ac.jp/records/337", "open access") + "</li>" +
+        "<li>Ngo, T. T.-N., Chen, H. H.-J., &amp; Lai, K. K.-W. (2024). The effectiveness of automatic speech recognition in ESL/EFL pronunciation: A meta-analysis. <i>ReCALL</i>. " + ext("https://www.cambridge.org/core/journals/recall/article/effectiveness-of-automatic-speech-recognition-in-eslefl-pronunciation-a-metaanalysis/A915444CF252B61D14961D2FE733822D", "open access") + "</li>" +
         "<li>Nation, I. S. P. (2013). <i>Learning Vocabulary in Another Language</i> (2nd ed.). Cambridge University Press.</li>" +
         "<li>National Institute for Japanese Language and Linguistics (NINJAL). <i>Balanced Corpus of Contemporary Written Japanese</i> (BCCWJ) word frequency list.</li>" +
         "<li>Pashler, H., McDaniel, M., Rohrer, D., &amp; Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest</i>, 9(3), 105–119. " + ext("https://digitalcommons.usf.edu/psy_facpub/1765/", "open access") + "</li>" +
@@ -285,6 +313,7 @@
         "<li>Sailer, M., &amp; Homner, L. (2020). The gamification of learning: A meta-analysis. <i>Educational Psychology Review</i>, 32, 77–112. " + ext("https://link.springer.com/article/10.1007/s10648-019-09498-w", "open access") + "</li>" +
         "<li>Schmidt, R. (1990). The role of consciousness in second language learning. <i>Applied Linguistics</i>, 11(2), 129–158.</li>" +
         "<li>Swain, M. (1985). Communicative competence: Some roles of comprehensible input and comprehensible output in its development. In S. Gass &amp; C. Madden (Eds.), <i>Input in Second Language Acquisition</i> (pp. 235–253). Newbury House.</li>" +
+        "<li>Sung, Y.-T., Chang, K.-E., &amp; Yang, J.-M. (2015). How effective are mobile devices for language learning? A meta-analysis. <i>Educational Research Review</i>, 16, 68–84.</li>" +
         "<li>Teimouri, Y., Goetze, J., &amp; Plonsky, L. (2019). Second language anxiety and achievement: A meta-analysis. <i>Studies in Second Language Acquisition</i>, 41(2), 363–387. " + ext("https://doi.org/10.1017/S0272263118000311", "doi") + "</li>" +
         "<li>Foreign Service Institute, U.S. Department of State. Foreign language training: language difficulty categories.</li>" +
         "</ul></section>" +

@@ -18,8 +18,9 @@ shinkansen (新幹線) as you remember them.
 | **30 units** on 6 lines | 646 words, 564 example sentences, 30 dialogues, 152 grammar points, culture notes. Units 1–20 cover roughly JLPT N5, units 21–30 much of N4 |
 | **Lessons** | 14 exercise types: new-word cards, meaning/word choice, listening, typing (romaji turns into kana), matching, particle gaps, sentence building, translation, conjugation drills, numbers and counters, “what do you say?” situations, conversation questions, and “say it aloud” cards |
 | **Reviews** | Spaced repetition with expanding intervals (4 h → 1 d → 3 d → 1 w → 2 w → 1 mo → 3 mo → 6 mo) |
-| **Games** | Time Attack, Kana Rain, Memory Match and Sentence Sprint, built from the words and sentences you've met; a relaxed mode takes out clocks and hearts |
-| **Motivation** | XP and levels, a daily goal and streak, combos, 24 badges, three daily missions, a stamp for every station, a gold exam for every line, a mistakes notebook |
+| **Games** | Time Attack (meanings, listening or pictures), Kana Rain, Memory Match and Sentence Sprint, built from the words and sentences you've met; a relaxed mode takes out clocks and hearts |
+| **More ways to practise** | Role-play any course conversation (pick or say your lines), Listen on the go (hands-free audio with pauses to recall, Japanese or English first), write kana by hand on a tracing pad, and a pronunciation check with the browser's speech recognition that marks the sounds it missed |
+| **Motivation** | XP and levels, a daily goal and streak with rest days that cover a missed day, combos, 29 badges, three daily missions, an omikuji fortune once the goal is reached, a stamp for every station, a gold exam for every line, a mistakes notebook |
 | **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings under every word, colour-coded particles, tap any word for its meaning and form |
 | **Sentence breakdown** | Any sentence, word by word: each particle's job, each verb form, slow audio, and record-and-compare for your own pronunciation |
 | **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
@@ -49,14 +50,18 @@ learner. The main points:
    sentence, dialogue and story uses only words already taught plus the
    current unit's new ones, enforced by `tools/validate.js`. Lots of easy
    reading builds fluency (Jeon & Day 2016).
-5. **Say it, hear it.** Words said aloud are remembered better (production
-   effect, MacLeod et al. 2010); shadowing helps beginners' listening
-   (Hamada 2016). Every word, sentence and dialogue has audio.
+5. **Say it, hear it, write it.** Words said aloud are remembered better
+   (production effect, MacLeod et al. 2010); shadowing helps beginners'
+   listening (Hamada 2016); reading while listening builds reading speed
+   (Chang & Millett 2015); speech-recognition feedback improves pronunciation
+   (Ngo et al. 2024); writing new characters by hand helps recognition
+   (Longcamp et al. 2008). Every word, sentence and dialogue has audio.
 6. **Chunks before rules.** いただきます, よろしくお願いします and 大丈夫です
    are learned whole on day one and taken apart later.
 7. **Habits, not willpower.** A small daily goal, a streak that survives a
    missed day (Lally et al. 2010), and if-then plans (Gollwitzer & Sheeran
-   2006). Points reward practice only, and mistakes are safe: language
+   2006). It all works on a phone, where short sessions fit into the day
+   (mobile learning meta-analysis: Sung et al. 2015). Points reward practice only, and mistakes are safe: language
    anxiety goes with lower achievement (Teimouri et al. 2019).
 8. **No "learning styles".** Matching lessons to a supposed visual or
    auditory style isn't supported by evidence (Pashler et al. 2008), so the
@@ -107,9 +112,12 @@ js/core/              engines with no DOM: kana & romaji input, furigana,
                       the sentence maker
 js/data/              course content (units-h/m/d/k/t/s.js = the six lines),
                       stories, phrasebook, kana tables, grammar-word glosses,
-                      emoji for concrete words, sentence-maker fillers
+                      emoji for concrete words, sentence-maker fillers,
+                      omikuji fortunes
 js/ui/                pages, exercise types, lesson/review sessions, games,
-                      reader and maker, stories, stamps, the sentence breakdown
+                      reader and maker, stories, stamps, the sentence breakdown,
+                      role-play, hands-free listening, kana writing and the
+                      pronunciation check
 js/app.js             router and start-up
 tools/validate.js     content checks and engine tests (`npm test`)
 tools/vocab.js        what a learner knows by a given unit (for writers)

@@ -27,7 +27,7 @@ function loadContext() {
   const order = fs.existsSync(indexPath) ? fs.readFileSync(indexPath, "utf8").match(/js\/data\/[\w.-]+\.js/g) || [] : [];
   const files = order.length ? order : fs.readdirSync(path.join(ROOT, "js/data")).sort().map((f) => "js/data/" + f);
   for (const f of files) run(f);
-  for (const f of ["ui", "views", "exercises"]) run("js/ui/" + f + ".js");
+  for (const f of ["ui", "speakcheck", "views", "exercises"]) run("js/ui/" + f + ".js");
   return ctx.NI;
 }
 
@@ -360,6 +360,10 @@ function main() {
 
   const storyIds = new Set();
   let nStoryLines = 0;
+  // Omikuji fortunes: furigana must match (words beyond the course are fine).
+  const O = NI.data.omikuji;
+  if (O) for (const [jp] of O.levels.concat(O.messages)) checkText(NI, jp, 0, "omikuji " + NI.furi.base(jp), { allowUnknown: true, ignoreOrder: true });
+  if (O && O.levels.reduce((a, l) => a + l[2], 0) !== 100) err("omikuji", "chances don't add up to 100");
   for (const st of C.stories) {
     const T = "story " + st.id;
     if (storyIds.has(st.id)) err(T, "duplicate id");

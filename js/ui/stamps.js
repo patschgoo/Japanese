@@ -14,7 +14,8 @@
     const line = NI.course.lineOf(u.n);
     const done = o.done !== false;
     const name = NI.furi.base(u.ja);
-    const size = Math.min(14, 104 / Math.max(4, name.length));
+    // The name sits on a chord of the inner ring about 70 units wide.
+    const size = Math.min(13, 68 / Math.max(4, name.length));
     const id = "arc" + u.n + (o.fresh ? "f" : "");
     const tilt = (U.hash("stamp" + u.n) % 13) - 6;
     const st = NI.game.stamps().find((s) => s.unit.n === u.n);
@@ -25,7 +26,7 @@
       '<circle cx="60" cy="60" r="55" class="st-ring"/><circle cx="60" cy="60" r="49" class="st-ring2"/>' +
       '<text class="st-arc"><textPath href="#' + id + '" startOffset="50%" text-anchor="middle">' + esc(NI.course.code(u.n)) + " · " + esc(line ? NI.furi.base(line.ja) : "") + "</textPath></text>" +
       (done ? '<text x="60" y="76" class="st-emoji" text-anchor="middle">' + esc(st ? st.em : "🚉") + "</text>" : '<text x="60" y="74" class="st-q" text-anchor="middle">?</text>') +
-      '<text x="60" y="95" class="st-name" text-anchor="middle" style="font-size:' + size.toFixed(1) + 'px">' + esc(name) + "</text>" +
+      '<text x="60" y="93" class="st-name" text-anchor="middle" style="font-size:' + size.toFixed(1) + 'px">' + esc(name) + "</text>" +
       (done && date ? '<text x="60" y="106" class="st-date" text-anchor="middle">' + date.getFullYear() + "." + (date.getMonth() + 1) + "." + date.getDate() + "</text>" : "") +
       "</svg>"
     );
@@ -40,7 +41,7 @@
         .week()
         .map((d) => {
           const dt = new Date(d.key + "T12:00:00");
-          return '<li class="' + (d.on ? "on" : "") + (d.today ? " today" : "") + '" title="' + esc(d.key) + (d.on ? ": practised" : "") + '"><span>' + days[dt.getDay()] + "</span></li>";
+          return '<li class="' + (d.on ? "on" : d.rest ? "rest" : "") + (d.today ? " is-today" : "") + '" title="' + esc(d.key) + (d.on ? ": practised" : d.rest ? ": rest day" : "") + '"><span>' + (d.rest ? "🎫" : days[dt.getDay()]) + "</span></li>";
         })
         .join("") +
       "</ol>"

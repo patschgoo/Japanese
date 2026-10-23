@@ -20,6 +20,10 @@
     missions: 30, // all three daily missions
     exam: 100, // passing a line exam
     made: 2, // a sentence in the Sentence Maker
+    roleLine: 5, // your line in a role-play
+    roleplay: 15, // finishing a role-play
+    listen: 1, // an item heard in hands-free listening
+    written: 2, // a kana written by hand and got right
   };
 
   // Level n starts at 100(n−1) + 25(n−1)(n−2) XP: each level takes 50 XP more than the one before.
@@ -64,11 +68,12 @@
   // Last 7 days, oldest first: which had any activity.
   function week() {
     const days = NI.store.state.days;
-    return dayKeysBack(7).map((k) => ({ key: k, on: !!days[k], today: k === NI.util.dayKey() }));
+    const rest = NI.store.state.rest.days;
+    return dayKeysBack(7).map((k) => ({ key: k, on: !!days[k], rest: !days[k] && !!rest[k], today: k === NI.util.dayKey() }));
   }
 
   function bestStreak() {
-    const keys = Object.keys(NI.store.state.days).sort();
+    const keys = Object.keys(Object.assign({}, NI.store.state.days, NI.store.state.rest.days)).sort();
     let best = 0;
     let run = 0;
     let prev = null;
@@ -130,6 +135,10 @@
       mistakesFixed: NI.store.total("mf"),
       shadowed: NI.store.total("sh"),
       made: NI.store.total("mk"),
+      roleplays: NI.store.total("rp"),
+      asrGood: NI.store.total("ag"),
+      written: NI.store.total("wr"),
+      listened: NI.store.total("ls"),
       level: level(st.xp).n,
     };
   }
@@ -156,6 +165,11 @@
     { id: "fixer", icon: "🩹", t: "Second chances", d: "Clear 20 items from your mistakes notebook.", test: (c) => c.mistakesFixed >= 20 },
     { id: "echo", icon: "🗣️", t: "Echo", d: "Shadow a whole conversation.", test: (c) => c.shadowed >= 1 },
     { id: "maker", icon: "🛠️", t: "Wordsmith", d: "Make 10 sentences in the Sentence Maker.", test: (c) => c.made >= 10 },
+    { id: "actor", icon: "🎭", t: "Actor", d: "Play a role in five conversations.", test: (c) => c.roleplays >= 5 },
+    { id: "voice", icon: "🎙️", t: "Clear voice", d: "Score 90% or more in five pronunciation checks.", test: (c) => c.asrGood >= 5 },
+    { id: "brush", icon: "🖌️", t: "Steady hand", d: "Write 50 kana by hand.", test: (c) => c.written >= 50 },
+    { id: "ears", icon: "🎧", t: "All ears", d: "Listen to 100 words and sentences hands-free.", test: (c) => c.listened >= 100 },
+    { id: "daikichi", icon: "🎋", t: "Great blessing", d: "Draw 大吉 from the omikuji.", event: true },
     { id: "level10", icon: "⭐", t: "Level 10", d: "Reach level 10.", test: (c) => c.level >= 10 },
     { id: "early", icon: "🌅", t: "Early bird", d: "Finish a lesson before 7 a.m.", event: true },
     { id: "night", icon: "🌙", t: "Night owl", d: "Finish a lesson after 10 p.m.", event: true },
@@ -190,6 +204,9 @@
     { id: "maker", t: "Make 3 sentences in the Sentence Maker", field: "mk", goal: 3 },
     { id: "reader", t: "Read a text in the Reader", field: "rd", goal: 1, when: (a) => a.parts > 2 },
     { id: "kana", t: "Answer 20 kana in the Kana trainer", field: "kn", goal: 20 },
+    { id: "roleplay", t: "Play a role in a conversation", field: "rp", goal: 1, when: (a) => a.dialogues },
+    { id: "listen", t: "Listen to 10 items hands-free", field: "ls", goal: 10, when: (a) => a.voice && a.parts > 0 },
+    { id: "write", t: "Write 10 kana by hand", field: "wr", goal: 10 },
   ];
 
   function available() {

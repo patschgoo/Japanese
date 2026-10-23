@@ -14,6 +14,7 @@
     ["hira", "Hiragana check", "ひらがな"],
     ["loan", "Loanwords", "がいらいご"],
     ["pairs", "Look-alikes", "にている じ"],
+    ["write", "Write", "かく"],
   ];
 
   function groupsFor(script) {
@@ -222,6 +223,7 @@
   }
 
   function tabBody(tab) {
+    if (tab === "write") return NI.kanaWrite.body();
     if (tab === "kata" || tab === "hira") {
       const script = tab;
       const intro =
@@ -231,7 +233,7 @@
       const groups = groupsFor(script);
       return (
         intro +
-        '<div class="drill-setup"><fieldset><legend>Practise</legend>' +
+        '<div class="drill-setup"><fieldset class="stack"><legend>Practise</legend>' +
         groups.map((g, i) => '<label class="check"><input type="checkbox" name="kg" value="' + g.id + '"' + (i === 0 ? " checked" : "") + "> " + esc(g.label) + "</label>").join("") +
         "</fieldset>" +
         (script === "kata"
@@ -270,6 +272,7 @@
     },
     mount(el, args) {
       const tab = TABS.some((t) => t[0] === args[0]) ? args[0] : "kata";
+      if (tab === "write") return NI.kanaWrite.mount(el);
       const start = el.querySelector("[data-start]");
       const box = el.querySelector(".drill-box");
       const setup = el.querySelector(".drill-setup");

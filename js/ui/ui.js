@@ -203,5 +203,9 @@
     return '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"' + (label ? ' aria-label="' + esc(label) + '"' : "") + '><span style="width:' + pct + '%"></span></div>';
   }
 
-  NI.ui = { ICON, esc, jp, rich, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, get popAnchor() { return popAnchor; } };
+  /* style="--n:…" for big single-word prompts, so CSS can shrink long ones
+     to fit on one line (よろしくお願いします) instead of wrapping one character. */
+  const fit = (markup) => ' style="--n:' + Math.max(3, Array.from(NI.furi.base(String(markup))).length) + '"';
+
+  NI.ui = { ICON, esc, jp, rich, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, get popAnchor() { return popAnchor; } };
 })(typeof window !== "undefined" ? window : globalThis);

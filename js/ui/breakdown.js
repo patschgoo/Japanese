@@ -152,12 +152,17 @@
         ? '<div class="bd-legend"><b>Particle colours</b>' + Array.from(used).map((p) => '<span class="bd-key" data-p="' + p + '"><b lang="ja">' + PARTICLE_NAMES[p][0] + "</b> " + esc(PARTICLE_NAMES[p][1]) + "</span>").join("") + "</div>"
         : "") +
       (unknown ? '<p class="small muted">Words in grey aren’t taught in this course yet. <a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(markup)) + '" target="_blank" rel="noopener">Look them up on Jisho ↗</a></p>' : "") +
-      (canRecord() && NI.speech.supported
-        ? '<div class="bd-rec"><b>Say it yourself</b><p class="small muted">Record yourself, then compare with the model. The recording stays on this device.</p>' +
-          '<div class="row wrap"><button class="btn small" type="button" data-rec>' + ui.ICON.mic + "<span>Record</span></button>" +
-          '<button class="btn small ghost" type="button" data-mine disabled>' + ui.ICON.play + "<span>My voice</span></button>" +
-          '<button class="btn small ghost" type="button" data-both disabled>' + ui.ICON.repeat + "<span>Model, then me</span></button></div>" +
-          '<p class="rec-status small" aria-live="polite"></p></div>'
+      ((canRecord() && NI.speech.supported) || NI.speech.canRecognize
+        ? '<div class="bd-rec"><b>Say it yourself</b>' +
+          (canRecord() && NI.speech.supported
+            ? '<p class="small muted">Record yourself, then compare with the model. The recording stays on this device.</p>' +
+              '<div class="row wrap"><button class="btn small" type="button" data-rec>' + ui.ICON.mic + "<span>Record</span></button>" +
+              '<button class="btn small ghost" type="button" data-mine disabled>' + ui.ICON.play + "<span>My voice</span></button>" +
+              '<button class="btn small ghost" type="button" data-both disabled>' + ui.ICON.repeat + "<span>Model, then me</span></button></div>" +
+              '<p class="rec-status small" aria-live="polite"></p>'
+            : "") +
+          NI.speakCheck.block() +
+          "</div>"
         : "") +
       "</div>";
     m.hidden = false;
@@ -183,6 +188,7 @@
     const slow = m.querySelector("[data-slow]");
     if (slow) slow.addEventListener("click", () => NI.speech.speak(text, { rate: 0.6 }));
     bindRecorder(m, text);
+    NI.speakCheck.bind(m, markup);
     m.querySelector("[data-bd-close]").focus();
     NI.store.log("bd", 1);
   }

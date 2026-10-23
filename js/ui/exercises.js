@@ -146,7 +146,7 @@
       return (
         '<p class="kicker">New word</p>' +
         '<div class="word-card">' +
-        '<div class="word-big hand">' + ui.wordHead(word, { tokens: false }) + "</div>" +
+        '<div class="word-big hand"' + ui.fit(word.head) + ">" + ui.wordHead(word, { tokens: false }) + "</div>" +
         ui.say(ui.wordAudio(word), word.r, "lg") +
         '<p class="word-en">' + esc(word.en) + "</p>" +
         '<p class="word-meta">' + ui.posTag(word) + "</p>" +
@@ -168,7 +168,7 @@
       item: word.id,
       ref: word.id,
       html() {
-        return '<p class="kicker">What does this mean?</p><div class="prompt-word hand">' + ui.jp(word.head, { tokens: false }) + ui.say(ui.wordAudio(word), word.r) + "</div>" + options(opts, (w) => esc(w.en));
+        return '<p class="kicker">What does this mean?</p><div class="prompt-word hand"' + ui.fit(word.head) + ">" + ui.jp(word.head, { tokens: false }) + ui.say(ui.wordAudio(word), word.r) + "</div>" + options(opts, (w) => esc(w.en));
       },
       autoplay: () => ui.wordAudio(word),
       mount(card, api) {
@@ -589,11 +589,23 @@
         '<p class="kicker">Say it out loud in Japanese</p><p class="prompt-en">' + esc(sen.en) + "</p>" +
         '<p class="small muted center">Say the whole sentence aloud (or at least mouth it), then check.</p>' +
         '<div class="speak-answer" hidden><div class="prompt-sentence">' + ui.jp(sen.jp) + ui.say(ui.sentenceAudio(sen.jp)) + "</div></div>" +
-        '<div class="row center wrap speak-btns"><button class="btn primary" type="button" data-show>I said it — show me</button></div>'
+        '<div class="row center wrap speak-btns"><button class="btn primary" type="button" data-show>I said it — show me</button></div>' +
+        NI.speakCheck.block("Say it to the microphone")
       );
     },
     mount(card, api) {
       const show = card.querySelector("[data-show]");
+      let heard = null;
+      // A microphone attempt shows the answer and suggests the grade.
+      NI.speakCheck.bind(card, sen.jp, (s) => {
+        heard = s;
+        if (card.querySelector(".speak-answer").hidden) show.click();
+        else focusGrade();
+      });
+      const focusGrade = () => {
+        const b = card.querySelector('[data-self="' + (heard != null && heard < 0.7 ? 0 : 1) + '"]');
+        if (b) b.focus({ preventScroll: true });
+      };
       show.addEventListener("click", () => {
         card.querySelector(".speak-answer").hidden = false;
         if (NI.speech.supported) NI.speech.speak(ui.sentenceAudio(sen.jp));
@@ -608,7 +620,7 @@
             api.done(b.getAttribute("data-self") === "1");
           })
         );
-        btns.querySelector('[data-self="1"]').focus({ preventScroll: true });
+        focusGrade();
       });
     },
     solution: () => ui.jp(sen.jp) + ui.say(ui.sentenceAudio(sen.jp)),

@@ -145,7 +145,9 @@
         ? '<div class="new-badges"><p><b>New badge' + (badges.length > 1 ? "s" : "") + '</b> · <a href="#stamps">Stamp book</a></p><ul>' +
           badges.map((b) => '<li><span class="nb-icon" aria-hidden="true">' + b.icon + "</span><span><b>" + esc(b.t) + "</b>" + esc(b.d) + "</span></li>").join("") + "</ul></div>"
         : "") +
-      goalLine(res.goal) + "</div>"
+      goalLine(res.goal) +
+      (res.rest ? '<p class="rest-earned">🎫 <b>Rest day earned</b> for ' + NI.store.streak() + " days in a row: if you miss a day, it keeps your streak going.</p>" : "") +
+      "</div>"
     );
   }
 
@@ -272,6 +274,12 @@
       b.addEventListener("click", next);
       setTimeout(() => b.focus({ preventScroll: true }), 0);
       foot.scrollIntoView({ block: "nearest" });
+      // On a phone the feedback bar can cover the right answer: scroll it into view above the bar.
+      const shown = card.querySelector(".opt.right") || card.querySelector(".kana-input");
+      if (shown) {
+        const gap = foot.getBoundingClientRect().top - shown.getBoundingClientRect().bottom;
+        if (gap < 10) window.scrollBy(0, 10 - gap);
+      }
     }
 
     function next() {
@@ -523,7 +531,7 @@
         );
       }
       if (mode === "listen") return '<p class="kicker">What does it mean?</p><div class="prompt-audio"><button class="big-play" type="button" data-say="' + esc(ui.wordAudio(it)) + '" aria-label="Play the word">' + ui.ICON.speaker + "</button></div>";
-      return '<p class="kicker">What does it mean?</p><div class="prompt-word hand">' + ui.jp(it.head, { tokens: false }) + ui.say(ui.wordAudio(it), it.r) + "</div>";
+      return '<p class="kicker">What does it mean?</p><div class="prompt-word hand"' + ui.fit(it.head) + ">" + ui.jp(it.head, { tokens: false }) + ui.say(ui.wordAudio(it), it.r) + "</div>";
     }
     if (mode === "listen") return '<p class="kicker">What does it mean?</p><div class="prompt-audio"><button class="big-play" type="button" data-say="' + esc(ui.sentenceAudio(it.jp)) + '" aria-label="Play the sentence">' + ui.ICON.speaker + "</button></div>";
     return '<p class="kicker">What does it mean?</p><div class="prompt-sentence">' + ui.jp(it.jp) + ui.say(ui.sentenceAudio(it.jp)) + "</div>";
@@ -533,7 +541,7 @@
     if (it.kind === "word") {
       const ex = NI.items.bestExample(it);
       return (
-        '<div class="rv-back">' + (it.em ? '<div class="em-big" aria-hidden="true">' + it.em + "</div>" : "") + '<div class="word-big hand">' + ui.wordHead(it, { tokens: false }) + "</div>" + ui.say(ui.wordAudio(it), it.r) +
+        '<div class="rv-back">' + (it.em ? '<div class="em-big" aria-hidden="true">' + it.em + "</div>" : "") + '<div class="word-big hand"' + ui.fit(it.head) + ">" + ui.wordHead(it, { tokens: false }) + "</div>" + ui.say(ui.wordAudio(it), it.r) +
         '<p class="word-en">' + esc(it.en) + "</p>" + (it.note ? '<p class="word-note">' + esc(it.note) + "</p>" : "") +
         (ex ? '<div class="word-ex">' + ui.jp(ex.jp) + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '<p class="en">' + esc(ex.en) + "</p></div>" : "") + "</div>"
       );
