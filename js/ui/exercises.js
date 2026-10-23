@@ -460,6 +460,9 @@
   };
 
   // Numbers: read a price, time or head-count, or hear one and pick it.
+  // counter → [sign, plain reading, whether "number + plain reading" is a useful wrong answer]
+  const COUNTER_SIGNS = { hon: ["本", "ほん", true], mai: ["枚", "まい", false], satsu: ["冊", "さつ", true], hiki: ["匹", "ひき", true], kai: ["回", "かい", true], floor: ["階", "かい", false] };
+
   function numberItem(kind, rng) {
     const N = NI.num;
     const r = rng || Math.random;
@@ -471,6 +474,15 @@
     if (kind === "people") {
       const n = U.pick([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 4, 1, 2], r);
       return { label: n + "人", kana: N.COUNTERS.nin(n), naive: N.toKana(n) + "にん", near: () => N.COUNTERS.nin(1 + Math.floor(r() * 10)) };
+    }
+    if (kind.startsWith("ctr:")) {
+      // "ctr:hon,mai" drills those counters. Numbers with two accepted readings
+      // (8本 はっぽん/はちほん, 3階 さんがい/さんかい) are left out.
+      const c = U.pick(kind.slice(4).split(","), r);
+      const [sign, plain, naive] = COUNTER_SIGNS[c];
+      const n = U.pick(c === "floor" ? [1, 2, 4, 5, 6, 7, 9, 10] : [1, 2, 3, 4, 5, 6, 7, 9, 10, 1, 3, 6], r);
+      const fn = N.COUNTERS[c];
+      return { label: n + sign, kana: fn(n), naive: naive ? N.toKana(n) + plain : null, near: () => fn(U.pick([1, 2, 3, 4, 5, 6, 7, 9, 10], r)) };
     }
     const bands = [[10, 990, 10], [100, 9900, 100], [1000, 50000, 500], [100, 2000, 50]];
     const [lo, hi, step] = U.pick(bands, r);

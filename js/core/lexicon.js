@@ -19,9 +19,15 @@
       temo: 15, tewa: 15,
       dict: 16, nai: 16, nakatta: 16, ta: 16, naide: 16, teiru: 16, teinai: 16, teita: 16, teru: 16, tenai: 16, teta: 16, vol: 16,
       tari: 18,
+      pot: 22, potmasu: 22, potmasen: 22, potmashita: 22, potmasendeshita: 22, potnai: 22, potnakatta: 22,
+      tara: 23, nakattara: 23,
+      nagara: 24,
+      sou: 27, souna: 27,
+      ba: 28, nakereba: 28,
+      nakute: 29,
     },
-    "adj-i": { neg: 10, kuarimasen: 10, te: 10, adv: 15, past: 18, pastneg: 18, kuarimasendeshita: 18 },
-    "adj-na": { na: 10, de: 10, janai: 10, ni: 15, da: 16, datta: 16, janakatta: 18 },
+    "adj-i": { neg: 10, kuarimasen: 10, te: 10, adv: 15, past: 18, pastneg: 18, kuarimasendeshita: 18, tara: 23, sou: 27, souna: 27, ba: 28 },
+    "adj-na": { na: 10, de: 10, janai: 10, ni: 15, da: 16, datta: 16, janakatta: 18, tara: 23, sou: 27, souna: 27, nara: 28 },
   };
 
   const PUNCT = /^[。、？！「」『』…〜・（）()!?,.:：　ー—]$/;
@@ -160,6 +166,14 @@
       tiles.forEach((atoms, ti) => {
         for (const t of this.segment(atoms)) out.push(Object.assign({ tile: ti, atoms: atoms.slice(t.start, t.end) }, t));
       });
+      // After a number, a counter beats its homograph: 3本 is "3 long things", not "3 books".
+      for (let i = 1; i < out.length; i++) {
+        const t = out[i];
+        if (!t.entry || t.entry.pos === "ctr" || !out[i - 1].entry || out[i - 1].entry.kind !== "number") continue;
+        const rd = t.reading || t.entry.r;
+        const ctr = (this.index.get(t.entry.s) || []).find((e) => e.pos === "ctr" && (e.r === rd || (e.rs && e.rs.indexOf(rd) >= 0)));
+        if (ctr) out[i] = Object.assign({}, t, { entry: ctr, mismatch: false });
+      }
       return out;
     },
   };

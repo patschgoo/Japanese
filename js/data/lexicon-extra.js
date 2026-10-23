@@ -1,4 +1,4 @@
-/* Grammar words, names and the four course "lines".
+/* Grammar words, names and the six course "lines".
    Grammar words are not review cards; they are glossed when tapped and are
    taught in the unit given by u. */
 (function (root) {
@@ -11,6 +11,8 @@
     { id: "M", ja: "まいにち{線|せん}", kana: "まいにちせん", en: "Everyday Line", color: "m", units: [6, 7, 8, 9, 10], blurb: "Verbs, going places, where things are, family and describing the world." },
     { id: "D", ja: "できる{線|せん}", kana: "できるせん", en: "Can-Do Line", color: "d", units: [11, 12, 13, 14, 15], blurb: "Likes and wants, requests, what's happening now, invitations and permission." },
     { id: "K", ja: "かいわ{線|せん}", kana: "かいわせん", en: "Conversation Line", color: "k", units: [16, 17, 18, 19, 20], blurb: "Casual speech, opinions, past experiences, directions and getting help." },
+    { id: "T", ja: "つながる{線|せん}", kana: "つながるせん", en: "Connections Line", color: "t", units: [21, 22, 23, 24, 25], blurb: "Giving and receiving, can and can't, if and when, before and after, and making plans." },
+    { id: "S", ja: "すすむ{線|せん}", kana: "すすむせん", en: "Onward Line", color: "s", units: [26, 27, 28, 29, 30], blurb: "Trying things, how things look, asking for advice, rules, and the polite Japanese of shops and work." },
   ];
 
   NI.data.grammar = [
@@ -54,6 +56,11 @@
     { s: "ほう", u: 11, kind: "noun", en: "side; Aのほうが = A is more …; 〜たほうがいい = had better" },
     { s: "{何|なに}か", u: 14, kind: "pronoun", en: "something" },
     { s: "どのぐらい", u: 19, kind: "question", en: "how long / how much (approximately)" },
+    { s: "だったら", u: 23, kind: "copula", en: "if (it) is … (after a noun or な-adjective)" },
+    { s: "かもしれません", u: 25, kind: "ending", en: "might, may (polite)" },
+    { s: "かもしれない", u: 25, kind: "ending", en: "might, may (plain)" },
+    { s: "なら", u: 28, kind: "copula", en: "if it's …; as for … (after a noun)" },
+    { s: "でございます", u: 30, kind: "copula", en: "is (very polite: shop and hotel staff)" },
     // interjections and fillers
     { s: "あ", u: 3, kind: "interjection", en: "oh!" },
     { s: "あっ", u: 1, kind: "interjection", en: "oh! (sudden)" },

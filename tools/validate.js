@@ -54,11 +54,38 @@ function engineTests(NI) {
     ["{食|た}べる", "v1", { te: "食べて", nai: "食べない", masu: "食べます", tai: "食べたい" }],
     ["する", "vs", { te: "して", nai: "しない", masu: "します" }],
     ["{勉強|べんきょう}する", "vs", { te: "勉強して", teimasu: "勉強しています" }],
-    ["ある", "v5r-i", { nai: "ない", nakatta: "なかった", masu: "あります" }],
+    ["ある", "v5r-i", { nai: "ない", nakatta: "なかった", masu: "あります", ba: "あれば", nakereba: "なければ" }],
+    ["{飲|の}む", "v5", { pot: "飲める", potmasu: "飲めます", potnai: "飲めない", tara: "飲んだら", nagara: "飲みながら", ba: "飲めば", nakereba: "飲まなければ", nakute: "飲まなくて", nakattara: "飲まなかったら" }],
+    ["{食|た}べる", "v1", { pot: "食べられる", potmasen: "食べられません", ba: "食べれば", tara: "食べたら", sou: "食べそう" }],
+    ["{話|はな}す", "v5", { pot: "話せる", ba: "話せば" }],
+    ["{待|ま}つ", "v5", { pot: "待てる" }],
+    ["{泳|およ}ぐ", "v5", { pot: "泳げる", tara: "泳いだら" }],
+    ["{遊|あそ}ぶ", "v5", { pot: "遊べる" }],
+    ["{買|か}う", "v5", { pot: "買える", ba: "買えば", nakereba: "買わなければ" }],
+    ["{行|い}く", "v5k-s", { pot: "行ける", tara: "行ったら", ba: "行けば" }],
+    ["する", "vs", { ba: "すれば", tara: "したら", nakereba: "しなければ" }],
+    ["{勉強|べんきょう}する", "vs", { pot: "勉強できる", potmasu: "勉強できます" }],
+    ["いらっしゃる", "v5aru", { masu: "いらっしゃいます", te: "いらっしゃって", nai: "いらっしゃらない", ta: "いらっしゃった" }],
   ];
   for (const [j, pos, want] of table) for (const f in want) eq(j + " " + f, form(j, pos, f), want[f]);
   eq("来る nai reading", reading("{来|く}る", "vk", "nai"), "こない");
   eq("来る te reading", reading("{来|く}る", "vk", "te"), "きて");
+  eq("来る pot reading", reading("{来|く}る", "vk", "pot"), "こられる");
+  eq("来る ba reading", reading("{来|く}る", "vk", "ba"), "くれば");
+  eq("来る tara reading", reading("{来|く}る", "vk", "tara"), "きたら");
+  eq("する has no potential form (it is できる)", "pot" in NI.conj.forms({ j: "する", pos: "vs" }), false);
+  eq("ある has no potential form", "pot" in NI.conj.forms({ j: "ある", pos: "v5r-i" }), false);
+  eq("分かる has no potential form", "pot" in NI.conj.forms({ j: "{分|わ}かる", pos: "v5", noDrill: ["tai", "mashou"] }), false);
+  const adj = (j, pos, f) => F.base(NI.conj.forms({ j, pos })[f]);
+  eq("高い tara", adj("{高|たか}い", "adj-i", "tara"), "高かったら");
+  eq("高い ba", adj("{高|たか}い", "adj-i", "ba"), "高ければ");
+  eq("高い sou", adj("{高|たか}い", "adj-i", "sou"), "高そう");
+  eq("いい sou", adj("いい", "adj-ix", "sou"), "よさそう");
+  eq("いい ba", adj("いい", "adj-ix", "ba"), "よければ");
+  eq("いい tara", adj("いい", "adj-ix", "tara"), "よかったら");
+  eq("静か tara", adj("{静|しず}か", "adj-na", "tara"), "静かだったら");
+  eq("静か nara", adj("{静|しず}か", "adj-na", "nara"), "静かなら");
+  eq("静か souna", adj("{静|しず}か", "adj-na", "souna"), "静かそうな");
   eq("いい neg", F.base(NI.conj.forms({ j: "いい", pos: "adj-ix" }).neg), "よくない");
   eq("高い past", F.base(NI.conj.forms({ j: "{高|たか}い", pos: "adj-i" }).past), "高かった");
   eq("静か na", F.base(NI.conj.forms({ j: "{静|しず}か", pos: "adj-na" }).na), "静かな");
@@ -80,6 +107,15 @@ function engineTests(NI) {
   eq("1人", N.COUNTERS.nin(1), "ひとり");
   eq("4人", N.COUNTERS.nin(4), "よにん");
   eq("8歳", N.COUNTERS.sai(8), "はっさい");
+  eq("1本", N.COUNTERS.hon(1), "いっぽん");
+  eq("3本", N.COUNTERS.hon(3), "さんぼん");
+  eq("6本", N.COUNTERS.hon(6), "ろっぽん");
+  eq("10本", N.COUNTERS.hon(10), "じゅっぽん");
+  eq("4枚", N.COUNTERS.mai(4), "よんまい");
+  eq("8冊", N.COUNTERS.satsu(8), "はっさつ");
+  eq("3匹", N.COUNTERS.hiki(3), "さんびき");
+  eq("1回", N.COUNTERS.kai(1), "いっかい");
+  eq("3階", N.COUNTERS.floor(3), "さんがい");
 
   const K = NI.kana;
   eq("ime konnichiha", K.romajiToHiragana("konnichiha", true), "こんにちは");
@@ -140,7 +176,7 @@ function lessonTests(NI) {
   }
 }
 
-const COUNTER_FN = { 円: "yen", 時: "ji", 分: "fun", 人: "nin", 歳: "sai", 番線: "bansen" };
+const COUNTER_FN = { 円: "yen", 時: "ji", 分: "fun", 人: "nin", 歳: "sai", 番線: "bansen", 本: "hon", 枚: "mai", 冊: "satsu", 匹: "hiki", 回: "kai", 階: "floor" };
 
 function checkText(NI, markup, unit, where, opts) {
   const o = opts || {};
@@ -252,6 +288,30 @@ function main() {
     }
   }
 
+  for (const line of C.lines) for (const n of line.units) if (!C.unit(n)) err("line " + line.id, "lists unit " + n + ", which doesn't exist");
+  for (const id of Object.keys(NI.data.emoji || {})) if (!C.get(id)) err("emoji", id + " is not a course word");
+
+  const storyIds = new Set();
+  let nStoryLines = 0;
+  for (const st of C.stories) {
+    const T = "story " + st.id;
+    if (storyIds.has(st.id)) err(T, "duplicate id");
+    storyIds.add(st.id);
+    if (!st.title || !st.en) err(T, "missing title or English title");
+    if (!C.unit(st.unit)) err(T, "unit " + st.unit + " doesn't exist");
+    if (!C.lines.some((l) => l.id === st.line)) err(T, "unknown line " + st.line);
+    checkText(NI, st.title, st.unit, T + " title");
+    for (const l of st.lines) {
+      nStoryLines++;
+      if (!l.en) err(T, "line missing translation");
+      checkText(NI, l.jp, st.unit, T + " “" + NI.furi.base(l.jp) + "”");
+    }
+    for (const q of st.q || []) {
+      for (const m of [q.a].concat(q.o)) if (/[぀-ヿ一-鿿]/.test(m)) checkText(NI, m, st.unit, T + " question");
+      if (new Set([q.a].concat(q.o)).size !== q.o.length + 1) err(T, "duplicate option in “" + q.q + "”");
+    }
+  }
+
   for (const ph of NI.data.phrases || []) {
     for (const p of ph.items) {
       if (!p.en) err("phrase " + p.jp, "missing translation");
@@ -264,7 +324,7 @@ function main() {
     console.log("Errors (" + errors.length + "):\n" + fmt(errors));
     process.exitCode = 1;
   } else {
-    console.log("OK: " + C.units.length + " units, " + nWords + " words, " + nSent + " sentences checked.");
+    console.log("OK: " + C.units.length + " units, " + nWords + " words, " + nSent + " sentences, " + C.stories.length + " stories (" + nStoryLines + " lines) checked.");
   }
 }
 

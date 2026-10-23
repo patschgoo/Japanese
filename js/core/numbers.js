@@ -81,7 +81,36 @@
     bansen(n) {
       return toKana(n) + "ばんせん";
     },
+    // 本 (long things), 枚 (flat things), 冊 (books), 匹 (small animals), 回 (times), 階 (floors)
+    hon(n) {
+      return soundChange(n, { 1: "いっぽん", 2: "にほん", 3: "さんぼん", 4: "よんほん", 5: "ごほん", 6: "ろっぽん", 7: "ななほん", 8: "はっぽん", 9: "きゅうほん" }, "じゅっぽん");
+    },
+    mai(n) {
+      return toKana(n) + "まい";
+    },
+    satsu(n) {
+      return soundChange(n, { 1: "いっさつ", 8: "はっさつ" }, "じゅっさつ", "さつ");
+    },
+    hiki(n) {
+      return soundChange(n, { 1: "いっぴき", 2: "にひき", 3: "さんびき", 4: "よんひき", 5: "ごひき", 6: "ろっぴき", 7: "ななひき", 8: "はっぴき", 9: "きゅうひき" }, "じゅっぴき");
+    },
+    kai(n) {
+      return soundChange(n, { 1: "いっかい", 6: "ろっかい", 8: "はっかい" }, "じゅっかい", "かい");
+    },
+    floor(n) {
+      return soundChange(n, { 1: "いっかい", 3: "さんがい", 6: "ろっかい", 8: "はっかい" }, "じゅっかい", "かい");
+    },
   };
+
+  /* Counter reading with the sound changes on the last digit (いっぽん, さんぼん)
+     and on round tens (じゅっぽん, にじゅっぽん). Digits missing from the table
+     take the plain number + suffix. */
+  function soundChange(n, units, tensForm, suffix) {
+    const o = n % 10;
+    const head = n - o;
+    if (o === 0) return toKana(n).replace(/じゅう$/, "") + tensForm;
+    return (head ? toKana(head) : "") + (units[o] || DIG[o] + suffix);
+  }
 
   /* "3:30" style clock time → kana, e.g. さんじはん. */
   function timeKana(h, m) {

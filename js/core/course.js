@@ -1,10 +1,14 @@
-/* Course model. Data files register units with NI.addUnit(); NI.course.init()
-   normalises them into words, sentences and dialogue lines with stable ids. */
+/* Course model. Data files register units with NI.addUnit() and graded
+   stories with NI.addStory(); NI.course.init() normalises them into words,
+   sentences, dialogue lines and story lines with stable ids. A unit can bring
+   its own grammar words (gwords) and names, which are taught in that unit. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
   NI.data = NI.data || { units: [], grammar: [], names: [], phrases: [], lines: [] };
+  NI.data.stories = NI.data.stories || [];
   NI.addUnit = (u) => NI.data.units.push(u);
+  NI.addStory = (st) => NI.data.stories.push(st);
 
   const POS_LABEL = {
     n: "noun",
@@ -15,6 +19,7 @@
     v5: "verb · group 1",
     "v5k-s": "verb · group 1",
     "v5r-i": "verb · group 1",
+    v5aru: "verb · group 1 (honorific)",
     vk: "verb · irregular",
     vs: "verb · irregular",
     "adj-i": "い-adjective",
@@ -35,6 +40,7 @@
     words: [],
     sentences: [],
     lines: [],
+    stories: [],
     byId: new Map(),
     POS_LABEL,
     inited: false,
@@ -46,12 +52,15 @@
       this.lines = NI.data.lines;
       const seen = new Map();
       for (const u of this.units) {
+        for (const g of u.gwords || []) NI.data.grammar.push(Object.assign({ u: u.n }, g));
+        for (const n of u.names || []) NI.data.names.push(n);
         u.words = (u.words || []).map((wd, i) => {
           const w = F.base(wd.j);
           const r = F.reading(wd.j);
           let id = "v:" + w;
           if (seen.has(id)) id += "|" + r;
           const word = Object.assign({}, wd, { id, w, r, unit: u.n, idx: i, kind: "word" });
+          if (!word.em && NI.data.emoji && NI.data.emoji[id]) word.em = NI.data.emoji[id];
           if (NI.conj.isVerb(wd.pos)) {
             const f = NI.conj.forms(wd);
             word.head = f.masu; // ます-form is taught first and shown as the headword
@@ -78,12 +87,22 @@
         this.words.push(...u.words);
         this.sentences.push(...u.sentences);
       }
+      // Stories: [japanese, english] lines, readable once their unit is reached.
+      this.stories = NI.data.stories.slice().sort((a, b) => a.unit - b.unit).map((st) =>
+        Object.assign({}, st, {
+          kind: "story",
+          lines: st.lines.map((l, i) => ({ id: "t:" + st.id + ":" + i, jp: l[0], en: l[1], unit: st.unit, kind: "storyline" })),
+        })
+      );
       this.inited = true;
       return this;
     },
 
     unit(n) {
       return this.units.find((u) => u.n === Number(n)) || null;
+    },
+    story(id) {
+      return this.stories.find((st) => st.id === id) || null;
     },
     get(id) {
       return this.byId.get(id) || null;

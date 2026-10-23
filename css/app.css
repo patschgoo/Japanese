@@ -23,6 +23,8 @@
   --line-m: #e0242c;
   --line-d: #0a78bf;
   --line-k: #00984d;
+  --line-t: #7a4fc2;
+  --line-s: #9c5e31;
   --shadow: 0 10px 30px rgba(20, 30, 45, 0.16);
 
   --f-ui: "Fira Sans", "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -54,6 +56,8 @@
     --line-m: #ff5c61;
     --line-d: #45a6ec;
     --line-k: #34c47a;
+    --line-t: #b195f0;
+    --line-s: #d99a63;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     color-scheme: dark;
   }
@@ -80,6 +84,8 @@
   --line-m: #ff5c61;
   --line-d: #45a6ec;
   --line-k: #34c47a;
+  --line-t: #b195f0;
+  --line-s: #d99a63;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
 }
@@ -88,6 +94,8 @@
 .line-m { --lc: var(--line-m); }
 .line-d { --lc: var(--line-d); }
 .line-k { --lc: var(--line-k); }
+.line-t { --lc: var(--line-t); }
+.line-s { --lc: var(--line-s); }
 
 /* ---------------------------------------------------------------- base */
 *, *::before, *::after { box-sizing: border-box; }
