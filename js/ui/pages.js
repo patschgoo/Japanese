@@ -55,12 +55,131 @@
   }
 
   // ---------------------------------------------------------------------------
+  // The learner's plan: a goal, a daily XP target and a focus for lessons.
+  const PLAN = {
+    GOALS: [
+      { id: "travel", icon: "✈️", t: "Travel in Japan", focus: "speaking", tip: "Start with the phrasebook and units 1–8, then directions in unit 19. Shadow the conversations so phrases come out quickly.", go: [["#phrases", "Phrasebook"], ["#unit-19", "Directions (unit 19)"], ["#maker", "Sentence Maker"]] },
+      { id: "media", icon: "🎌", t: "Anime, manga & games", focus: "listening", tip: "Learn katakana early, enjoy casual speech in unit 16, and listen a lot: play conversations and read the stories.", go: [["#kana-kata", "Katakana trainer"], ["#stories", "Stories"], ["#unit-16", "Casual speech (unit 16)"]] },
+      { id: "work", icon: "💼", t: "Work or study", focus: "balanced", tip: "Keep polite です/ます forms solid and don’t skip the service Japanese in unit 30.", go: [["#grammar", "Grammar list"], ["#reader", "Reader"], ["#unit-30", "Service Japanese (unit 30)"]] },
+      { id: "exam", icon: "🎓", t: "The JLPT exam", focus: "exam", tip: "Units 1–20 cover most of N5 and units 21–30 much of N4. Use the line exams as practice tests.", go: [["#play", "Line exams"], ["#grammar", "Grammar list"], ["#reader", "Reader"]] },
+      { id: "people", icon: "💬", t: "Friends, family or a partner", focus: "speaking", tip: "Casual speech (unit 16) and the conversation units matter most. Say sentences out loud and shadow.", go: [["#unit-16", "Casual speech (unit 16)"], ["#maker", "Sentence Maker"], ["#stories", "Stories"]] },
+      { id: "curious", icon: "🌱", t: "Just curious", focus: "balanced", tip: "Follow the route map at your own pace; the games keep it fun.", go: [["#play", "Games"], ["#stories", "Stories"], ["#stamps", "Stamp book"]] },
+    ],
+    DAILY: [
+      [30, "Casual", "about 5 minutes"],
+      [60, "Regular", "about 10 minutes"],
+      [120, "Serious", "about 20 minutes"],
+      [200, "Intense", "30 minutes or more"],
+    ],
+    FOCI: [
+      ["balanced", "Balanced", "A bit of everything"],
+      ["listening", "Listening", "More audio questions and shadowing"],
+      ["speaking", "Speaking", "More saying it aloud and typing from memory"],
+      ["reading", "Reading", "More reading and grammar in context"],
+      ["exam", "Exam practice", "More particles, verb forms and numbers"],
+    ],
+  };
+  // "Lessons now focus on listening." for toasts after the plan changes.
+  PLAN.focusLine = (id) => (id === "balanced" ? "Lessons now practise a bit of everything." : "Lessons now focus on " + ((PLAN.FOCI.find((f) => f[0] === id) || [])[1] || id).toLowerCase() + ".");
+  NI.plan = PLAN;
+
+  function planCard() {
+    const s = NI.store.settings;
+    const chip = (name, v, label, on) => '<button class="chip' + (on ? " on" : "") + '" type="button" data-plan="' + name + '" data-v="' + v + '" aria-pressed="' + !!on + '">' + label + "</button>";
+    return (
+      '<section class="welcome plan" aria-labelledby="welcome-h">' +
+      '<h2 id="welcome-h">' + ui.jp("ようこそ！", { tokens: false }) + " Let’s set up your plan</h2>" +
+      "<p>This course is for people who can already read <b>hiragana</b>. Four quick questions, and the course adapts to you. You can change any of it later in Options.</p>" +
+      '<div class="plan-q"><b>1. Can you read katakana?</b> <span class="small muted">(the script for words like コーヒー)</span><div class="chips">' +
+      chip("kata", "yes", "Yes", !s.kataHelp && NI.store.state.onboarded) + chip("kata", "no", "Not yet", s.kataHelp) + "</div></div>" +
+      '<div class="plan-q"><b>2. Why are you learning?</b><div class="chips">' + PLAN.GOALS.map((g) => chip("goal", g.id, g.icon + " " + esc(g.t), s.goal === g.id)).join("") + "</div></div>" +
+      '<div class="plan-q"><b>3. How much time do you have most days?</b><div class="chips">' + PLAN.DAILY.map(([xp, t, d]) => chip("daily", xp, esc(t) + " · " + esc(d), Number(s.dailyGoal) === xp)).join("") + "</div></div>" +
+      '<div class="plan-q"><b>4. What do you want to get better at first?</b><div class="chips">' + PLAN.FOCI.map(([v, t]) => chip("focus", v, esc(t), s.focus === v)).join("") + "</div></div>" +
+      '<p class="plan-tip small" aria-live="polite"></p>' +
+      '<div class="row wrap"><button class="btn primary" type="button" data-plan-save>Start learning</button><button class="btn ghost small" type="button" data-plan-skip>Skip for now</button></div>' +
+      '<p class="small muted">Rusty on hiragana? <a href="#kana-hira">Take the 2-minute hiragana check</a>. Curious about the method? <a href="#guide">Read how this course works</a>.</p>' +
+      "</section>"
+    );
+  }
+
+  function mountPlan(el) {
+    const box = el.querySelector(".plan");
+    if (!box) return;
+    const tip = box.querySelector(".plan-tip");
+    const showTip = () => {
+      const g = PLAN.GOALS.find((x) => x.id === NI.store.settings.goal);
+      tip.textContent = g ? "Tip for you: " + g.tip : "";
+    };
+    box.querySelectorAll("[data-plan]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const name = b.getAttribute("data-plan");
+        const v = b.getAttribute("data-v");
+        box.querySelectorAll('[data-plan="' + name + '"]').forEach((x) => {
+          x.classList.toggle("on", x === b);
+          x.setAttribute("aria-pressed", x === b);
+        });
+        if (name === "kata") NI.store.set("kataHelp", v !== "yes", true);
+        if (name === "daily") NI.store.set("dailyGoal", Number(v), true);
+        if (name === "focus") NI.store.set("focus", v, true);
+        if (name === "goal") {
+          NI.store.set("goal", v, true);
+          const g = PLAN.GOALS.find((x) => x.id === v);
+          if (g) {
+            NI.store.set("focus", g.focus, true);
+            box.querySelectorAll('[data-plan="focus"]').forEach((x) => {
+              x.classList.toggle("on", x.getAttribute("data-v") === g.focus);
+              x.setAttribute("aria-pressed", x.getAttribute("data-v") === g.focus);
+            });
+          }
+          showTip();
+        }
+        NI.app.applySettings();
+      })
+    );
+    showTip();
+    box.querySelector("[data-plan-save]").addEventListener("click", () => {
+      NI.store.setPlanned();
+      ui.toast("Your plan is saved. がんばって！");
+      NI.app.render();
+    });
+    box.querySelector("[data-plan-skip]").addEventListener("click", () => {
+      NI.store.setPlanned();
+      NI.app.render();
+    });
+  }
+
+  function wotdCard() {
+    const w = NI.game.wordOfTheDay();
+    if (!w) return "";
+    const ex = NI.items.bestExample(w);
+    return (
+      '<section class="wotd" aria-labelledby="wotd-h"><h2 id="wotd-h">' + ui.jp("{今日|きょう}の{言葉|ことば}", { tokens: false }) + ' <span class="sub">Word of the day</span></h2>' +
+      '<div class="wotd-word">' + (w.em ? '<span class="em-big" aria-hidden="true">' + w.em + "</span>" : "") + '<span class="hand">' + ui.wordHead(w, { tokens: false }) + "</span>" + ui.say(ui.wordAudio(w), w.r) + "</div>" +
+      '<p class="wotd-en">' + esc(w.en) + " " + ui.posTag(w) + "</p>" +
+      (ex ? '<div class="word-ex">' + ui.jp(ex.jp) + '<span class="s-tools">' + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '</span><p class="en">' + esc(ex.en) + "</p></div>" : "") +
+      '<p class="small"><a href="#unit-' + w.unit + '">From ' + esc(NI.course.code(w.unit)) + "</a></p></section>"
+    );
+  }
+
+  // Once a goal is set, the home page keeps its tip and shortcuts in view.
+  function routeCard() {
+    const g = PLAN.GOALS.find((x) => x.id === NI.store.settings.goal);
+    if (!g || !NI.store.state.planned) return "";
+    return (
+      '<section class="route-strip" aria-label="Your route"><span class="rs-icon" aria-hidden="true">' + g.icon + "</span>" +
+      "<div><b>Your route: " + esc(g.t) + '</b> <span class="small muted">' + esc(g.tip) + "</span>" +
+      '<p class="route-links">' + g.go.map(([h, t]) => '<a href="' + h + '">' + esc(t) + "</a>").join(" · ") + ' · <a href="#guide-routes">Other routes</a></p></div></section>'
+    );
+  }
+
   pages.home = {
     title: "Route map",
     nav: "home",
     render() {
       const c = counts();
       const step = nextStep();
+      const g = NI.game.goal();
+      const L = NI.game.level(NI.store.state.xp);
       const h = new Date().getHours();
       const greet = h >= 4 && h < 11 ? ["おはようございます", "Good morning"] : h >= 11 && h < 18 ? ["こんにちは", "Hello"] : ["こんばんは", "Good evening"];
       const reviewBtn = c.due
@@ -73,33 +192,34 @@
         '<section class="today">' +
         '<div class="today-main"><p class="eyebrow">' + ui.jp("{今日|きょう}", { tokens: false }) + " · Today</p>" +
         '<h1 class="greet">' + ui.jp(greet[0], { tokens: false }) + ui.say(greet[0], greet[1]) + '<span class="greet-en">' + greet[1] + "</span></h1>" +
-        '<div class="today-actions">' + reviewBtn + stepBtn + "</div></div>" +
+        '<div class="today-actions">' + reviewBtn + stepBtn + '<a class="btn ghost" href="#play">Play</a></div></div>' +
+        '<div class="today-goal"><div class="ring-box big">' + NI.session.ring(g.frac, g.done ? "✓" : g.xp + '<small>/' + g.target + "</small>") + "</div>" +
+        '<div class="tg-text"><b>' + (g.done ? "Goal reached!" : "Daily goal") + '</b><span class="small muted">' + g.xp + " of " + g.target + " XP today</span>" +
+        '<a class="lvl-chip" href="#stamps" title="Level ' + L.n + '"><span class="lvl-badge">Lv ' + L.n + "</span>" + ui.jp(L.title.ja, { tokens: false }) + "</a></div></div>" +
         '<dl class="stats">' +
         '<div><dt>Due now</dt><dd>' + c.due + "</dd></div>" +
         '<div><dt>Words learned</dt><dd>' + c.words + "</dd></div>" +
-        '<div><dt>Day streak</dt><dd>' + c.streak + "</dd></div>" +
-        "</dl>" + tierSummary() + "</section>";
+        '<div><dt>Day streak</dt><dd>' + c.streak + (c.streak ? ' <span aria-hidden="true">🔥</span>' : "") + "</dd></div>" +
+        "</dl>" +
+        '<div class="today-week">' + NI.weekDots() + "</div>" +
+        tierSummary() + "</section>";
 
-      if (!NI.store.state.onboarded) {
-        html +=
-          '<section class="welcome" aria-labelledby="welcome-h">' +
-          '<h2 id="welcome-h">' + ui.jp("ようこそ！", { tokens: false }) + " Welcome</h2>" +
-          "<p>This course is for people who can already read <b>hiragana</b>. It takes you from greetings to real conversations in 20 short units, with spaced reviews so the words stick.</p>" +
-          "<p><b>Can you read katakana</b> (the script for words like コーヒー)? If not, the course shows hiragana above it until you've learned it.</p>" +
-          '<div class="row wrap"><button class="btn primary" type="button" data-onboard="yes">Yes, I can read katakana</button><button class="btn ghost" type="button" data-onboard="no">Not yet</button></div>' +
-          '<p class="small muted">Rusty on hiragana? <a href="#kana-hira">Take the 2-minute hiragana check</a>. Curious about the method? <a href="#guide">Read how this course works</a>.</p>' +
-          "</section>";
-      }
+      if (!NI.store.state.planned) html += planCard();
+      html += '<div class="home-row">' + NI.missionsCard() + wotdCard() + "</div>" + routeCard();
 
       html += '<section class="routemap" aria-label="Course route map">';
+      const stampEm = {};
+      for (const st of NI.game.stamps()) stampEm[st.unit.n] = st.em;
       NI.course.lines.forEach((line, li) => {
         const units = line.units.map((n) => NI.course.unit(n)).filter(Boolean);
         const done = units.filter((u) => partsDone(u) === NI.course.parts(u).length).length;
+        const pct = NI.store.state.exams[line.id];
         html +=
-          '<section class="line line-' + line.color + '" aria-labelledby="line-' + line.id + '">' +
+          '<section class="line line-' + line.color + (pct >= 80 ? " gold" : "") + '" aria-labelledby="line-' + line.id + '">' +
           '<header class="line-head"><span class="line-badge" aria-hidden="true">' + line.id + "</span>" +
-          '<div><h2 id="line-' + line.id + '">' + ui.jp(line.ja, { tokens: false }) + ' <span class="line-en">' + esc(line.en) + "</span></h2>" +
-          '<p class="line-blurb">' + esc(line.blurb) + ' <span class="muted">' + done + "/" + units.length + " stations</span></p></div></header>" +
+          '<div><h2 id="line-' + line.id + '">' + ui.jp(line.ja, { tokens: false }) + ' <span class="line-en">' + esc(line.en) + "</span>" + (pct >= 80 ? ' <span class="gold-badge" title="Line exam passed">★</span>' : "") + "</h2>" +
+          '<p class="line-blurb">' + esc(line.blurb) + ' <span class="muted">' + done + "/" + units.length + " stations</span>" +
+          (done === units.length && units.length && !(pct >= 80) ? ' · <a href="#exam-' + line.id + '">Take the line exam</a>' : "") + "</p></div></header>" +
           '<ol class="stations">';
         for (const u of units) {
           const parts = NI.course.parts(u);
@@ -112,6 +232,7 @@
             ui.stationCode(u.n) +
             '<span class="st-text"><span class="st-name">' + ui.jp(u.ja, { tokens: false, gaps: false }) + '</span><span class="st-en">' + esc(u.en) + "</span></span>" +
             (cur ? '<span class="here" title="You are here">' + ui.jp("{現在地|げんざいち}", { tokens: false }) + "</span>" : "") +
+            (state === "done" ? '<span class="mini-stamp" title="Stamp collected" aria-label="Stamp collected">' + esc(stampEm[u.n]) + "</span>" : "") +
             '<span class="st-prog" aria-label="' + d + " of " + parts.length + ' parts done">' +
             parts.map((p) => '<i class="' + (NI.store.partDone(u.n, p.key) ? "on" : "") + '"></i>').join("") +
             "</span></a></li>";
@@ -124,22 +245,17 @@
 
       html +=
         '<section class="home-links">' +
-        '<a class="card-link" href="#guide"><b>How this course works</b><span>The method behind it: what to learn first, and how to make it stick.</span></a>' +
-        '<a class="card-link" href="#kana"><b>Kana trainer</b><span>Katakana charts, drills, loanwords and look-alike characters.</span></a>' +
-        '<a class="card-link" href="#phrases"><b>Phrasebook</b><span>90 survival phrases for restaurants, shops, trains and emergencies.</span></a>' +
+        '<a class="card-link" href="#play"><b>🎮 Play</b><span>Time Attack, Kana Rain, Memory Match and Sentence Sprint, plus your mistakes notebook.</span></a>' +
+        '<a class="card-link" href="#reader"><b>🔎 Reader & dictionary</b><span>Paste any Japanese to see readings and meanings, word by word.</span></a>' +
+        '<a class="card-link" href="#maker"><b>🛠️ Sentence Maker</b><span>Build your own correct sentences: polite or casual, past or negative.</span></a>' +
+        '<a class="card-link" href="#stories"><b>📖 Stories</b><span>Short graded stories with audio, written with the words you know.</span></a>' +
+        '<a class="card-link" href="#stamps"><b>🏅 Stamp book</b><span>Station stamps, badges, your level and records.</span></a>' +
+        '<a class="card-link" href="#guide"><b>🧭 How this course works</b><span>The research behind it, and how to learn in a way that suits you.</span></a>' +
         "</section>";
       return html;
     },
     mount(el) {
-      el.querySelectorAll("[data-onboard]").forEach((b) =>
-        b.addEventListener("click", () => {
-          const can = b.getAttribute("data-onboard") === "yes";
-          NI.store.set("kataHelp", !can);
-          NI.store.setOnboarded();
-          ui.toast(can ? "Katakana help is off. You can change it in Options." : "Hiragana will appear above katakana. Try the Kana trainer when you're ready.");
-          NI.app.render();
-        })
-      );
+      mountPlan(el);
     },
   };
 
@@ -244,6 +360,7 @@
       const next = parts.find((p) => !NI.store.partDone(u.n, p.key));
       let html = NI.views.sign(u);
       html += '<div class="unit-intro"><p class="goal"><b>Goal</b> ' + esc(u.goal) + '</p><p class="intro">' + esc(u.intro) + "</p></div>";
+      html += NI.views.aids();
       html +=
         '<section class="steps" aria-label="Lesson parts"><ol class="step-list">' +
         parts
@@ -281,6 +398,7 @@
     mount(el, args) {
       const u = NI.course.unit(args[0]);
       if (!u) return;
+      NI.views.bindAids(el);
       if (u.dialogue) NI.views.bindDialogue(el, u);
       if (u.builder) mountBuilder(el);
     },
@@ -292,7 +410,7 @@
   // ---------------------------------------------------------------------------
   pages.phrases = {
     title: "Phrasebook",
-    nav: "phrases",
+    nav: "tools",
     render() {
       const P = NI.data.phrases;
       let html =
@@ -341,7 +459,7 @@
   // ---------------------------------------------------------------------------
   pages.words = {
     title: "Word list",
-    nav: "more",
+    nav: "tools",
     render() {
       return (
         '<header class="page-head"><h1>Word list <span class="sub">' + ui.jp("{単語帳|たんごちょう}", { tokens: false }) + "</span></h1>" +
@@ -390,7 +508,7 @@
   // ---------------------------------------------------------------------------
   pages.grammar = {
     title: "Grammar",
-    nav: "grammar",
+    nav: "tools",
     render() {
       const cell = (m) => "<td>" + ui.jp(m, { tokens: false, gaps: false }) + "</td>";
       const particles = NI.data.grammar.filter((g) => g.kind === "particle");
@@ -470,6 +588,15 @@
       }
       return (
         '<header class="page-head"><h1>Options</h1><p>Settings are saved in this browser.' + (NI.store.persistent ? "" : " <b>Your browser is blocking storage, so progress will be lost when you close this page.</b>") + "</p></header>" +
+        '<section class="u-sec opt-sec"><h2>Your plan</h2>' +
+        "<p>Your goal and focus shape what lessons practise most; the daily goal sets your XP target.</p>" +
+        '<fieldset><legend>Why are you learning?</legend><div class="chips">' +
+        NI.plan.GOALS.map((g) => '<button class="chip' + (s.goal === g.id ? " on" : "") + '" type="button" data-opt-goal="' + g.id + '" aria-pressed="' + (s.goal === g.id) + '">' + g.icon + " " + esc(g.t) + "</button>").join("") +
+        '</div><p class="small muted plan-tip">' + esc((NI.plan.GOALS.find((g) => g.id === s.goal) || {}).tip || "") + "</p></fieldset>" +
+        '<fieldset><legend>Daily goal</legend>' + NI.plan.DAILY.map(([xp, t, d]) => radio("dailyGoal", xp, s.dailyGoal, t + " · " + xp + " XP", d)).join("") + "</fieldset>" +
+        '<fieldset><legend>Lesson focus</legend>' + NI.plan.FOCI.map(([v, t, d]) => radio("focus", v, s.focus, t, d)).join("") + "</fieldset>" +
+        toggle("relaxed", "Relaxed mode", "No clocks or lives in games, and a softer sound for mistakes. Lessons and reviews never time you anyway.") +
+        "</section>" +
         '<section class="u-sec opt-sec"><h2>Reading</h2>' +
         '<div class="preview" aria-live="polite">' + ui.jp(sample) + "</div>" +
         '<fieldset><legend>Kanji and furigana</legend>' +
@@ -479,9 +606,13 @@
         "</fieldset>" +
         toggle("kataHelp", "Katakana help", "Show hiragana above katakana until you can read it.") +
         toggle("gaps", "Space between phrases", "Japanese has no spaces; small gaps make sentences easier to split at first.") +
+        toggle("gloss", "Word meanings under Japanese", "A small English gloss under every word. Great for reading longer texts; turn it off to test yourself.") +
+        toggle("particles", "Colour-code particles", "は topic, が subject, を object, に/へ direction, で place or means…") +
+        '<fieldset><legend>Text size</legend>' + radio("textSize", "s", s.textSize, "Small") + radio("textSize", "m", s.textSize, "Medium") + radio("textSize", "l", s.textSize, "Large") + radio("textSize", "xl", s.textSize, "Extra large") + "</fieldset>" +
         "</section>" +
         '<section class="u-sec opt-sec"><h2>Audio</h2>' +
         toggle("autoplay", "Play audio automatically", "Words and sentences are spoken as they appear.") +
+        toggle("sound", "Sound effects", "A chime for right answers, combos and rewards.") +
         '<label for="rate">Speed <output id="rate-out">' + Number(s.rate).toFixed(2) + "×</output></label>" +
         '<input id="rate" type="range" min="0.5" max="1.2" step="0.05" value="' + esc(s.rate) + '">' +
         voices +
@@ -503,8 +634,18 @@
       const refreshPreview = () => (preview.innerHTML = ui.jp("{私|わたし}は コーヒーを {飲|の}みます。"));
       el.querySelectorAll('input[type="radio"]').forEach((r) =>
         r.addEventListener("change", () => {
-          NI.store.set(r.name, r.value);
+          NI.store.set(r.name, r.name === "dailyGoal" ? Number(r.value) : r.value);
           refreshPreview();
+        })
+      );
+      el.querySelectorAll("[data-opt-goal]").forEach((b) =>
+        b.addEventListener("click", () => {
+          const g = NI.plan.GOALS.find((x) => x.id === b.getAttribute("data-opt-goal"));
+          NI.store.set("goal", g.id, true);
+          NI.store.set("focus", g.focus);
+          NI.store.setPlanned();
+          NI.app.render();
+          ui.toast("Plan updated: " + g.t + ". " + PLAN.focusLine(g.focus));
         })
       );
       el.querySelectorAll("[data-set]").forEach((c) =>
@@ -569,11 +710,15 @@
       const link = (href, t, d) => '<a class="card-link" href="' + href + '"><b>' + t + "</b><span>" + d + "</span></a>";
       return (
         '<header class="page-head"><h1>More</h1></header><section class="home-links">' +
-        link("#guide", "How this course works", "What to learn first, and why spaced practice works.") +
-        link("#grammar", "Grammar reference", "Particles, verb and adjective forms, numbers and counters.") +
-        link("#words", "Word list", "Every word in the course, searchable.") +
-        link("#phrases", "Phrasebook", "Survival phrases by situation.") +
-        link("#options", "Options", "Furigana, katakana help, audio, theme and backups.") +
+        link("#stamps", "🏅 Stamp book", "Station stamps, badges, your level and records.") +
+        link("#mistakes", "📝 Mistakes notebook", "Everything you got wrong, ready to practise.") +
+        link("#stories", "📖 Stories", "Graded stories with audio.") +
+        link("#kana", "あ Kana trainer", "Katakana charts, drills, loanwords and look-alikes.") +
+        link("#guide", "🧭 How this course works", "The research behind the course, and routes for different learners.") +
+        link("#grammar", "📐 Grammar reference", "Particles, verb and adjective forms, numbers and counters.") +
+        link("#words", "📚 Word list", "Every word in the course, searchable.") +
+        link("#phrases", "💬 Phrasebook", "Survival phrases by situation.") +
+        link("#options", "⚙️ Options", "Your plan, reading aids, audio, theme and backups.") +
         "</section>"
       );
     },

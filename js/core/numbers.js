@@ -81,7 +81,7 @@
     bansen(n) {
       return toKana(n) + "ばんせん";
     },
-    // 本 (long things), 枚 (flat things), 冊 (books), 匹 (small animals), 回 (times), 階 (floors)
+    // 本 (long things), 枚 (flat things), 冊 (books), 匹 (small animals), 回 (times), 階 (floors), 月 (months)
     hon(n) {
       return soundChange(n, { 1: "いっぽん", 2: "にほん", 3: "さんぼん", 4: "よんほん", 5: "ごほん", 6: "ろっぽん", 7: "ななほん", 8: "はっぽん", 9: "きゅうほん" }, "じゅっぽん");
     },
@@ -99,6 +99,11 @@
     },
     floor(n) {
       return soundChange(n, { 1: "いっかい", 3: "さんがい", 6: "ろっかい", 8: "はっかい" }, "じゅっかい", "かい");
+    },
+    // Months: 4月 しがつ, 7月 しちがつ, 9月 くがつ.
+    gatsu(n) {
+      if (n < 1 || n > 12) return null;
+      return (withLastDigit(n, { 4: "し", 7: "しち", 9: "く" }) || toKana(n)) + "がつ";
     },
   };
 

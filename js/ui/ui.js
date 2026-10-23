@@ -19,6 +19,10 @@
     gear: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 13.5l1.6 1.2-1.8 3.1-1.9-.7a7.6 7.6 0 0 1-1.8 1l-.3 2h-3.6l-.3-2a7.6 7.6 0 0 1-1.8-1l-1.9.7-1.8-3.1 1.6-1.2a7.4 7.4 0 0 1 0-2.1L3.8 9.3l1.8-3.1 1.9.7a7.6 7.6 0 0 1 1.8-1l.3-2h3.6l.3 2a7.6 7.6 0 0 1 1.8 1l1.9-.7 1.8 3.1-1.6 1.2a7.4 7.4 0 0 1 0 2.1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
     train: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="14" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 10h14" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="13.5" r="1.1" fill="currentColor"/><circle cx="15" cy="13.5" r="1.1" fill="currentColor"/><path d="M8 20l2-3M16 20l-2-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
     eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>',
+    split: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M8 10.5h5M10.5 8v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    turtle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15.5c0-4 3.4-7 7.5-7s7.5 3 7.5 7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M19 13.5l2.2-1.2M7 15.5l-1 2.5M16 15.5l1 2.5M8.5 9.8l2 5.7M14.5 9.8l-2 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    mic: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    repeat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9.5A6.5 6.5 0 0 1 17 7l1.5 1.5M19 14.5A6.5 6.5 0 0 1 7 17l-1.5-1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18.5 4v4.5H14M5.5 20v-4.5H10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   };
 
   function furiOpts() {
@@ -45,6 +49,13 @@
     if (!NI.speech.supported) return "";
     return '<button class="say' + (cls ? " " + cls : "") + '" type="button" data-say="' + esc(text) + '" aria-label="Play audio' + (label ? ": " + esc(label) : "") + '" title="Play audio">' + ICON.speaker + "</button>";
   }
+
+  // Opens the word-by-word breakdown of a sentence (handled in app.js).
+  function breakdownBtn(markup, en) {
+    return '<button class="bd-btn" type="button" data-bd="' + esc(markup) + '"' + (en ? ' data-en="' + esc(en) + '"' : "") + ' aria-label="Break this sentence down" title="Break it down: word by word">' + ICON.split + "</button>";
+  }
+
+  const em = (w) => (w && w.em ? '<span class="em" aria-hidden="true">' + w.em + "</span>" : "");
 
   function posTag(word) {
     return '<span class="pos">' + esc(NI.course.posLabel(word.pos)) + "</span>";
@@ -77,12 +88,14 @@
         out.form = entry.form === "dict" && entry.kind === "word" ? NI.conj.LABELS.dict : NI.conj.LABELS[entry.form] || entry.form;
         out.unit = w.unit;
         out.pos = w.pos;
+        out.em = w.em;
       }
     } else if (entry.kind === "word") {
       const w = NI.course.get(entry.id);
       if (w) {
         out.unit = w.unit;
         out.pos = w.pos;
+        out.em = w.em;
       }
     } else if (entry.kind === "grammar") {
       out.kindLabel = entry.pos;
@@ -98,7 +111,7 @@
     const entry = NI.lex.get(key);
     const d = describe(entry);
     if (!d || !pop) return;
-    let html = '<div class="pop-head">' + jp(d.title, { tokens: false, gaps: false }) + say(d.audio, d.reading) + "</div>";
+    let html = '<div class="pop-head">' + (d.em ? '<span class="em" aria-hidden="true">' + d.em + "</span>" : "") + jp(d.title, { tokens: false, gaps: false }) + say(d.audio, d.reading) + "</div>";
     if (d.reading !== NI.furi.base(d.title)) html += '<div class="pop-reading" lang="ja">' + esc(d.reading) + "</div>";
     html += '<div class="pop-en">' + esc(d.en) + "</div>";
     if (d.form) html += '<div class="pop-form">' + esc(d.form) + (d.base ? " of " + jp(d.base, { tokens: false, gaps: false }) : "") + "</div>";
@@ -107,6 +120,7 @@
     if (d.kindLabel) meta.push(esc(d.kindLabel));
     if (d.unit) meta.push('<a href="#unit-' + d.unit + '">Unit ' + d.unit + "</a>");
     if (meta.length) html += '<div class="pop-meta">' + meta.join(" · ") + "</div>";
+    if (entry.kind === "word" || entry.kind === "form") html += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
     pop.innerHTML = html;
     pop.hidden = false;
     popAnchor = anchor;
@@ -189,5 +203,5 @@
     return '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"' + (label ? ' aria-label="' + esc(label) + '"' : "") + '><span style="width:' + pct + '%"></span></div>';
   }
 
-  NI.ui = { ICON, esc, jp, rich, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, get popAnchor() { return popAnchor; } };
+  NI.ui = { ICON, esc, jp, rich, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, get popAnchor() { return popAnchor; } };
 })(typeof window !== "undefined" ? window : globalThis);

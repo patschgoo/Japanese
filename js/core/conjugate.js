@@ -151,6 +151,7 @@
       f.potmasendeshita = s.pot + "ませんでした";
       f.potnai = s.pot + "ない";
       f.potnakatta = s.pot + "なかった";
+      f.potta = s.pot + "た";
     }
     return f;
   }
@@ -240,6 +241,7 @@
     potmasendeshita: "couldn't … (potential, past)",
     potnai: "can't … — plain (potential)",
     potnakatta: "couldn't … — plain (potential)",
+    potta: "could … — plain (potential)",
     neg: "negative (〜くない)",
     past: "past (〜かった)",
     pastneg: "past negative (〜くなかった)",
@@ -277,6 +279,7 @@
     nai: { label: "plain negative (〜ない)", verb: (f) => [f.nai], i: (f) => [f.neg], na: (f) => [f.janai, f.dict + "ではない"] },
     ta: { label: "plain past (〜た)", verb: (f) => [f.ta], i: (f) => [f.past], na: (f) => [f.datta] },
     nakatta: { label: "plain past negative (〜なかった)", verb: (f) => [f.nakatta], i: (f) => [f.pastneg], na: (f) => [f.janakatta, f.dict + "ではなかった"] },
+    vol: { label: "let's / I'll … (〜よう)", verb: (f) => [f.vol] },
     pot: { label: "can … (〜ます form)", verb: (f) => (f.potmasu ? [f.potmasu] : null) },
     tara: { label: "if / when … (〜たら)", verb: (f) => [f.tara], i: (f) => [f.tara], na: (f) => [f.tara] },
     nagara: { label: "while …ing (〜ながら)", verb: (f) => [f.nagara] },
@@ -288,7 +291,9 @@
 
   function drillAnswers(entry, target) {
     const d = DRILLS[target];
-    if (!d || (entry.noDrill && entry.noDrill.includes(target))) return null;
+    // Verbs that can't take ましょう can't take the volitional either.
+    const blocked = entry.noDrill && (entry.noDrill.includes(target) || (target === "vol" && entry.noDrill.includes("mashou")));
+    if (!d || blocked) return null;
     const f = forms(entry);
     if (isVerb(entry.pos)) return d.verb ? d.verb(f) : null;
     if (entry.pos === "adj-na") return d.na ? d.na(f) : null;

@@ -12,7 +12,7 @@ const path = require("path");
 const vm = require("vm");
 
 const ROOT = path.join(__dirname, "..");
-const CORE = ["util", "kana", "furigana", "conjugate", "numbers", "course", "lexicon", "srs", "items"];
+const CORE = ["util", "kana", "furigana", "conjugate", "numbers", "course", "lexicon", "srs", "items", "game", "maker"];
 
 function loadContext() {
   const ctx = { console, setTimeout, clearTimeout };
@@ -116,6 +116,10 @@ function engineTests(NI) {
   eq("3匹", N.COUNTERS.hiki(3), "さんびき");
   eq("1回", N.COUNTERS.kai(1), "いっかい");
   eq("3階", N.COUNTERS.floor(3), "さんがい");
+  eq("4月", N.COUNTERS.gatsu(4), "しがつ");
+  eq("7月", N.COUNTERS.gatsu(7), "しちがつ");
+  eq("9月", N.COUNTERS.gatsu(9), "くがつ");
+  eq("11月", N.COUNTERS.gatsu(11), "じゅういちがつ");
 
   const K = NI.kana;
   eq("ime konnichiha", K.romajiToHiragana("konnichiha", true), "こんにちは");
@@ -152,6 +156,29 @@ function builderTests(NI) {
   ok("{肉|にく}より {魚|さかな}の ほうが {好|す}きです。", [1, 0, 2, 3], false);
 }
 
+// The Sentence Maker: every filler, style, tense, polarity and mood gives known, correctly read Japanese.
+function makerTests(NI) {
+  const D = NI.data.maker;
+  let n = 0;
+  const check = (sel) => {
+    const r = NI.maker.build(sel);
+    n++;
+    if (!r || !r.jp || /undefined|null/.test(r.jp + r.en)) return err("maker", JSON.stringify(sel) + " built nothing");
+    checkText(NI, r.jp, 0, "maker " + sel.pattern + " “" + NI.furi.base(r.jp) + "”", { ignoreOrder: true });
+  };
+  const variants = (base, moods) => {
+    for (const style of ["polite", "plain"]) for (const tense of ["present", "past"]) for (const pol of ["aff", "neg"]) for (const mood of moods) check(Object.assign({ style, tense, pol, mood }, base));
+  };
+  const MOODS = NI.maker.MOODS.map((m) => m[0]);
+  D.action.verb.forEach((v, vi) => v.obj.forEach((o, oi) => variants({ pattern: "action", verb: vi, obj: oi, time: (vi + oi) % D.action.time.length, place: (vi * 2 + oi) % D.action.place.length, who: oi % 2 === 0 }, MOODS)));
+  D.go.verb.forEach((v, vi) => D.go.place.forEach((p, pi) => variants({ pattern: "go", verb: vi, place: pi, how: pi % D.go.how.length, with: (pi + vi) % D.go.with.length }, MOODS)));
+  D.is.topic.forEach((t, ti) => D.is.noun.forEach((x, ni) => variants({ pattern: "is", topic: ti, noun: ni }, ["statement"])));
+  D.adj.topic.forEach((t, ti) => D.adj.adj.forEach((x, ai) => variants({ pattern: "adj", topic: ti, adj: ai }, ["statement"])));
+  D.exist.place.forEach((p, pi) => D.exist.thing.forEach((x, ti) => variants({ pattern: "exist", place: pi, thing: ti }, ["statement"])));
+  D.like.thing.forEach((t, ti) => D.like.feel.forEach((x, fi) => variants({ pattern: "like", thing: ti, feel: fi, who: ti % 2 === 0 }, ["statement"])));
+  return n;
+}
+
 // Every part of every unit builds a lesson whose exercises render.
 function lessonTests(NI) {
   for (const u of NI.course.units) {
@@ -176,7 +203,7 @@ function lessonTests(NI) {
   }
 }
 
-const COUNTER_FN = { 円: "yen", 時: "ji", 分: "fun", 人: "nin", 歳: "sai", 番線: "bansen", 本: "hon", 枚: "mai", 冊: "satsu", 匹: "hiki", 回: "kai", 階: "floor" };
+const COUNTER_FN = { 円: "yen", 時: "ji", 分: "fun", 人: "nin", 歳: "sai", 番線: "bansen", 本: "hon", 枚: "mai", 冊: "satsu", 匹: "hiki", 回: "kai", 階: "floor", 月: "gatsu" };
 
 function checkText(NI, markup, unit, where, opts) {
   const o = opts || {};
@@ -226,6 +253,7 @@ function main() {
   NI.lex.build();
   builderTests(NI);
   lessonTests(NI);
+  const nMade = makerTests(NI);
   const C = NI.course;
   const posOk = new Set(Object.keys(C.POS_LABEL));
   const seenId = new Map();
@@ -324,7 +352,7 @@ function main() {
     console.log("Errors (" + errors.length + "):\n" + fmt(errors));
     process.exitCode = 1;
   } else {
-    console.log("OK: " + C.units.length + " units, " + nWords + " words, " + nSent + " sentences, " + C.stories.length + " stories (" + nStoryLines + " lines) checked.");
+    console.log("OK: " + C.units.length + " units, " + nWords + " words, " + nSent + " sentences, " + C.stories.length + " stories (" + nStoryLines + " lines), " + nMade + " Sentence Maker sentences checked.");
   }
 }
 

@@ -295,9 +295,13 @@
             rest.forEach((x) => (x.hidden = false));
             return;
           }
+          const xp = res.right * NI.game.XP.gamePoint;
+          const won = NI.fx.gain(xp, { inline: true });
+          NI.fx.play("chime");
           box.innerHTML =
             '<div class="finish">' + (res.right / res.total >= 0.8 ? NI.session.hanamaru() : "") +
             "<h2>" + res.right + " / " + res.total + "</h2><p>" + (res.right === res.total ? "Perfect!" : res.right / res.total >= 0.8 ? "Nearly there." : "Keep at it: a few short drills a day work best.") + "</p>" +
+            (xp ? NI.session.xpBlock(won, [["Correct answers", xp]]) : "") +
             '<div class="row center wrap"><button class="btn primary" type="button" data-again>Go again</button><button class="btn ghost" type="button" data-back>Back to the chart</button></div></div>';
           box.querySelector("[data-again]").addEventListener("click", () => start.click());
           box.querySelector("[data-back]").addEventListener("click", () => NI.app.render());

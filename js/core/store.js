@@ -1,5 +1,6 @@
-/* Learner state: settings, finished lesson parts, spaced-repetition items and
-   daily activity. Saved in localStorage; if the browser blocks storage the
+/* Learner state: settings, finished lesson parts, spaced-repetition items,
+   daily activity, and the game layer (XP, badges, bests, line exams, the
+   mistakes notebook). Saved in localStorage; if the browser blocks storage the
    site still works for the current visit. */
 (function (root) {
   "use strict";
@@ -14,10 +15,22 @@
     rate: 0.9,
     voice: "",
     theme: "system", // system | light | dark
+    sound: true, // sound effects for right/wrong answers and rewards
+    relaxed: false, // no clocks or lives in games, softer sound for mistakes
+    dailyGoal: 60, // XP per day
+    goal: "", // travel | media | work | exam | people | curious
+    focus: "balanced", // balanced | listening | speaking | reading | exam
+    textSize: "m", // s | m | l | xl
+    gloss: false, // English meaning under each Japanese word
+    particles: true, // colour-code particles
   };
 
   function blank() {
-    return { v: 1, settings: Object.assign({}, DEFAULT_SETTINGS), onboarded: false, parts: {}, srs: {}, days: {}, kana: {}, intro: {}, created: Date.now() };
+    return {
+      v: 1, settings: Object.assign({}, DEFAULT_SETTINGS), onboarded: false, planned: false,
+      parts: {}, srs: {}, days: {}, kana: {}, intro: {}, created: Date.now(),
+      xp: 0, badges: {}, exams: {}, games: {}, mistakes: {}, stories: {},
+    };
   }
 
   let state = blank();
@@ -52,8 +65,10 @@
     const s = blank();
     if (!saved || typeof saved !== "object") return s;
     s.settings = Object.assign({}, DEFAULT_SETTINGS, saved.settings || {});
-    for (const k of ["parts", "srs", "days", "kana", "intro"]) if (saved[k] && typeof saved[k] === "object") s[k] = saved[k];
+    for (const k of ["parts", "srs", "days", "kana", "intro", "badges", "exams", "games", "mistakes", "stories"]) if (saved[k] && typeof saved[k] === "object") s[k] = saved[k];
+    s.xp = Number(saved.xp) || 0;
     s.onboarded = !!saved.onboarded;
+    s.planned = !!saved.planned;
     s.created = saved.created || s.created;
     return s;
   }
@@ -110,14 +125,21 @@
     get settings() {
       return state.settings;
     },
-    set(key, value) {
+    // quiet: change it without telling listeners (no page re-render).
+    set(key, value, quiet) {
       state.settings[key] = value;
       this.save();
-      emit("settings");
+      if (!quiet) emit("settings");
     },
     setOnboarded() {
       state.onboarded = true;
       this.save();
+    },
+    setPlanned() {
+      state.planned = true;
+      state.onboarded = true;
+      this.save();
+      emit("settings");
     },
 
     partKey: (unit, part) => unit + ":" + part,
@@ -173,6 +195,82 @@
       day[field] = (day[field] || 0) + n;
       this.save();
     },
+    // Keeps the highest value of the day (e.g. the longest combo).
+    logMax(field, n) {
+      const d = NI.util.dayKey();
+      const day = state.days[d] || (state.days[d] = {});
+      if (!(day[field] >= n)) day[field] = n;
+      this.save();
+    },
+    today() {
+      return state.days[NI.util.dayKey()] || {};
+    },
+    // Sum of a daily counter over every day.
+    total(field) {
+      let n = 0;
+      for (const d in state.days) n += state.days[d][field] || 0;
+      return n;
+    },
+
+    // ---- game layer ---------------------------------------------------------
+    addXp(n) {
+      if (!(n > 0)) return 0;
+      state.xp += n;
+      this.log("xp", n);
+      emit("xp");
+      return n;
+    },
+    // Returns true the first time a badge is earned.
+    award(id) {
+      if (state.badges[id]) return false;
+      state.badges[id] = Date.now();
+      this.save();
+      return true;
+    },
+    // Stores a personal best; returns true if it is a new one.
+    setBest(game, score, lowerIsBetter) {
+      const cur = state.games[game];
+      const better = cur == null || (lowerIsBetter ? score < cur : score > cur);
+      if (better) state.games[game] = score;
+      this.log("g", 1);
+      this.save();
+      return better;
+    },
+    setExam(lineId, pct) {
+      if (!(state.exams[lineId] >= pct)) state.exams[lineId] = pct;
+      this.save();
+    },
+    // The mistakes notebook: items answered wrong, until answered right twice.
+    addMistake(ref) {
+      if (!ref) return;
+      const m = state.mistakes[ref] || (state.mistakes[ref] = { n: 0, ok: 0 });
+      m.n++;
+      m.ok = 0;
+      m.t = Date.now();
+      this.save();
+    },
+    fixMistake(ref) {
+      const m = state.mistakes[ref];
+      if (!m) return false;
+      m.ok++;
+      if (m.ok >= 2) {
+        delete state.mistakes[ref];
+        this.log("mf", 1);
+      }
+      this.save();
+      return !state.mistakes[ref];
+    },
+    removeMistake(ref) {
+      delete state.mistakes[ref];
+      this.save();
+    },
+    markStory(id) {
+      const first = !state.stories[id];
+      if (first) state.stories[id] = Date.now();
+      this.log("st", 1);
+      this.save();
+      return first;
+    },
     // Consecutive days with any activity, counting today or yesterday as the end.
     streak() {
       let n = 0;
@@ -193,7 +291,7 @@
     kanaResult(ch, ok) {
       const k = state.kana[ch] || (state.kana[ch] = [0, 0]);
       k[ok ? 0 : 1]++;
-      this.save();
+      this.log("kn", 1);
     },
 
     exportJson() {

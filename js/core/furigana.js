@@ -77,8 +77,10 @@
   }
 
   /* Renders markup to HTML. Known words become tappable spans (data-k is the
-     lexicon key) when the lexicon is loaded. opts.onToken may replace a token,
-     which is how exercises blank out a particle. */
+     lexicon key) when the lexicon is loaded, carrying a short English gloss
+     (data-gl) and, for particles, an id for colour-coding (data-p).
+     opts.onToken may replace a token, which is how exercises blank out a
+     particle. */
   function render(markup, opts) {
     const o = Object.assign({}, defaults, opts || {});
     const tiles = parse(markup);
@@ -90,7 +92,9 @@
         const slice = atoms.slice(tok.start, tok.end);
         let h = atomsHtml(slice, o);
         if (tok.entry && tok.entry.kind !== "punct") {
-          h = "<span class=\"tok\" data-k=\"" + esc(tok.entry.key) + "\">" + h + "</span>";
+          const gl = NI.lex.gloss ? NI.lex.gloss(tok.entry) : "";
+          const pid = NI.lex.particleId ? NI.lex.particleId(tok.entry) : null;
+          h = "<span class=\"tok\" data-k=\"" + esc(tok.entry.key) + "\"" + (gl ? " data-gl=\"" + esc(gl) + "\"" : "") + (pid ? " data-p=\"" + pid + "\"" : "") + ">" + h + "</span>";
         }
         if (o.onToken) {
           const r = o.onToken(tok, h, ti, ki, slice);
