@@ -1,7 +1,7 @@
 {
   "name": "Nihongo Ippo",
   "short_name": "Ippo",
-  "description": "Learn Japanese once you can read hiragana: words, grammar and conversations with spaced repetition.",
+  "description": "Learn Japanese once you can read hiragana: words, grammar, conversations, games and stories with spaced repetition.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

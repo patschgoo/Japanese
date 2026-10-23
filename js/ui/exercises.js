@@ -1,6 +1,9 @@
 /* Exercise types and the generator that turns a unit part into a lesson.
    Each exercise has html() and mount(card, api); it calls api.done(correct)
-   once answered (or api.done(null) for cards that are only read). */
+   once answered (or api.done(null) for cards that are only read).
+   ref names the word or sentence being tested (for the mistakes notebook);
+   hint(card) gives a nudge. Option and typing cards also get a generic hint
+   from the session: data-ci marks the right option, data-ans the answer. */
 (function (root) {
   "use strict";
   const NI = root.NI;
@@ -57,6 +60,8 @@
   // Wires option buttons; correctIndex marks the right one after a choice.
   function bindOptions(card, correctIndex, api, onPick) {
     const btns = Array.from(card.querySelectorAll(".opt"));
+    const box = card.querySelector(".opts");
+    if (box) box.setAttribute("data-ci", correctIndex);
     btns.forEach((b) =>
       b.addEventListener("click", () => {
         if (card.dataset.answered) return;
@@ -88,6 +93,7 @@
 
   function bindInput(card, api, accept) {
     const input = card.querySelector(".kana-input");
+    input.setAttribute("data-ans", accept.find((a) => /^[ぁ-ゖァ-ヺー]+$/.test(a)) || accept[0]);
     const ime = K.bindIme(input);
     const check = () => {
       if (card.dataset.answered) return;
@@ -160,6 +166,7 @@
     return {
       type: "mcMeaning",
       item: word.id,
+      ref: word.id,
       html() {
         return '<p class="kicker">What does this mean?</p><div class="prompt-word hand">' + ui.jp(word.head, { tokens: false }) + ui.say(ui.wordAudio(word), word.r) + "</div>" + options(opts, (w) => esc(w.en));
       },
@@ -177,6 +184,7 @@
     return {
       type: "mcWord",
       item: word.id,
+      ref: word.id,
       html() {
         return '<p class="kicker">Choose the Japanese</p><p class="prompt-en">' + esc(word.en) + "</p>" + options(opts, (w) => ui.jp(w.head, { tokens: false }));
       },
@@ -193,6 +201,7 @@
     return {
       type: "listen",
       item: word.id,
+      ref: word.id,
       html() {
         return '<p class="kicker">What did you hear?</p><div class="prompt-audio">' + playButton(ui.wordAudio(word), "the word") + "</div>" + options(opts, (w) => ui.jp(w.head, { tokens: false }));
       },
@@ -208,6 +217,7 @@
   T.type = (word, rng) => ({
     type: "type",
     item: word.id,
+    ref: word.id,
     html() {
       return '<p class="kicker">Type it in Japanese</p><p class="prompt-en">' + esc(word.en) + '</p><p class="word-meta center">' + ui.posTag(word) + "</p>" + inputBox("ans-" + U.hash(word.id + Math.random()));
     },
@@ -229,6 +239,16 @@
           '<div class="match-col">' + left.map((w) => '<button class="m-cell jp-cell" type="button" data-id="' + esc(w.id) + '">' + ui.jp(w.head, { tokens: false }) + "</button>").join("") + "</div>" +
           '<div class="match-col">' + right.map((w) => '<button class="m-cell" type="button" data-id="' + esc(w.id) + '">' + esc(w.en) + "</button>").join("") + "</div></div>"
         );
+      },
+      // Flashes one pair that still needs matching.
+      hint(card) {
+        const open = Array.from(card.querySelectorAll(".match-col:first-child .m-cell:not(.done)"));
+        if (!open.length) return;
+        const id = open[0].dataset.id;
+        card.querySelectorAll('.m-cell[data-id="' + CSS.escape(id) + '"]').forEach((c) => {
+          c.classList.add("hinted");
+          setTimeout(() => c.classList.remove("hinted"), 1600);
+        });
       },
       mount(card, api) {
         let sel = null;
@@ -280,6 +300,7 @@
     return {
       type: "translate",
       item: sen.id,
+      ref: /^s:/.test(sen.id || "") ? sen.id : null,
       html() {
         return '<p class="kicker">What does it mean?</p><div class="prompt-sentence">' + ui.jp(sen.jp) + ui.say(ui.sentenceAudio(sen.jp)) + "</div>" + options(opts, (s) => esc(s.en));
       },
@@ -296,6 +317,7 @@
     const opts = U.shuffle([sen].concat(others), rng);
     return {
       type: "listenSentence",
+      ref: /^s:/.test(sen.id || "") ? sen.id : null,
       html() {
         return '<p class="kicker">Which sentence did you hear?</p><div class="prompt-audio">' + playButton(ui.sentenceAudio(sen.jp), "the sentence") + "</div>" + options(opts, (s) => ui.jp(s.jp, { tokens: false }));
       },
@@ -324,6 +346,7 @@
     return {
       type: "particle",
       item: sen.id + target,
+      ref: /^s:/.test(sen.id || "") ? sen.id : null,
       html() {
         return '<p class="kicker">Fill in the particle</p><p class="prompt-en small">' + esc(sen.en) + '</p><div class="prompt-sentence">' + blanked + "</div>" + options(opts, (p) => '<span class="jp particle" lang="ja">' + esc(p) + "</span>");
       },
@@ -398,6 +421,23 @@
     return {
       type: "build",
       item: sen.id,
+      ref: /^s:/.test(sen.id || "") ? sen.id : null,
+      // Puts the next tile in place (after taking back any that are out of order).
+      hint(card) {
+        const ans = card.querySelector(".build-answer");
+        const bank = card.querySelector(".build-tiles");
+        const got = Array.from(ans.querySelectorAll(".tile"));
+        let k = 0;
+        while (k < got.length && Number(got[k].dataset.t) === k) k++;
+        got.slice(k).forEach((t) => bank.appendChild(t));
+        const t = bank.querySelector('.tile[data-t="' + k + '"]');
+        if (t) {
+          ans.appendChild(t);
+          t.classList.add("hinted");
+        }
+        const check = card.querySelector("[data-check]");
+        if (check) check.disabled = bank.querySelectorAll(".tile").length > 0;
+      },
       html() {
         return (
           '<p class="kicker">Build the sentence</p><p class="prompt-en">' + esc(sen.en) + "</p>" +
@@ -440,6 +480,7 @@
     return {
       type: "conj",
       item: word.id + target,
+      ref: word.id,
       html() {
         return (
           '<p class="kicker">Change the form</p><div class="prompt-word hand small">' + ui.jp(word.head, { tokens: false }) + "</div>" +
@@ -460,6 +501,9 @@
   };
 
   // Numbers: read a price, time or head-count, or hear one and pick it.
+  // counter → [sign, plain reading, whether "number + plain reading" is a useful wrong answer]
+  const COUNTER_SIGNS = { hon: ["本", "ほん", true], mai: ["枚", "まい", false], satsu: ["冊", "さつ", true], hiki: ["匹", "ひき", true], kai: ["回", "かい", true], floor: ["階", "かい", false], gatsu: ["月", "がつ", true] };
+
   function numberItem(kind, rng) {
     const N = NI.num;
     const r = rng || Math.random;
@@ -471,6 +515,16 @@
     if (kind === "people") {
       const n = U.pick([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 4, 1, 2], r);
       return { label: n + "人", kana: N.COUNTERS.nin(n), naive: N.toKana(n) + "にん", near: () => N.COUNTERS.nin(1 + Math.floor(r() * 10)) };
+    }
+    if (kind.startsWith("ctr:")) {
+      // "ctr:hon,mai" drills those counters. Numbers with two accepted readings
+      // (8本 はっぽん/はちほん, 3階 さんがい/さんかい) are left out.
+      const c = U.pick(kind.slice(4).split(","), r);
+      const [sign, plain, naive] = COUNTER_SIGNS[c];
+      const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+      const n = U.pick(c === "floor" ? [1, 2, 4, 5, 6, 7, 9, 10] : c === "gatsu" ? months.concat([4, 7, 9]) : [1, 2, 3, 4, 5, 6, 7, 9, 10, 1, 3, 6], r);
+      const fn = N.COUNTERS[c];
+      return { label: n + sign, kana: fn(n), naive: naive ? N.toKana(n) + plain : null, near: () => fn(U.pick(c === "gatsu" ? months : [1, 2, 3, 4, 5, 6, 7, 9, 10], r)) };
     }
     const bands = [[10, 990, 10], [100, 9900, 100], [1000, 50000, 500], [100, 2000, 50]];
     const [lo, hi, step] = U.pick(bands, r);
@@ -523,6 +577,43 @@
     };
   };
 
+  /* Say it out loud: reading or saying words aloud makes them more memorable
+     than silent study (the production effect), so the learner says the
+     sentence, then checks it against the text and the audio. */
+  T.speak = (sen, rng) => ({
+    type: "speak",
+    item: "speak:" + sen.id,
+    ref: /^s:/.test(sen.id || "") ? sen.id : null,
+    html() {
+      return (
+        '<p class="kicker">Say it out loud in Japanese</p><p class="prompt-en">' + esc(sen.en) + "</p>" +
+        '<p class="small muted center">Say the whole sentence aloud (or at least mouth it), then check.</p>' +
+        '<div class="speak-answer" hidden><div class="prompt-sentence">' + ui.jp(sen.jp) + ui.say(ui.sentenceAudio(sen.jp)) + "</div></div>" +
+        '<div class="row center wrap speak-btns"><button class="btn primary" type="button" data-show>I said it — show me</button></div>'
+      );
+    },
+    mount(card, api) {
+      const show = card.querySelector("[data-show]");
+      show.addEventListener("click", () => {
+        card.querySelector(".speak-answer").hidden = false;
+        if (NI.speech.supported) NI.speech.speak(ui.sentenceAudio(sen.jp));
+        const btns = card.querySelector(".speak-btns");
+        btns.innerHTML = '<button class="btn ghost" type="button" data-self="0">Not quite</button><button class="btn primary" type="button" data-self="1">I got it</button>';
+        btns.querySelectorAll("[data-self]").forEach((b) =>
+          b.addEventListener("click", () => {
+            if (card.dataset.answered) return;
+            card.dataset.answered = "1";
+            btns.querySelectorAll("button").forEach((x) => (x.disabled = true));
+            NI.store.log("sp", 1);
+            api.done(b.getAttribute("data-self") === "1");
+          })
+        );
+        btns.querySelector('[data-self="1"]').focus({ preventScroll: true });
+      });
+    },
+    solution: () => ui.jp(sen.jp) + ui.say(ui.sentenceAudio(sen.jp)),
+  });
+
   T.dialogue = (unit) => ({
     type: "dialogue",
     html() {
@@ -551,6 +642,20 @@
   // ---------------------------------------------------------------------------
   // Building a lesson for one part of a unit
 
+  /* The learner's focus (Options → Your plan) shifts the mix of exercise
+     types; every lesson still has some of everything. */
+  const FOCUS = {
+    balanced: {},
+    listening: { listen: 2, listenSentence: 2, speak: 1.5, type: 0.75 },
+    speaking: { speak: 2.5, type: 1.5, build: 1.25, translate: 0.75 },
+    reading: { translate: 1.5, particle: 1.25, speak: 0.5, listen: 0.67, listenSentence: 0.5 },
+    exam: { particle: 1.5, conj: 1.5, number: 1.5, speak: 0.5 },
+  };
+  function howMany(base, type) {
+    const f = FOCUS[(NI.store.settings && NI.store.settings.focus) || "balanced"] || {};
+    return Math.max(0, Math.round(base * (f[type] || 1)));
+  }
+
   function wordsLesson(words, rng) {
     const out = [];
     for (let i = 0; i < words.length; i += 4) {
@@ -564,8 +669,8 @@
       if (grp.length >= 3) out.push(T.match(grp, rng));
     }
     const typeable = mixed.filter((w) => w.r.length <= 7 && w.pos !== "num" && w.pos !== "ctr");
-    U.sample(typeable, Math.min(4, typeable.length), rng).forEach((w) => out.push(T.type(w, rng)));
-    if (NI.speech.canListen) U.sample(mixed, Math.min(3, mixed.length), rng).forEach((w) => out.push(T.listen(w, rng)));
+    U.sample(typeable, Math.min(howMany(4, "type"), typeable.length), rng).forEach((w) => out.push(T.type(w, rng)));
+    if (NI.speech.canListen) U.sample(mixed, Math.min(howMany(3, "listen"), mixed.length), rng).forEach((w) => out.push(T.listen(w, rng)));
     else U.sample(mixed, Math.min(3, mixed.length), rng).forEach((w) => out.push(T.mcWord(w, rng)));
     return out;
   }
@@ -574,26 +679,30 @@
     const S = u.sentences;
     const ex = [];
     const take = (list, n) => U.sample(list, Math.min(n, list.length), rng);
-    take(S, 4).forEach((s) => ex.push(T.translate(s, S, rng)));
-    if (NI.speech.canListen) take(S, 2).forEach((s) => ex.push(T.listenSentence(s, S, rng)));
+    take(S, howMany(4, "translate")).forEach((s) => ex.push(T.translate(s, S, rng)));
+    if (NI.speech.canListen) take(S, howMany(2, "listenSentence")).forEach((s) => ex.push(T.listenSentence(s, S, rng)));
     const withP = S.filter((s) => s.p);
-    take(withP, 5).forEach((s) => ex.push(T.particle(s, [].concat(s.p)[0], rng)));
+    take(withP, howMany(5, "particle")).forEach((s) => ex.push(T.particle(s, [].concat(s.p)[0], rng)));
+    take(S.filter((s) => NI.furi.base(s.jp).length <= 22), howMany(2, "speak")).forEach((s) => ex.push(T.speak(s, rng)));
     const buildable = S.filter((s) => {
       const tiles = NI.furi.parse(s.jp).length;
       const body = NI.furi.base(s.jp).replace(/[。？！]$/, "");
       return tiles >= 3 && tiles <= 6 && !/[。？！]/.test(body);
     });
-    take(buildable, 4).forEach((s) => ex.push(T.build(s, rng)));
+    take(buildable, howMany(4, "build")).forEach((s) => ex.push(T.build(s, rng)));
     const drill = u.drill || {};
-    // "masen:a" drills adjectives, "te" (or "te:v") drills verbs; this unit's words come first.
+    /* "masen:a" drills adjectives, "te" (or "te:v") drills verbs. Words the
+       unit names in drill.words (dictionary forms) come first, then this
+       unit's own words, then earlier units'. */
+    const named = (drill.words || []).map((b) => NI.course.words.find((w) => w.w === b && w.unit <= u.n)).filter(Boolean);
     for (const spec of drill.conj || []) {
       const [target, kind] = spec.split(":");
       const fits = (w) => (kind === "a" ? NI.conj.isAdj(w.pos) : NI.conj.isVerb(w.pos)) && NI.conj.drillAnswers(w, target);
-      const cands = [];
-      for (let n = u.n; n >= 1 && cands.length < 8; n--) for (const w of NI.course.unit(n).words) if (fits(w)) cands.push(w);
-      take(cands.slice(0, 8), Math.ceil(6 / drill.conj.length)).forEach((w) => ex.push(T.conj(w, target, rng)));
+      const cands = named.filter(fits);
+      for (let n = u.n; n >= 1 && cands.length < 8; n--) for (const w of NI.course.unit(n).words) if (fits(w) && !cands.includes(w)) cands.push(w);
+      take(cands.slice(0, 8), howMany(Math.ceil(6 / drill.conj.length), "conj")).forEach((w) => ex.push(T.conj(w, target, rng)));
     }
-    if (drill.num) for (let i = 0; i < 4; i++) ex.push(T.number(drill.num, rng, i % 2 === 1 && NI.speech.canListen));
+    if (drill.num) for (let i = 0; i < howMany(4, "number"); i++) ex.push(T.number(drill.num, rng, i % 2 === 1 && NI.speech.canListen));
     take(u.sit || [], 6).forEach((s) => ex.push(T.situation(s, rng)));
     // Keep two reading questions first, then mix the rest.
     return ex.slice(0, 2).concat(U.shuffle(ex.slice(2), rng));
@@ -625,5 +734,54 @@
     return { part, exercises, srs };
   }
 
-  NI.exercises = { T, lesson, builderAccepts, builderBlocks, wordDistractors, acceptedForWord, overlaps };
+  // A word or sentence from the mistakes notebook, as a fresh exercise.
+  function practiceOne(ref, rng) {
+    const it = NI.items.get(ref);
+    if (!it) return null;
+    if (it.kind === "word") {
+      const typeable = it.r.length <= 7 && it.pos !== "num" && it.pos !== "ctr";
+      const pick = Math.floor(rng() * 3);
+      return pick === 0 && typeable ? T.type(it, rng) : pick === 1 ? T.mcWord(it, rng) : T.mcMeaning(it, rng);
+    }
+    if (it.kind === "sentence") {
+      const u = NI.course.unit(it.unit);
+      const pool = u ? u.sentences : [it];
+      const tiles = NI.furi.parse(it.jp).length;
+      const pick = Math.floor(rng() * 3);
+      if (pick === 0 && it.p) return T.particle(it, [].concat(it.p)[0], rng);
+      if (pick === 1 && tiles >= 3 && tiles <= 7) return T.build(it, rng);
+      return pool.length >= 4 ? T.translate(it, pool, rng) : T.speak(it, rng);
+    }
+    return null;
+  }
+
+  function practice(refs, seed) {
+    const rng = U.rng(seed == null ? Date.now() : seed);
+    return U.shuffle(refs, rng).map((r) => practiceOne(r, rng)).filter(Boolean);
+  }
+
+  /* A line exam: 20 mixed questions from the line's units. No retries and no
+     hints, so the score shows what you know. */
+  function exam(line, seed) {
+    const rng = U.rng(seed == null ? Date.now() : seed);
+    const units = line.units.map((n) => NI.course.unit(n)).filter(Boolean);
+    const words = [].concat(...units.map((u) => u.words)).filter((w) => w.pos !== "int");
+    const sens = [].concat(...units.map((u) => u.sentences));
+    const ex = [];
+    U.sample(words, 4, rng).forEach((w) => ex.push(T.mcMeaning(w, rng)));
+    U.sample(words, 3, rng).forEach((w) => ex.push(T.mcWord(w, rng)));
+    U.sample(sens, 4, rng).forEach((s) => ex.push(T.translate(s, sens, rng)));
+    U.sample(sens.filter((s) => s.p), 4, rng).forEach((s) => ex.push(T.particle(s, [].concat(s.p)[0], rng)));
+    const buildable = sens.filter((s) => {
+      const n = NI.furi.parse(s.jp).length;
+      return n >= 3 && n <= 6 && !/[。？！]/.test(NI.furi.base(s.jp).replace(/[。？！]$/, ""));
+    });
+    U.sample(buildable, 2, rng).forEach((s) => ex.push(T.build(s, rng)));
+    const sits = [].concat(...units.map((u) => u.sit || []));
+    U.sample(sits, 3, rng).forEach((s) => ex.push(T.situation(s, rng)));
+    while (ex.length < 20 && words.length) ex.push(T.mcMeaning(U.pick(words, rng), rng));
+    return U.shuffle(ex, rng).slice(0, 20).map((e) => Object.assign(e, { retry: null, noHint: true }));
+  }
+
+  NI.exercises = { T, lesson, practice, exam, builderAccepts, builderBlocks, wordDistractors, acceptedForWord, overlaps, FOCUS };
 })(typeof window !== "undefined" ? window : globalThis);

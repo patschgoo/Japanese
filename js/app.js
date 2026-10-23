@@ -10,9 +10,9 @@
   const NAV = [
     { id: "home", label: "Learn", ja: "{学|まな}ぶ" },
     { id: "review", label: "Review", ja: "{復習|ふくしゅう}", badge: true },
-    { id: "phrases", label: "Phrases", ja: "フレーズ" },
-    { id: "kana", label: "Kana", ja: "かな" },
-    { id: "grammar", label: "Grammar", ja: "{文法|ぶんぽう}", wide: true },
+    { id: "play", label: "Play", ja: "{遊|あそ}ぶ" },
+    { id: "tools", label: "Tools", ja: "{道具|どうぐ}" },
+    { id: "kana", label: "Kana", ja: "かな", wide: true },
     { id: "guide", label: "Guide", ja: "ガイド", wide: true },
     { id: "options", label: "Options", icon: "gear", wide: true },
     { id: "more", label: "More", ja: "その{他|た}", narrow: true },
@@ -104,6 +104,10 @@
       ownTheme = false;
     }
     doc.body.classList.toggle("furi-hover", s.furigana === "hover");
+    doc.body.classList.toggle("show-gloss", !!s.gloss);
+    doc.body.classList.toggle("pcolor", !!s.particles);
+    if (s.textSize && s.textSize !== "m") el.setAttribute("data-size", s.textSize);
+    else el.removeAttribute("data-size");
   }
 
   function onClick(e) {
@@ -114,6 +118,12 @@
       say.classList.remove("ping");
       void say.offsetWidth;
       say.classList.add("ping");
+      return;
+    }
+    const bd = e.target.closest("[data-bd]");
+    if (bd) {
+      e.preventDefault();
+      NI.breakdown.open(bd.getAttribute("data-bd"), bd.getAttribute("data-en"));
       return;
     }
     const tok = e.target.closest(".tok[data-k]");
@@ -197,7 +207,7 @@
     registerWorker();
   }
 
-  NI.app = { render, go, renderNav, parse };
+  NI.app = { render, go, renderNav, parse, applySettings };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot);
   else boot();
 })(typeof window !== "undefined" ? window : globalThis);
