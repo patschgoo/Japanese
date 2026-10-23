@@ -41,7 +41,7 @@
       },
       {
         t: "All done, or oops: 〜てしまう",
-        body: "<p>て-form + [[しまう]] says an action is over and done with: [[{全部|ぜんぶ}{食|た}べてしまいました]] (I ate the whole lot). Very often it adds regret, for something you didn't mean to happen: [[{財布|さいふ}を{忘|わす}れてしまいました]] (I went and forgot my wallet). The past form on its own, [[しまった！]], means “Oh no!”.</p><p>In casual speech 〜てしまう shrinks to 〜ちゃう (〜じゃう after a で): 忘れちゃった, 飲んじゃった. You'll hear it all the time.</p>",
+        body: "<p>て-form + [[しまう]] says an action is over and done with: [[{全部|ぜんぶ}{食|た}べてしまいました]] (I ate the whole lot). Very often it adds regret, for something you didn't mean to happen: [[{財布|さいふ}を{忘|わす}れてしまいました]] (I went and forgot my wallet). The past form on its own, [[しまった！]], means “Oh no!”.</p><p>In casual speech 〜てしまう shrinks to 〜ちゃう (〜じゃう after a で): [[{忘|わす}れちゃった]], [[{飲|の}んじゃった]]. You'll hear it all the time, and friends in this unit use it too.</p>",
         ex: [
           ["{財布|さいふ}を {忘|わす}れてしまいました。", "I've gone and forgotten my wallet."],
           ["もう {全部|ぜんぶ} {読|よ}んでしまいました。", "I've already read the whole thing."],
@@ -88,7 +88,7 @@
     ],
     sit: [
       { q: "In a shop, you'd like to try on a yukata.", a: "すみません、 この {浴衣|ゆかた}、 {着|き}てみても いいですか。", o: ["すみません、 この {浴衣|ゆかた}、 {着|き}てしまいました。", "すみません、 この {浴衣|ゆかた}、 {着|き}ないでください。", "すみません、 この {浴衣|ゆかた}を {落|お}としてしまいました。"] },
-      { q: "You reach the festival and realise your wallet is still at home.", a: "しまった！ {財布|さいふ}を {忘|わす}れてしまった。", o: ["よかった！ {財布|さいふ}が ある。", "{財布|さいふ}を {買|か}ってみたい。", "{財布|さいふ}を なくさないでね。"] },
+      { q: "You reach the festival and realise your wallet is still at home.", a: "しまった！ {財布|さいふ}を {忘|わす}れちゃった。", o: ["よかった！ {財布|さいふ}が ある。", "{財布|さいふ}を {買|か}ってみたい。", "{財布|さいふ}を なくさないでね。"] },
       { q: "A friend asks how many times you've been to Kyoto. You've been three times.", a: "{3|さん}{回|かい} {行|い}った ことが あります。", o: ["{3|さん}{回|かい} {行|い}ってみたいです。", "{3|さん}{人|にん}で {行|い}きました。", "{3|さん}{月|がつ}に {行|い}きました。"] },
       { q: "A friend offers you some takoyaki. You've never had it, and you're curious.", a: "{食|た}べてみたいです！", o: ["もう {全部|ぜんぶ} {食|た}べてしまいました。", "{食|た}べないでください。", "{食|た}べては いけません。"] },
       { q: "A friend is wearing a yukata for the first time. Pay them a compliment.", a: "よく {似合|にあ}いますね！", o: ["よく {忘|わす}れますね。", "{浴衣|ゆかた}を なくしてしまいましたね。", "{浴衣|ゆかた}は {高|たか}いですね。"] },
@@ -105,10 +105,10 @@
         ["K", "いいえ、 {2|に}{回|かい} {行|い}った ことが あります。 でも、 {浴衣|ゆかた}は {初|はじ}めてです。", "No, I've been to two. But it's my first time in a yukata."],
         ["*", "At the festival, the street is lined with food stalls."],
         ["Y", "ケン、 たこ{焼|や}き、 {食|た}べてみる？", "Ken, want to try some takoyaki?"],
-        ["K", "うん！ …あっ、 しまった！{財布|さいふ}を {忘|わす}れてしまった。", "Yeah! … Oh no! I've left my wallet behind."],
+        ["K", "うん！ …あっ、 しまった！{財布|さいふ}を {忘|わす}れちゃった。", "Yeah! … Oh no! I've left my wallet behind."],
         ["Y", "{大丈夫|だいじょうぶ}。{今日|きょう}は {私|わたし}が {払|はら}うね。", "Don't worry. Tonight's on me."],
         ["K", "ありがとう！ …{熱|あつ}い！ でも、 おいしい！", "Thanks! … Hot! But it's so good!"],
-        ["Y", "えっ、 もう {全部|ぜんぶ} {食|た}べてしまった？ あ、 {花火|はなび}が {始|はじ}まった！", "What, you've eaten them all already? Oh, the fireworks have started!"],
+        ["Y", "えっ、 もう {全部|ぜんぶ} {食|た}べちゃった？ あ、 {花火|はなび}が {始|はじ}まった！", "What, you've eaten them all already? Oh, the fireworks have started!"],
         ["K", "わあ、 きれい！{来年|らいねん}も {一緒|いっしょ}に {来|こ}よう！", "Wow, they're beautiful! Let's come again next year!"],
       ],
       q: [
@@ -355,7 +355,7 @@
       setting: "A hot August night. Ken's air conditioner has stopped working, so he knocks on Yuki's door.",
       cast: { K: { ja: "ケン", en: "Ken" }, Y: { ja: "ゆき", en: "Yuki" }, W: { ja: "{大家|おおや}さん", en: "Landlady" } },
       lines: [
-        ["K", "ゆき、 エアコンが {壊|こわ}れてしまった。{暑|あつ}くて {寝|ね}られないよ。", "Yuki, my air conditioner's broken. It's so hot I can't sleep."],
+        ["K", "ゆき、 エアコンが {壊|こわ}れちゃった。{暑|あつ}くて {寝|ね}られないよ。", "Yuki, my air conditioner's broken. It's so hot I can't sleep."],
         ["Y", "えっ、 {大変|たいへん}！ {大家|おおや}さんに {電話|でんわ}した？", "Oh no! Have you called the landlady?"],
         ["K", "ううん、 まだ。もう {遅|おそ}いから…。どう すれば いい？", "No, not yet. It's late… What should I do?"],
         ["Y", "{明日|あした}の {朝|あさ} {電話|でんわ}すれば いいよ。{大家|おおや}さんは {優|やさ}しいから、 すぐ {来|き}てくれるよ。", "Just call her tomorrow morning. She's kind, so she'll come over straight away."],

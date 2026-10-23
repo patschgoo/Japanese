@@ -25,6 +25,7 @@
       sou: 27, souna: 27,
       ba: 28, nakereba: 28,
       nakute: 29,
+      chau: 26, chatta: 26,
     },
     "adj-i": { neg: 10, kuarimasen: 10, te: 10, adv: 15, past: 18, pastneg: 18, kuarimasendeshita: 18, tara: 23, sou: 27, souna: 27, ba: 28 },
     "adj-na": { na: 10, de: 10, janai: 10, ni: 15, da: 16, datta: 16, janakatta: 18, tara: 23, sou: 27, souna: 27, nara: 28 },
@@ -49,7 +50,7 @@
     teru: "-ing", tenai: "not -ing", teta: "was -ing", vol: "let’s", ba: "if", pot: "can", potmasu: "can", potmasen: "can’t",
     potmashita: "could", potmasendeshita: "couldn’t", potnai: "can’t", potnakatta: "couldn’t", potta: "could", neg: "not", past: "past",
     pastneg: "not · past", adv: "-ly", kuarimasen: "not", kuarimasendeshita: "not · past", ni: "-ly", de: "and", da: "is",
-    datta: "was", janai: "not", janakatta: "not · past", nara: "if",
+    datta: "was", janai: "not", janakatta: "not · past", nara: "if", chau: "end up", chatta: "went and",
   };
   // Particle ids for colour-coding (CSS: .tok[data-p="wa"]).
   const PARTICLE_ID = { は: "wa", が: "ga", を: "o", に: "ni", で: "de", へ: "e", と: "to", も: "mo", の: "no", か: "ka", から: "kara", まで: "made", より: "yori", ね: "ne", よ: "yo" };

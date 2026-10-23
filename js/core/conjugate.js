@@ -99,6 +99,9 @@
     throw new Error("Not a verb: " + pos);
   }
 
+  // Casual 〜てしまう: 忘れて → 忘れちゃう, 飲んで → 飲んじゃう.
+  const chau = (te, end) => te.slice(0, -1) + (te.endsWith("で") ? "じゃ" : "ちゃ") + end;
+
   function verbForms(j, pos) {
     const s = verbStems(j, pos);
     const neg = s.a; // a-stem (empty for ある, giving ない)
@@ -140,6 +143,8 @@
       teru: s.te + "る",
       tenai: s.te + "ない",
       teta: s.te + "た",
+      chau: chau(s.te, "う"),
+      chatta: chau(s.te, "った"),
       vol: s.vol,
       ba: s.ba,
     };
@@ -219,6 +224,8 @@
     nakatta: "plain past negative (〜なかった)",
     naide: "without …ing / don't … (〜ないで)",
     nakute: "not … (〜なくて): 〜なくてもいい = don't have to",
+    chau: "end up … — casual (〜ちゃう, from 〜てしまう)",
+    chatta: "went and … — casual past (〜ちゃった, from 〜てしまった)",
     nakereba: "if not … (〜なければ): 〜なければなりません = must",
     nakattara: "if (you) don't … (〜なかったら)",
     te: "て-form",

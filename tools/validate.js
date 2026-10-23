@@ -58,6 +58,10 @@ function engineTests(NI) {
     ["{飲|の}む", "v5", { pot: "飲める", potmasu: "飲めます", potnai: "飲めない", tara: "飲んだら", nagara: "飲みながら", ba: "飲めば", nakereba: "飲まなければ", nakute: "飲まなくて", nakattara: "飲まなかったら" }],
     ["{食|た}べる", "v1", { pot: "食べられる", potmasen: "食べられません", ba: "食べれば", tara: "食べたら", sou: "食べそう" }],
     ["{話|はな}す", "v5", { pot: "話せる", ba: "話せば" }],
+    ["{忘|わす}れる", "v1", { chau: "忘れちゃう", chatta: "忘れちゃった" }],
+    ["{飲|の}む", "v5", { chatta: "飲んじゃった" }],
+    ["{行|い}く", "v5k-s", { chatta: "行っちゃった" }],
+    ["する", "vs", { chatta: "しちゃった" }],
     ["{待|ま}つ", "v5", { pot: "待てる" }],
     ["{泳|およ}ぐ", "v5", { pot: "泳げる", tara: "泳いだら" }],
     ["{遊|あそ}ぶ", "v5", { pot: "遊べる" }],
@@ -260,6 +264,7 @@ function segmentTests(NI) {
   eq("寒いそうです (hearsay)", key("とても {寒|さむ}いそうです。", "そうです"), "g:そうです#hearsay");
   eq("元気そうです (looks)", key("{元気|げんき}そうです。", "元気そう"), "v:元気#sou@sou");
   eq("降りそうです (looks)", key("{雨|あめ}が {降|ふ}りそうです。", "降りそう"), "v:降る#sou@sou");
+  eq("忘れちゃった (casual てしまった)", key("{財布|さいふ}を {忘|わす}れちゃった。", "忘れちゃった"), "v:忘れる#chatta@chatta");
   const plain = (text, surface) => {
     const t = NI.lex.readPlain(text).find((x) => x.text === surface);
     return t && t.entry ? t.entry.key : "(none)";
