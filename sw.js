@@ -1,8 +1,26 @@
 /* Offline support: network first, falling back to the last cached copy, so
-   updates show up immediately when online and the course still opens offline. */
+   updates show up immediately when online and the course still opens offline.
+   Installing caches the page and every file it loads, so this already works
+   after the first visit (the page's own first requests come before the worker). */
 const CACHE = "nihongo-ippo-v1";
 
-self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then(async (cache) => {
+        const page = await fetch("./", { cache: "no-cache" });
+        if (!page.ok) return;
+        const html = await page.clone().text();
+        await cache.put("./", page);
+        // Same-origin files the page references: scripts, stylesheet, icon, manifest.
+        const files = Array.from(html.matchAll(/(?:src|href)="([^"#:]+)"/g), (m) => m[1]);
+        await Promise.all(files.map((f) => cache.add(new Request(f, { cache: "no-cache" })).catch(() => {})));
+      })
+      .catch(() => {})
+      .then(() => self.skipWaiting())
+  );
+});
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
