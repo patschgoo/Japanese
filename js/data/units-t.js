@@ -11,17 +11,17 @@
     intro: "Japanese has three verbs for giving and receiving, and the right one depends on who gives to whom. Put the same verbs after a て-form and an action becomes a favour. Three new counters cover pens and bottles, tickets and photos, and books.",
     drill: { num: "ctr:hon,mai,satsu", conj: ["te"] },
     words: [
-      { j: "あげる", pos: "v1", en: "give (to someone else)", note: "From you, or anyone, to someone outside your side: 友達に 本を あげる." },
+      { j: "あげる", pos: "v1", en: "give (to someone else)", note: "From you to anyone, or between other people: 友達に 本を あげる." },
       { j: "くれる", pos: "v1", noDrill: ["tai", "mashou"], en: "give (to me or my family)", note: "Only when the receiver is you or your side: 友達が 本を くれた." },
       { j: "もらう", pos: "v5", en: "get, receive", note: "The giver takes に or から: 友達に 本を もらった." },
       { j: "プレゼント", pos: "n", en: "present, gift" },
-      { j: "{花|はな}", pos: "n", en: "flower", em: "💐", note: "Often お花, especially as a gift." },
+      { j: "{花|はな}", pos: "n", en: "flower", em: "💐", note: "Often お花, which sounds softer and more polite." },
       { j: "ケーキ", pos: "n", en: "cake", em: "🍰" },
       { j: "カード", pos: "n", en: "card (greeting card; credit card)" },
       { j: "{手紙|てがみ}", pos: "n", en: "letter", em: "✉️" },
       { j: "{漫画|まんが}", pos: "n", en: "manga, comics" },
       { j: "ペン", pos: "n", en: "pen", em: "🖊️" },
-      { j: "{僕|ぼく}", pos: "pron", en: "I, me (used by men and boys)", note: "Less formal than 私, and fine in polite talk with friends and classmates." },
+      { j: "{僕|ぼく}", pos: "pron", en: "I, me (used by men and boys)", note: "Less formal than 私. Fine with friends, classmates and teachers; in a job interview or at work, use 私." },
       { j: "{選|えら}ぶ", pos: "v5", en: "choose, pick" },
       { j: "{包|つつ}む", pos: "v5", en: "wrap" },
       { j: "{気|き}に{入|い}る", pos: "v5", noDrill: ["tai", "mashou"], en: "like, be pleased with", note: "気に入った？ = Do you like it? The thing you like takes が." },
@@ -61,7 +61,7 @@
       },
       {
         t: "Favours: 〜てあげる・〜てくれる・〜てもらう",
-        body: "<p>Put the same verbs after a て-form to say who does a favour for whom. [[{教|おし}えてくれました]]: someone taught me (and I'm grateful). [[{教|おし}えてもらいました]]: I got someone to teach me. [[{教|おし}えてあげました]]: I taught someone, as a favour.</p><p>To thank someone, say [[〜てくれて、 ありがとう]]. To ask a favour, [[〜てくれませんか]] means “would you … for me?”. Careful with 〜てあげる to the person's face: it can sound as if you're doing them a big favour.</p>",
+        body: "<p>Put the same verbs after a て-form to say who does a favour for whom. [[{教|おし}えてくれました]]: someone taught me (and I'm grateful). [[{教|おし}えてもらいました]]: I had someone teach me (the same favour, told from my side, often because I asked). [[{教|おし}えてあげました]]: I taught someone, as a favour.</p><p>To thank someone, say [[〜てくれて、 ありがとう]]. To ask a favour, [[〜てくれませんか]] means “would you … for me?”. Careful with 〜てあげる to the person's face: it can sound as if you're doing them a big favour.</p>",
         ex: [
           ["ゆきさんが {日本語|にほんご}を {教|おし}えてくれました。", "Yuki taught me some Japanese."],
           ["{店|みせ}の {人|ひと}に プレゼントを {包|つつ}んでもらいました。", "I had the shop assistant wrap the present."],
@@ -111,7 +111,7 @@
       cast: { E: { ja: "エマ", en: "Emma" }, K: { ja: "ケン", en: "Ken" }, Y: { ja: "ゆき", en: "Yuki" } },
       lines: [
         ["E", "ケンさん、 ゆきさんの {誕生日|たんじょうび}に {何|なに}を あげますか。", "Ken, what are you giving Yuki for her birthday?"],
-        ["K", "{本|ほん}を あげます。{毎朝|まいあさ} {本|ほん}を {読|よ}んでいますから。エマさんは？", "A book. She reads every morning. How about you, Emma?"],
+        ["K", "{本|ほん}を あげます。ゆきさんは {毎朝|まいあさ} {本|ほん}を {読|よ}んでいますから。エマさんは？", "A book. She reads every morning. How about you, Emma?"],
         ["E", "{私|わたし}は お{花|はな}を あげます。カードも {一緒|いっしょ}に {書|か}きませんか。", "I'm giving her flowers. Shall we write a card together, too?"],
         ["K", "いいですね。カードは {僕|ぼく}が {選|えら}びます。", "Good idea. I'll choose the card."],
         ["*", "Friday evening, at Yuki's birthday party."],
@@ -151,7 +151,7 @@
       { j: "{漢字|かんじ}", pos: "n", en: "kanji (Chinese characters)" },
       { j: "ピアノ", pos: "n", en: "piano", em: "🎹" },
       { j: "ギター", pos: "n", en: "guitar", em: "🎸" },
-      { j: "{弾|ひ}く", pos: "v5", en: "play (an instrument)", note: "ピアノを 弾く. For sports and games, use する." },
+      { j: "{弾|ひ}く", pos: "v5", en: "play (piano, guitar…)", note: "For keyboards and strings: ピアノを 弾く. For sports and games, use する." },
       { j: "{歌|うた}う", pos: "v5", en: "sing" },
       { j: "{走|はし}る", pos: "v5", en: "run", note: "Group 1, even though it ends in -iru." },
       { j: "{運転|うんてん}する", pos: "vs", en: "drive" },
@@ -176,7 +176,7 @@
       },
       {
         t: "Group 2, 来る and する",
-        body: "<p>Group 2 verbs replace る with [[られる]]: [[{食|た}べる]] → [[{食|た}べられる]], [[{見|み}る]] → [[{見|み}られる]], [[{起|お}きる]] → [[{起|お}きられる]]. [[{来|く}る]] becomes [[{来|こ}られる]] (こられる). する has no potential form of its own; it becomes [[できる]], so [[{運転|うんてん}する]] → [[{運転|うんてん}できる]].</p><p>The potential of もらう makes a gentle, polite request: [[{写真|しゃしん}を{撮|と}ってもらえませんか]] (could I ask you to take a photo?).</p>",
+        body: "<p>Group 2 verbs replace る with [[られる]]: [[{食|た}べる]] → [[{食|た}べられる]], [[{見|み}る]] → [[{見|み}られる]], [[{起|お}きる]] → [[{起|お}きられる]]. [[{来|く}る]] becomes [[{来|こ}られる]] (こられる). する has no potential form of its own; it becomes [[できる]], so [[{運転|うんてん}する]] → [[{運転|うんてん}できる]]. In casual speech you'll often hear shorter forms such as 食べれる and 来れる (これる); the full forms are always safe.</p><p>The potential of もらう makes a gentle, polite request: [[{写真|しゃしん}を{撮|と}ってもらえませんか]] (could I ask you to take a photo?).</p>",
         ex: [
           ["{納豆|なっとう}が {食|た}べられますか。", "Can you eat natto?"],
           ["{明日|あした} {来|こ}られますか。", "Can you come tomorrow?"],
@@ -264,13 +264,13 @@
     },
     culture: {
       t: "Part-time work",
-      body: "<p>Part-time work, アルバイト or バイト (from the German <i>Arbeit</i>), is a normal part of student life in Japan: convenience stores, cafés, restaurants and cram schools all rely on it. International students need permission from the immigration office before they start, and can then work up to 28 hours a week during term and longer in the school holidays. For an interview you bring a CV on a standard form (履歴書, りれきしょ) with a photo, and arriving a few minutes early is expected.</p>",
+      body: "<p>Part-time work, アルバイト or バイト (from the German <i>Arbeit</i>), is a normal part of student life in Japan: convenience stores, cafés, restaurants and cram schools all rely on it. International students need permission from the immigration office before they start, and can then work up to 28 hours a week during term, or up to eight hours a day in the long school holidays. For an interview you usually bring a CV on a standard form (履歴書, りれきしょ) with a photo, and arriving a few minutes early is expected.</p>",
     },
   });
 
   NI.addUnit({
     n: 23,
-    ja: "もし〜たら",
+    ja: "{晴|は}れたら",
     en: "If & when",
     goal: "Say what will happen if or when something happens, plan around the weather, and make gentle suggestions.",
     intro: "One ending, 〜たら, does the work of both “if” and “when”. Make the plain past and add ら: 降ったら, 行ったら, 高かったら, 雨だったら. Put もし in front when you're imagining something.",
@@ -326,7 +326,7 @@
       },
       {
         t: "もし: imagining",
-        body: "<p>[[もし]] at the start of a sentence signals that an “if” is coming. It's optional, but it makes it clear you're imagining something that may not happen.</p>",
+        body: "<p>[[もし]] at the start of a sentence signals that an “if” is coming. It's optional, but it makes it clear you're imagining something that may not happen. Leave it out when you mean “when”: [[もし{家|うち}に{帰|かえ}ったら]] sounds as if you might not make it home.</p>",
         ex: [
           ["もし {困|こま}ったら、 いつでも {言|い}ってください。", "If you ever need help, just tell me."],
           ["もし {日曜日|にちようび}も {雨|あめ}だったら、 どう しますか。", "What will you do if it rains on Sunday too?"],
@@ -334,7 +334,7 @@
       },
       {
         t: "Suggestions: 〜たらどうですか",
-        body: "<p>To make a gentle suggestion, ask how it would be if the other person did something: [[{休|やす}んだらどうですか]] (why don't you take a rest?). With friends, just [[{休|やす}んだら？]]</p>",
+        body: "<p>To make a gentle suggestion, ask how it would be if the other person did something: [[{休|やす}んだらどうですか]] (why don't you take a rest?). With friends, just [[{休|やす}んだら？]] To a teacher or a boss, 〜たらどうですか can sound pushy.</p>",
         ex: [
           ["{医者|いしゃ}に {行|い}ったら どうですか。", "Why don't you see a doctor?"],
           ["{少|すこ}し {休|やす}んだら？", "Why not take a break?"],
@@ -396,7 +396,7 @@
     },
     culture: {
       t: "梅雨, the rainy season",
-      body: "<p>From about early June to mid-July (earlier in Okinawa, a little later in the north), most of Japan has its rainy season, 梅雨 (つゆ): weeks of warm, humid drizzle rather than storms. Hokkaido largely escapes it. It's also when hydrangeas (あじさい) bloom, and Kamakura's temples draw crowds to see them. Children hang てるてる坊主 (てるてるぼうず), little white dolls of paper or cloth, by the window to wish for a sunny day, and forecasts give the chance of rain as a percentage (降水確率, こうすいかくりつ), which many people check before deciding on an umbrella. Typhoon season comes later, mostly from August to October.</p>",
+      body: "<p>From about early June to mid-July (earlier in Okinawa, a little later in the north), most of Japan has its rainy season, 梅雨 (つゆ): weeks of warm, humid weather with frequent rain, much of it a steady drizzle. Hokkaido largely escapes it. It's also when hydrangeas (あじさい) bloom, and Kamakura's temples draw crowds to see them. Children hang てるてる坊主 (てるてるぼうず), little white dolls of paper or cloth, by the window to wish for a sunny day, and forecasts give the chance of rain as a percentage (降水確率, こうすいかくりつ), which many people check before deciding on an umbrella. Typhoon season comes later, peaking in August and September.</p>",
     },
   });
 
@@ -450,7 +450,7 @@
       },
       {
         t: "And then: 〜てから",
-        body: "<p>て-form + [[から]] says one thing happens and then another: [[{手|て}を{洗|あら}ってから{食|た}べます]] (I wash my hands, then eat). It puts more weight on the order than a plain て-form, which makes it the natural choice for instructions.</p>",
+        body: "<p>て-form + [[から]] says one thing happens and then another: [[{手|て}を{洗|あら}ってから{食|た}べます]] (I wash my hands, then eat). It stresses that the first action is finished before the second begins, so it's common in instructions.</p>",
         ex: [
           ["{宿題|しゅくだい}を してから、 {遊|あそ}びます。", "I'll play once I've done my homework."],
           ["{野菜|やさい}を {洗|あら}ってから、 {切|き}ります。", "Wash the vegetables, then cut them."],
@@ -512,7 +512,7 @@
         ["K", "これぐらいですか。", "About this big?"],
         ["M", "ええ、 {上手|じょうず}ですね。{次|つぎ}に、 {鍋|なべ}に {肉|にく}と {野菜|やさい}と {水|みず}を {入|い}れます。", "Yes, very good. Next, we put the meat, vegetables and water in the pot."],
         ["K", "{写真|しゃしん}を {撮|と}りながら {作|つく}っても いいですか。{母|はは}に {見|み}せたいです。", "May I take photos as we cook? I'd like to show my mum."],
-        ["M", "どうぞ、 どうぞ。{砂糖|さとう}を {入|い}れてから、 しょうゆを {入|い}れます。{最後|さいご}に {20|にじゅっ}{分|ぷん}ぐらい {煮|に}ます。", "Of course. We add the sugar, and then the soy sauce. Finally, it simmers for about twenty minutes."],
+        ["M", "どうぞ、 どうぞ。{砂糖|さとう}を {入|い}れてから、 しょうゆを {入|い}れます。{最後|さいご}に {20|にじゅっ}{分|ぷん}ぐらい {煮|に}ます。", "Of course. We add the sugar, and then the soy sauce. Finally, we let it simmer for about twenty minutes."],
         ["*", "Twenty minutes later."],
         ["Y", "できた！ケン、 {熱|あつ}いから {気|き}をつけてね。", "It's ready! Careful, Ken, it's hot."],
         ["K", "いただきます。…おいしい！{家|うち}に {帰|かえ}ったら、 {一人|ひとり}で {作|つく}ります。", "Thank you. … Delicious! When I get home, I'll make it myself."],
@@ -527,7 +527,7 @@
     },
     culture: {
       t: "Home cooking",
-      body: "<p>肉じゃが (にくじゃが), meat and potatoes simmered in a sweet soy broth, is a classic of Japanese home cooking (家庭料理, かていりょうり), and many people name it as the taste of their mother's kitchen. Beef is usual in western Japan, pork in the east.</p><p>Cooks learn to add seasonings in the order さしすせそ: さ for 砂糖 (さとう, sugar), し for 塩 (しお, salt), す for 酢 (す, vinegar), せ for しょうゆ (the rhyme spells it せうゆ) and そ for 味噌 (みそ, miso). Sugar goes in first because it soaks in slowly; soy sauce and miso go in late so they keep their aroma.</p>",
+      body: "<p>肉じゃが (にくじゃが), meat and potatoes simmered in a sweet soy broth, is a classic of Japanese home cooking (家庭料理, かていりょうり), and it often comes up when people talk about the taste of home. Many families in western Japan make it with beef, while pork is more common in the east.</p><p>A well-known rule of thumb, さしすせそ, gives the order for adding seasonings: さ for 砂糖 (さとう, sugar), し for 塩 (しお, salt), す for 酢 (す, vinegar), せ for しょうゆ (from its old spelling, せうゆ) and そ for 味噌 (みそ, miso). Sugar goes in first because it soaks in slowly; soy sauce and miso go in late so they keep their aroma.</p>",
     },
   });
 
@@ -567,12 +567,12 @@
         body: "<p>Dictionary form + [[つもりです]] says what you intend to do: [[{国|くに}へ{帰|かえ}るつもりです]] (I'm planning to go home). For what you don't intend to do, use the ない form: [[{帰|かえ}らないつもりです]]. Asking a teacher or a stranger 〜つもりですか can sound blunt; with friends and classmates it's fine.</p>",
         ex: [
           ["{夏休|なつやす}みに {国|くに}へ {帰|かえ}る つもりです。", "I'm planning to go home for the summer holidays."],
-          ["{今年|ことし}の {夏|なつ}は {国|くに}へ {帰|かえ}らない つもりです。", "I'm not going home this summer."],
+          ["{今年|ことし}の {夏|なつ}は {国|くに}へ {帰|かえ}らない つもりです。", "I'm not planning to go home this summer."],
         ],
       },
       {
         t: "Arranged: 〜予定です",
-        body: "<p>[[{予定|よてい}]] (plans, schedule) can follow a dictionary form, or a noun with の: [[{来月|らいげつ}{京都|きょうと}へ{行|い}く{予定|よてい}です]], [[{旅行|りょこう}の{予定|よてい}です]]. It sounds more fixed than つもり: something already arranged, or on the calendar.</p>",
+        body: "<p>[[{予定|よてい}]] (plans, schedule) can follow a dictionary form, or a noun with の: [[{来月|らいげつ}{京都|きょうと}へ{行|い}く{予定|よてい}です]], [[{来週|らいしゅう}は{旅行|りょこう}の{予定|よてい}です]]. It sounds more fixed than つもり: something already arranged, or on the calendar.</p>",
         ex: [
           ["{来月|らいげつ} {京都|きょうと}へ {行|い}く {予定|よてい}です。", "I'm due to go to Kyoto next month."],
           ["{一週間|いっしゅうかん}ぐらい {沖縄|おきなわ}に いる {予定|よてい}です。", "I'll be in Okinawa for about a week."],
@@ -609,7 +609,7 @@
       { jp: "{来月|らいげつ} {京都|きょうと}へ {行|い}く {予定|よてい}です。", en: "I'm due to go to Kyoto next month." },
       { jp: "{富士山|ふじさん}に {登|のぼ}ろうと {思|おも}っています。", en: "I'm thinking of climbing Mount Fuji." },
       { jp: "{明日|あした}は {雨|あめ}かもしれません。", en: "It might rain tomorrow." },
-      { jp: "{今年|ことし}の {夏|なつ}は {国|くに}へ {帰|かえ}らない つもりです。", en: "I'm not going home this summer." },
+      { jp: "{今年|ことし}の {夏|なつ}は {国|くに}へ {帰|かえ}らない つもりです。", en: "I'm not planning to go home this summer." },
       { jp: "{山|やま}の {上|うえ}は {寒|さむ}いかもしれません。", en: "It might be cold at the top of the mountain." },
       { jp: "{田中|たなか}さんは {来|こ}ないかもしれません。", en: "Tanaka might not come." },
       { jp: "{夏休|なつやす}みは {来週|らいしゅう}から {始|はじ}まります。", en: "The summer holidays start next week.", p: "から", alt: ["に"] },
@@ -627,7 +627,7 @@
     ],
     sit: [
       { q: "Someone asks about your summer. You're thinking of going to Okinawa, but nothing is booked.", a: "{沖縄|おきなわ}へ {行|い}こうと {思|おも}っています。", o: ["{沖縄|おきなわ}へ {行|い}きました。", "{沖縄|おきなわ}へは {行|い}かない つもりです。", "{沖縄|おきなわ}から {来|き}ました。"] },
-      { q: "A friend invites you to a party, but you might have to work that day.", a: "すみません、 {仕事|しごと}が あるかもしれません。", o: ["ぜひ {行|い}きたいです！", "{仕事|しごと}は {終|お}わりました。", "パーティーが {大好|だいす}きです。"] },
+      { q: "A friend invites you to a party. Tell them you might have to work that day.", a: "すみません、 {仕事|しごと}が あるかもしれません。", o: ["ぜひ {行|い}きたいです！", "{仕事|しごと}は {終|お}わりました。", "パーティーが {大好|だいす}きです。"] },
       { q: "Your teacher asks about your summer plans. You haven't decided yet.", a: "まだ {決|き}めていません。", o: ["もう {決|き}めました。", "{決|き}めないでください。", "{決|き}めても いいですか。"] },
       { q: "A friend reminds you about the trip you're taking together next week. You can't wait.", a: "{楽|たの}しみです！", o: ["{残念|ざんねん}です。", "お{大事|だいじ}に。", "{疲|つか}れました。"] },
     ],
@@ -640,7 +640,7 @@
         ["E", "{私|わたし}は イギリスへ {帰|かえ}る つもりです。{久|ひさ}しぶりに {家族|かぞく}に {会|あ}います。", "I'm going back to Britain. I'll see my family for the first time in ages."],
         ["T", "いいですね。ケンさんは？", "How lovely. And you, Ken?"],
         ["K", "{僕|ぼく}は {国|くに}へ {帰|かえ}らない つもりです。カフェの アルバイトが ありますから。 でも、 {友達|ともだち}と {富士山|ふじさん}に {登|のぼ}ろうと {思|おも}っています。", "I'm not going home. I've got my job at the café. But I'm thinking of climbing Mount Fuji with a friend."],
-        ["T", "{富士山|ふじさん}ですか！{頂上|ちょうじょう}は {寒|さむ}いかもしれませんから、 {暖|あたた}かい {服|ふく}を {持|も}って {行|い}った ほうが いいですよ。", "Mount Fuji! It might be cold at the top, so you'd better take warm clothes."],
+        ["T", "{富士山|ふじさん}ですか！{頂上|ちょうじょう}は とても {寒|さむ}いですから、 {暖|あたた}かい {服|ふく}を {持|も}って {行|い}った ほうが いいですよ。", "Mount Fuji! It's very cold at the top, so you'd better take warm clothes."],
         ["*", "That evening, Ken runs into Yuki outside their building."],
         ["Y", "ケン、 {富士山|ふじさん}、 いつ {登|のぼ}る？", "Ken, when are we climbing Fuji?"],
         ["K", "{来月|らいげつ}の {週末|しゅうまつ}は どう？{山小屋|やまごや}に {泊|と}まって、 {頂上|ちょうじょう}で {日|ひ}の{出|で}を {見|み}よう。", "How about a weekend next month? Let's stay in a mountain hut and watch the sunrise from the top."],
@@ -657,7 +657,7 @@
     },
     culture: {
       t: "Summer in Japan",
-      body: "<p>School summer holidays run from late July to the end of August. In mid-August comes お盆 (おぼん), when the spirits of the ancestors are said to come home; many people travel back to their hometowns, so trains and motorways are packed. Summer evenings bring festivals (夏祭り, なつまつり) and fireworks displays (花火大会, はなびたいかい), and many people go in a cotton yukata.</p><p>Mount Fuji's climbing season runs from early July to early September. Many climbers book a mountain hut (山小屋, やまごや) on the upper slopes, rest for a few hours, and set off in the dark to see the sunrise from the top, called ご来光 (ごらいこう). Even in August it can be close to freezing at the summit before dawn.</p>",
+      body: "<p>School summer holidays usually run from late July to the end of August. In mid-August comes お盆 (おぼん), when the spirits of the ancestors are said to come home; many people travel back to their hometowns, so trains and motorways are packed. Summer evenings bring festivals (夏祭り, なつまつり) and fireworks displays (花火大会, はなびたいかい), and many people go in a cotton yukata.</p><p>Mount Fuji's climbing season runs from early July to early September. Many climbers book a mountain hut (山小屋, やまごや) on the upper slopes, rest for a few hours, and set off in the dark to see the sunrise from the top, called ご来光 (ごらいこう). Even in August it can be close to freezing at the summit before dawn.</p>",
     },
   });
 
@@ -678,7 +678,7 @@
       ["{起|お}きて、 {急|いそ}いで {電車|でんしゃ}を {降|お}りました。 でも、 ケーキを {電車|でんしゃ}に {忘|わす}れました！", "He woke up and hurried off the train. But he left the cake behind!"],
       ["「すみません！{電車|でんしゃ}に ケーキを {忘|わす}れました！」", "“Excuse me! I've left a cake on the train!”"],
       ["{駅員|えきいん}さんは {次|つぎ}の {駅|えき}に {電話|でんわ}してくれました。", "The station attendant phoned the next station for him."],
-      ["{30|さんじゅっ}{分|ぷん}ぐらい {待|ま}ってから、 ケンさんは ケーキを もらいました。 でも、 ケーキは もう きれいじゃありませんでした。", "After about thirty minutes, Ken had his cake back. But it wasn't pretty any more."],
+      ["{30|さんじゅっ}{分|ぷん}ぐらい {後|あと}に、 {駅員|えきいん}さんが ケーキを {持|も}って {来|き}てくれました。 でも、 ケーキは もう きれいじゃありませんでした。", "About thirty minutes later, the attendant brought him the cake. But it wasn't pretty any more."],
       ["ゆきさんの {家|いえ}で、 ケンさんは お{母|かあ}さんに ケーキを あげました。", "At Yuki's family home, Ken gave her mother the cake."],
       ["「すみません。{電車|でんしゃ}の {中|なか}で {寝|ね}ていました…。」", "“I'm sorry. I fell asleep on the train…”"],
       ["「ありがとう、 ケンさん。{一緒|いっしょ}に {食|た}べましょう。」", "“Thank you, Ken. Let's eat it together.”"],
