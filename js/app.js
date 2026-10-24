@@ -21,6 +21,8 @@
   function parse(hash) {
     const h = String(hash || "").replace(/^#\/?/, "");
     if (!h) return { name: "home", args: [] };
+    // A link from another device carries a profile: #move=nihon1.…
+    if (/^move=/.test(h)) return { name: "move", args: [] };
     const parts = h.split("-");
     if (!NI.pages[parts[0]]) return null; // an in-page anchor, not a route
     return { name: parts[0], args: parts.slice(1) };
@@ -60,7 +62,7 @@
       main.innerHTML = page.render(r.args);
       doc.body.classList.toggle("in-session", !!page.session);
       const title = typeof page.title === "function" ? page.title(r.args) : page.title;
-      doc.title = (title && r.name !== "home" ? title + " · " : "") + "Nihongo Ippo";
+      doc.title = (title && r.name !== "home" ? title + " · " : "") + "日本";
       renderNav(page.nav || r.name);
       if (page.mount) page.mount(main, r.args);
     } catch (e) {
@@ -206,9 +208,12 @@
     NI.store.load();
     NI.course.init();
     NI.lex.build();
+    NI.lex.setMine(NI.store.books.custom);
     applySettings();
     NI.lookup.init();
     NI.store.on((what) => {
+      // Your own words are words like any other in look-ups and the Reader.
+      if (what === "all" || what === "books") NI.lex.setMine(NI.store.books.custom);
       if (what === "settings") {
         applySettings();
         if (current && current.name !== "options" && !current.page.session) render();

@@ -108,6 +108,9 @@
       out.unit = entry.unit;
     } else if (entry.kind === "name") {
       out.kindLabel = "name";
+    } else if (entry.kind === "mine") {
+      out.pos = entry.pos;
+      out.kindLabel = "your own word";
     } else if (entry.kind === "extra") {
       // Seen around the site but not taught in a lesson.
       out.pos = entry.pos;
@@ -118,6 +121,25 @@
       }
     }
     return out;
+  }
+
+  /* What a compound or name is made of, each part as it's written in the word
+     (and the word it comes from), then why that gives the meaning:
+     見 "watch" (from 見る) + 習い "learn" (from 習う) = learning by watching. */
+  function partsHtml(entry) {
+    const j = (m) => jp(m, { tokens: false, gaps: false });
+    return (
+      '<div class="pop-parts"><p class="pp-h">How it’s made</p>' +
+      entry.parts
+        .map(
+          ([piece, en, from], i) =>
+            '<span class="pp-op" aria-hidden="true">' + (i ? "+" : "") + '</span><span class="pp-j">' + j(piece) + "</span>" +
+            '<span class="pp-en">' + rich(esc(en)) + (from ? ' <span class="pp-from">from ' + j(from) + "</span>" : "") + "</span>"
+        )
+        .join("") +
+      (entry.why ? '<span class="pp-op" aria-hidden="true">=</span><p class="pp-why">' + rich(esc(entry.why)) + "</p>" : "") +
+      "</div>"
+    );
   }
 
   /* Pop-up for a word: reading, meaning, form and audio. mode comes from
@@ -132,15 +154,14 @@
     if (d.reading !== NI.furi.base(d.title)) html += '<div class="pop-reading" lang="ja">' + esc(d.reading) + "</div>";
     if (romajiOn()) html += '<div class="pop-ro">' + esc(NI.lex.romajiOf(entry)) + "</div>";
     let meaning = '<div class="pop-en">' + esc(d.en) + "</div>";
-    // The words a name or compound is made of: はじめ "beginning" + 線 "line".
-    if (entry.parts) meaning += '<div class="pop-parts">' + entry.parts.map(([j, en], i) => '<span class="pp">' + (i ? '<span class="pp-plus" aria-hidden="true">+</span>' : "") + jp(j, { tokens: false, gaps: false }) + ' <span class="pp-en">' + esc(en) + "</span></span>").join("") + "</div>";
+    if (entry.parts) meaning += partsHtml(entry);
     if (d.form) meaning += '<div class="pop-form">' + esc(d.form) + (d.base ? " of " + jp(d.base, { tokens: false, gaps: false }) : "") + "</div>";
     const meta = [];
     if (d.pos) meta.push(esc(NI.course.posLabel(d.pos)));
     if (d.kindLabel) meta.push(esc(d.kindLabel));
     if (d.unit) meta.push('<a href="#unit-' + d.unit + '">Unit ' + d.unit + "</a>");
     if (meta.length) meaning += '<div class="pop-meta">' + meta.join(" · ") + "</div>";
-    if (entry.kind === "word" || entry.kind === "form" || entry.kind === "extra") meaning += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
+    if (entry.kind === "word" || entry.kind === "form" || entry.kind === "extra" || entry.kind === "mine") meaning += '<div class="pop-meta"><a href="https://jisho.org/search/' + encodeURIComponent(NI.furi.base(d.base || d.title)) + '" target="_blank" rel="noopener">More on Jisho ↗</a></div>';
     if (mode)
       html +=
         '<div class="pop-peek"><button class="btn small" type="button" data-peek>Show the meaning</button>' +

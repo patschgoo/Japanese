@@ -876,7 +876,7 @@
     pop.innerHTML =
       '<div class="pm"><p class="pm-h">Learning profile</p>' +
       NI.store.profiles.map((p) => '<button class="pm-row' + (p.id === cur.id ? " on" : "") + '" type="button" data-prof="' + esc(p.id) + '"' + (p.id === cur.id ? ' aria-current="true"' : "") + '><span class="pm-ic" aria-hidden="true">' + p.icon + "</span><b>" + esc(p.name) + "</b>" + (p.id === cur.id ? '<span class="pm-tick">✓</span>' : "") + "</button>").join("") +
-      '<div class="pm-acts"><a href="#profiles-new" class="btn small ghost">＋ New profile</a><a href="#profiles" class="btn small ghost">Manage</a></div></div>';
+      '<div class="pm-acts"><a href="#profiles-new" class="btn small ghost">＋ New profile</a><a href="#profiles" class="btn small ghost">Manage</a><a href="#stats" class="btn small ghost">📊 Statistics</a><a href="#move" class="btn small ghost">📲 Move to another device</a></div></div>';
     ui.placePop(pop, anchor);
     pop.querySelectorAll("[data-prof]").forEach((b) =>
       b.addEventListener("click", () => {
@@ -919,7 +919,7 @@
         '<label class="radio" for="pn-fresh"><input type="radio" id="pn-fresh" name="pn-start" value="fresh" checked><span><b>A fresh start</b><small>Default settings, and the plan questions first.</small></span></label>' +
         '<label class="radio" for="pn-copy"><input type="radio" id="pn-copy" name="pn-start" value="copy"><span><b>The settings of ' + esc(cur.icon + " " + cur.name) + "</b><small>Same plan, reading aids and audio; no progress.</small></span></label></fieldset>" +
         '<div class="row"><button class="btn primary" type="submit">Make it and switch to it</button></div></form>' +
-        '<p class="small muted">Profiles are kept in this browser. To move one to another device, open it and use Copy backup in Options.</p>'
+        '<p class="small muted">Profiles are kept in this browser. <a href="#move">Move them to another device</a> in a link or a file.</p>'
       );
     },
     mount(el, args) {
@@ -941,7 +941,7 @@
         if (del)
           del.addEventListener("click", () => {
             const p = NI.store.profiles.find((x) => x.id === id);
-            ui.confirm({ title: "Delete " + p.icon + " " + p.name + "?", body: "Its progress, reviews and word book are deleted for good. Copy a backup in Options first if you might want it back.", ok: "Delete the profile", danger: true }).then((yes) => {
+            ui.confirm({ title: "Delete " + p.icon + " " + p.name + "?", body: "Its progress, reviews and word book are deleted for good. If you might want it back, save it first: Options → Move to another device → Save as a file.", ok: "Delete the profile", danger: true }).then((yes) => {
               if (!yes) return;
               NI.store.removeProfile(id);
               ui.toast("Profile deleted.");

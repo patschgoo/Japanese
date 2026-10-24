@@ -45,6 +45,7 @@
       if (!e) return null;
       if ((e.kind === "word" || e.kind === "form") && e.id && e.id.startsWith("v:")) return e.id;
       if (e.kind === "extra" && e.key) return e.key.split("#")[0];
+      if (e.kind === "mine") return e.key;
       return null;
     },
 

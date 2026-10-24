@@ -5,14 +5,13 @@
   const NI = (root.NI = root.NI || {});
   NI.data = NI.data || {};
   NI.data.omikuji = {
-    // [markup, English, chance in %, XP]
     levels: [
-      // [fortune, English, chance, XP, its parts]
-      ["{大吉|だいきち}", "Great blessing", 12, 10, [["{大|だい}", "big, great"], ["{吉|きち}", "good luck"]]],
-      ["{中吉|ちゅうきち}", "Middle blessing", 20, 5, [["{中|ちゅう}", "middle"], ["{吉|きち}", "good luck"]]],
-      ["{小吉|しょうきち}", "Small blessing", 23, 3, [["{小|しょう}", "small"], ["{吉|きち}", "good luck"]]],
+      // [fortune, English, chance in %, XP, its parts, why the parts mean that]
+      ["{大吉|だいきち}", "Great blessing", 12, 10, [["{大|だい}", "big, great"], ["{吉|きち}", "good luck"]], "Big good luck: the best fortune in the box."],
+      ["{中吉|ちゅうきち}", "Middle blessing", 20, 5, [["{中|ちゅう}", "middle"], ["{吉|きち}", "good luck"]], "Good luck of a middle size: a fine fortune."],
+      ["{小吉|しょうきち}", "Small blessing", 23, 3, [["{小|しょう}", "small"], ["{吉|きち}", "good luck"]], "A little good luck."],
       ["{吉|きち}", "Blessing", 25, 3],
-      ["{末吉|すえきち}", "Future blessing", 20, 3, [["{末|すえ}", "the end; later on"], ["{吉|きち}", "good luck"]]],
+      ["{末吉|すえきち}", "Future blessing", 20, 3, [["{末|すえ}", "the end; later on"], ["{吉|きち}", "good luck"]], "Good luck that comes at the end: things turn out well, later on."],
     ],
     messages: [
       ["{明日|あした}も いい {日|ひ}に なりますよ。", "Tomorrow will be a good day too."],

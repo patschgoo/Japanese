@@ -101,7 +101,7 @@
   function readIndex() {
     const saved = read(PKEY);
     if (!saved || !Array.isArray(saved.list) || !saved.list.length) return index;
-    const list = saved.list.filter((p) => p && typeof p.id === "string").map((p) => ({ id: p.id, name: String(p.name || "Me").slice(0, 30), icon: p.icon || ICONS[0], t: p.t || Date.now() }));
+    const list = saved.list.filter((p) => p && typeof p.id === "string" && /^(main|p[a-z0-9]+)$/.test(p.id)).map((p) => ({ id: p.id, name: String(p.name || "Me").slice(0, 30), icon: safeIcon(p.icon, ICONS[0]), t: p.t || Date.now() }));
     if (!list.length) return index;
     return { cur: list.some((p) => p.id === saved.cur) ? saved.cur : list[0].id, list };
   }
@@ -109,17 +109,32 @@
     if (!put(PKEY, JSON.stringify(index))) persistent = false;
   }
 
+  // An icon is one emoji or so, never markup (states can come from another device).
+  const safeIcon = (x, dflt) => (typeof x === "string" && x && x.length <= 8 && !/[<>&"'\s]/.test(x) ? x : dflt);
+  const isObj = (x) => !!x && typeof x === "object" && !Array.isArray(x);
+
   function merge(saved) {
     const s = blank();
     if (!saved || typeof saved !== "object") return s;
-    s.settings = Object.assign({}, DEFAULT_SETTINGS, saved.settings || {});
-    for (const k of ["parts", "srs", "days", "kana", "intro", "badges", "exams", "games", "mistakes", "stories"]) if (saved[k] && typeof saved[k] === "object") s[k] = saved[k];
-    if (saved.rest && typeof saved.rest === "object") s.rest = Object.assign({ n: 0, days: {}, earned: {} }, saved.rest);
+    s.settings = Object.assign({}, DEFAULT_SETTINGS, isObj(saved.settings) ? saved.settings : {});
+    for (const k of ["parts", "srs", "days", "kana", "intro", "badges", "exams", "games", "mistakes", "stories"]) if (isObj(saved[k])) s[k] = saved[k];
+    for (const id in s.srs) if (!isObj(s.srs[id]) || !isFinite(s.srs[id].st) || !isFinite(s.srs[id].due)) delete s.srs[id];
+    for (const k in s.days) if (!isObj(s.days[k])) delete s.days[k];
+    if (isObj(saved.rest)) s.rest = Object.assign({ n: 0, days: {}, earned: {} }, saved.rest);
     const b = saved.books;
-    if (b && typeof b === "object") {
+    if (isObj(b)) {
       s.books = Object.assign(blankBooks(), b);
-      for (const k of ["saved", "custom"]) if (!b[k] || typeof b[k] !== "object" || Array.isArray(b[k])) s.books[k] = {};
-      s.books.lists = (Array.isArray(b.lists) ? b.lists : []).filter((l) => l && l.id && Array.isArray(l.words));
+      for (const k of ["saved", "custom"]) if (!isObj(b[k])) s.books[k] = {};
+      s.books.lists = (Array.isArray(b.lists) ? b.lists : [])
+        .filter((l) => l && typeof l.id === "string" && /^l\d+$/.test(l.id) && Array.isArray(l.words))
+        .map((l) => ({ id: l.id, name: String(l.name || "List").slice(0, 40), icon: safeIcon(l.icon, "📒"), words: l.words.filter((w) => typeof w === "string"), t: Number(l.t) || 0 }));
+      const custom = {};
+      for (const id in s.books.custom) {
+        const c = s.books.custom[id];
+        if (/^u:\d+$/.test(id) && isObj(c) && c.j && c.en) custom[id] = { j: String(c.j).slice(0, 60), r: String(c.r || "").slice(0, 60), en: String(c.en).slice(0, 120), pos: String(c.pos || "n").slice(0, 12), t: Number(c.t) || 0 };
+      }
+      s.books.custom = custom;
+      s.books.seq = Math.max(Number(b.seq) || 0, ...s.books.lists.map((l) => Number(l.id.slice(1))), ...Object.keys(custom).map((id) => Number(id.slice(2))));
       if (!Array.isArray(b.tests)) s.books.tests = [];
     }
     s.xp = Number(saved.xp) || 0;
@@ -128,6 +143,17 @@
     s.created = saved.created || s.created;
     return s;
   }
+
+  // Profile ids: "main" for the first, then p + the time + a little randomness.
+  function newId() {
+    let id;
+    do id = "p" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+    while (index.list.some((p) => p.id === id));
+    return id;
+  }
+
+  // The day a state was last practised ("2026-10-24"), or "".
+  const lastDay = (st) => Object.keys((st && st.days) || {}).sort().pop() || "";
 
   function emit(what) {
     for (const fn of listeners) {
@@ -413,7 +439,7 @@
     /* A new profile starts with no progress. copy: take this profile's
        settings and plan with it (otherwise the plan questions come first). */
     addProfile(name, icon, copy) {
-      const id = "p" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+      const id = newId();
       const fresh = blank();
       if (copy) {
         fresh.settings = Object.assign({}, state.settings);
@@ -464,9 +490,72 @@
     },
     // A profile's numbers without switching to it, for the profile list.
     peek(id) {
-      const st = id === index.cur ? state : read(keyOf(id));
-      if (!st) return { xp: 0, words: 0, days: 0 };
-      return { xp: Number(st.xp) || 0, words: Object.keys(st.srs || {}).filter((k) => k.startsWith("v:")).length, days: Object.keys(st.days || {}).length };
+      return this.sum(id === index.cur ? state : read(keyOf(id)));
+    },
+    // The numbers of any state: this device's or one sent from another.
+    sum(st) {
+      if (!st) return { xp: 0, words: 0, cards: 0, days: 0, saved: 0, last: "" };
+      const srs = st.srs || {};
+      return {
+        xp: Number(st.xp) || 0,
+        words: Object.keys(srs).filter((k) => k.startsWith("v:")).length,
+        cards: Object.keys(srs).length,
+        days: Object.keys(st.days || {}).length,
+        saved: Object.keys((st.books && st.books.saved) || {}).length,
+        last: lastDay(st),
+      };
+    },
+
+    // ---- moving profiles to another device -----------------------------------
+    /* Everything another device needs to carry on: the profiles whose ids are
+       given (or all of them), each with its name, icon and whole state. */
+    bundle(ids) {
+      this.flush();
+      const list = index.list.filter((p) => !ids || ids.indexOf(p.id) >= 0);
+      return {
+        app: "nihon",
+        v: 2,
+        sent: new Date().toISOString(),
+        profiles: list.map((p) => ({ name: p.name, icon: p.icon, state: p.id === index.cur ? JSON.parse(JSON.stringify(state)) : read(keyOf(p.id)) || blank() })),
+      };
+    },
+    /* The profiles in what another device sent: a bundle, or a backup from
+       before bundles (one profile's state, with its name if it had one). */
+    unbundle(data) {
+      const one = (name, icon, st) => ({
+        name: String(name || "").trim().slice(0, 30) || "Me",
+        icon: safeIcon(icon, ICONS[0]),
+        state: merge(st),
+      });
+      if (!data || typeof data !== "object") return [];
+      if (Array.isArray(data.profiles)) return data.profiles.filter((p) => p && p.state && typeof p.state === "object" && p.state.srs).map((p) => one(p.name, p.icon, p.state));
+      if (data.srs && typeof data.srs === "object") return [one(data.profile && data.profile.name, data.profile && data.profile.icon, data)];
+      return [];
+    },
+    /* Puts a profile from another device here: over the profile with the id
+       `over` (taking its name and icon too), or as a new profile. Returns the id. */
+    bring(p, over) {
+      let id = over;
+      const st = merge(p.state);
+      if (id && index.list.some((x) => x.id === id)) {
+        const local = index.list.find((x) => x.id === id);
+        local.name = p.name;
+        local.icon = p.icon;
+      } else {
+        id = newId();
+        let name = p.name;
+        for (let n = 2; index.list.some((x) => x.name === name); n++) name = p.name.slice(0, 27) + " " + n;
+        index.list.push({ id, name, icon: p.icon, t: Date.now() });
+      }
+      writeIndex();
+      if (id === index.cur) {
+        state = st;
+        dirty = true;
+        this.flush();
+        emit("all");
+      } else if (!put(keyOf(id), JSON.stringify(st))) persistent = false;
+      emit("profile");
+      return id;
     },
 
     // ---- the word book ----------------------------------------------------------
@@ -569,22 +658,6 @@
       return { last: pct(list[list.length - 1]), best: Math.max(...list.map(pct)), n: list.length, at: list[list.length - 1].at };
     },
 
-    exportJson() {
-      return JSON.stringify(Object.assign({ app: "nihongo-ippo", exported: new Date().toISOString(), profile: { name: this.profile.name, icon: this.profile.icon } }, state));
-    },
-    importJson(text) {
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch (e) {
-        throw new Error("That text isn't a backup. Copy the whole backup and try again.");
-      }
-      if (!data || typeof data !== "object" || !data.srs) throw new Error("This does not look like a Nihongo Ippo backup.");
-      state = merge(data);
-      dirty = true;
-      this.flush();
-      emit("all");
-    },
     reset() {
       const settings = state.settings;
       state = blank();

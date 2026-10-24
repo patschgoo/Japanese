@@ -216,7 +216,7 @@
 
         '<section id="g-helpers"><h2>Helpers for beginners</h2><ul class="helpers">' +
         "<li><b>Tap any Japanese</b>, wherever it appears, to hear it and see its reading and meaning, with links to Jisho, Google Translate and DeepL. That includes headings, the phrasebook and the culture notes, and grammar written in English text such as い-adjective or 〜ませんか, which opens its grammar point. <b>Select</b> a longer stretch to hear it, slowly too, or to see each word’s meaning. During a question the meaning stays hidden until you ask for it, and then counts as a hint.</li>" +
-        "<li><b>Reading aids</b> above Japanese text: meanings or romaji under every word, colour-coded particles, furigana only on tap. Tapping a name or compound shows what it's made of: はじめ線 is はじめ “the start” + 線 “line”.</li>" +
+        "<li><b>Reading aids</b> above Japanese text: meanings or romaji under every word, colour-coded particles, furigana only on tap. Tapping a name or compound shows what it's made of and why that gives its meaning: [[{見習|みなら}い]] (trainee) is [[{見|み}]] “watch” from [[{見|み}る]] + [[{習|なら}い]] “learn” from [[{習|なら}う]]: someone learning by watching.</li>" +
         "<li><b>🔍 Break it down</b> on any sentence: word by word, what each particle does, which verb form is used, slow audio, and record-and-compare.</li>" +
         '<li><b><a href="#reader">Reader</a>:</b> paste any Japanese text to see how much of it you know, look up the rest, or send it to Google Translate or DeepL. It also finds course words and sentences for English you type.</li>' +
         '<li><b><a href="#maker">Sentence Maker</a>:</b> pick a pattern and the parts, and it builds a correct sentence in any tense, polite or casual, as a question or a request.</li>' +
@@ -225,6 +225,8 @@
         '<li><b><a href="#book">Word book</a>:</b> save any word you meet (tap it and choose Save, or the bookmark beside it), sort words into your own lists next to All saved words, and add words from outside the course. Any list can go into your reviews.</li>' +
         '<li><b><a href="#vtest">Vocabulary tests</a>:</b> test yourself on a list, your saved words, your reviews, your mistakes or any course units, with the question types you choose (meaning, Japanese, listening, typing, kanji readings). Each list keeps its last and best score; flashcards are there for a quick run-through.</li>' +
         '<li><b><a href="#profiles">Learning profiles</a>:</b> one for each person learning on this device, each with its own progress, word book, plan and settings.</li>' +
+        '<li><b><a href="#stats">Statistics</a>:</b> XP day by day, an activity calendar, your review cards by train and the week ahead, kana, tests and all-time totals, for the profile in use.</li>' +
+        '<li><b><a href="#move">Move to another device</a>:</b> progress is kept in your browser, so send a profile (or all of them) to your phone, tablet or another computer in a link or a file, and open it there. Nothing is uploaded; nothing is changed until you say where it goes.</li>' +
         '<li><b><a href="#phrases">Phrasebook</a>:</b> ready-made phrases for shops, restaurants, stations and emergencies.</li>' +
         '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +
         '<li><b><a href="#listen">Listen on the go</a>:</b> hands-free audio with pauses to recall, Japanese first or English first.</li>' +

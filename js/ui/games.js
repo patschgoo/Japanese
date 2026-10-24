@@ -509,7 +509,7 @@
         cards
           .map(
             (c, i) =>
-              '<button class="mem-card" type="button" data-i="' + i + '" aria-label="Card ' + (i + 1) + ', face down"><span class="mem-back" aria-hidden="true">一歩</span><span class="mem-face">' +
+              '<button class="mem-card" type="button" data-i="' + i + '" aria-label="Card ' + (i + 1) + ', face down"><span class="mem-back" aria-hidden="true">日本</span><span class="mem-face">' +
               (c.side === "jp" ? ui.em(c.w) + ui.jp(c.w.head, { tokens: false }) : esc(c.w.en)) + "</span></button>"
           )
           .join("") +

@@ -3,11 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nihongo Ippo</title>
+<title>日本</title>
 <meta name="description" content="Learn Japanese once you can read hiragana: 30 short units of high-frequency words, grammar and conversations, with spaced repetition, audio, games and graded stories.">
 <meta name="theme-color" content="#f5f6f3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12161b" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="img/icon.svg" type="image/svg+xml">
+<meta name="application-name" content="日本">
+<meta name="apple-mobile-web-app-title" content="日本">
+<link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="img/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,9 +22,9 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="topbar">
   <div class="topbar-in">
-    <a class="brand" href="#home" aria-label="Nihongo Ippo, home">
-      <span class="brand-mark" aria-hidden="true">一歩</span>
-      <span class="brand-text"><b>Nihongo Ippo</b><small lang="ja">にほんご いっぽ</small></span>
+    <a class="brand" href="#home" aria-label="日本 (Nihon), home">
+      <img class="brand-mark" src="img/mark.png" alt="" width="36" height="36">
+      <span class="brand-text"><b lang="ja">日本</b><small><span lang="ja">にほん</span> · Nihon</small></span>
     </a>
     <nav id="topnav" class="topnav" aria-label="Main"></nav>
     <button id="profbtn" class="prof-btn" type="button" data-profiles aria-haspopup="dialog" title="Learning profile"></button>
@@ -31,7 +35,7 @@
 <div id="pop" class="pop" role="dialog" aria-label="Word" hidden></div>
 <div id="modal" class="modal" hidden></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<noscript><p class="empty">Nihongo Ippo needs JavaScript to run.</p></noscript>
+<noscript><p class="empty">日本 needs JavaScript to run.</p></noscript>
 
 <script src="js/core/util.js"></script>
 <script src="js/core/kana.js"></script>
@@ -82,6 +86,8 @@
 <script src="js/ui/write.js"></script>
 <script src="js/ui/kana-practice.js"></script>
 <script src="js/ui/book.js"></script>
+<script src="js/ui/stats.js"></script>
+<script src="js/ui/move.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /* Grammar words, names and the six course "lines".
    Grammar words are not review cards; they are glossed when tapped and are
    taught in the unit given by u. A line's parts say what its name is made of
-   (はじめ "the start" + 線 "line"); its romaji is made from the kana, the way
+   (はじめ "the start" + 線 "line"), and why how that gives the name; its romaji is made from the kana, the way
    real line names are written: Hajime-sen. */
 (function (root) {
   "use strict";
@@ -9,12 +9,12 @@
   NI.data = NI.data || { units: [], grammar: [], names: [], phrases: [], lines: [] };
 
   NI.data.lines = [
-    { id: "H", ja: "はじめ{線|せん}", kana: "はじめせん", en: "Starting Line", parts: [["はじめ", "the beginning, the start (as in はじめまして)"], ["{線|せん}", "line"]], color: "h", units: [1, 2, 3, 4, 5], blurb: "Greetings, introductions, things, numbers and time — the survival kit." },
-    { id: "M", ja: "まいにち{線|せん}", kana: "まいにちせん", en: "Everyday Line", parts: [["まいにち", "every day"], ["{線|せん}", "line"]], color: "m", units: [6, 7, 8, 9, 10], blurb: "Verbs, going places, where things are, family and describing the world." },
-    { id: "D", ja: "できる{線|せん}", kana: "できるせん", en: "Can-Do Line", parts: [["できる", "can do, be able to"], ["{線|せん}", "line"]], color: "d", units: [11, 12, 13, 14, 15], blurb: "Likes and wants, requests, what's happening now, invitations and permission." },
-    { id: "K", ja: "かいわ{線|せん}", kana: "かいわせん", en: "Conversation Line", parts: [["かいわ", "conversation"], ["{線|せん}", "line"]], color: "k", units: [16, 17, 18, 19, 20], blurb: "Casual speech, opinions, past experiences, directions and getting help." },
-    { id: "T", ja: "つながる{線|せん}", kana: "つながるせん", en: "Connections Line", parts: [["つながる", "to connect, link up"], ["{線|せん}", "line"]], color: "t", units: [21, 22, 23, 24, 25], blurb: "Giving and receiving, can and can't, if and when, before and after, and making plans." },
-    { id: "S", ja: "すすむ{線|せん}", kana: "すすむせん", en: "Onward Line", parts: [["すすむ", "to go forward"], ["{線|せん}", "line"]], color: "s", units: [26, 27, 28, 29, 30], blurb: "Trying things, how things look, asking for advice, rules, and the polite Japanese of shops and work." },
+    { id: "H", ja: "はじめ{線|せん}", kana: "はじめせん", en: "Starting Line", parts: [["はじめ", "the beginning, the start (as in はじめまして)"], ["{線|せん}", "line"]], why: "The line where you begin: the Starting Line.", color: "h", units: [1, 2, 3, 4, 5], blurb: "Greetings, introductions, things, numbers and time — the survival kit." },
+    { id: "M", ja: "まいにち{線|せん}", kana: "まいにちせん", en: "Everyday Line", parts: [["まいにち", "every day"], ["{線|せん}", "line"]], why: "The line for the Japanese of every day: the Everyday Line.", color: "m", units: [6, 7, 8, 9, 10], blurb: "Verbs, going places, where things are, family and describing the world." },
+    { id: "D", ja: "できる{線|せん}", kana: "できるせん", en: "Can-Do Line", parts: [["できる", "can do, be able to"], ["{線|せん}", "line"]], why: "The line of things you can do: the Can-Do Line.", color: "d", units: [11, 12, 13, 14, 15], blurb: "Likes and wants, requests, what's happening now, invitations and permission." },
+    { id: "K", ja: "かいわ{線|せん}", kana: "かいわせん", en: "Conversation Line", parts: [["かいわ", "conversation"], ["{線|せん}", "line"]], why: "The line for conversation: the Conversation Line.", color: "k", units: [16, 17, 18, 19, 20], blurb: "Casual speech, opinions, past experiences, directions and getting help." },
+    { id: "T", ja: "つながる{線|せん}", kana: "つながるせん", en: "Connections Line", parts: [["つながる", "to connect, link up"], ["{線|せん}", "line"]], why: "The line where sentences link up (if, when, before, after): the Connections Line.", color: "t", units: [21, 22, 23, 24, 25], blurb: "Giving and receiving, can and can't, if and when, before and after, and making plans." },
+    { id: "S", ja: "すすむ{線|せん}", kana: "すすむせん", en: "Onward Line", parts: [["すすむ", "to go forward"], ["{線|せん}", "line"]], why: "The line that takes you further: the Onward Line.", color: "s", units: [26, 27, 28, 29, 30], blurb: "Trying things, how things look, asking for advice, rules, and the polite Japanese of shops and work." },
   ];
 
   NI.data.grammar = [

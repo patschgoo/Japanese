@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Content checks and engine tests for Nihongo Ippo. Run: node tools/validate.js
+/* Content checks and engine tests for 日本 (Nihon). Run: node tools/validate.js
    - every Japanese text segments into known words (no unknown tokens)
    - furigana agrees with the dictionary reading of each word
    - nothing is used before the unit that teaches it (i+1 ordering)
@@ -276,6 +276,31 @@ function segmentTests(NI) {
   eq("no かわいそう for cute", String(NI.conj.forms({ j: "かわいい", pos: "adj-i" }).sou), "undefined");
 }
 
+/* Word breakdowns: the parts are the pieces as written in the word (見 + 習い
+   make 見習い; the word a piece comes from, 見る, goes third), and each one
+   says why the parts give the meaning. */
+function partsTests(NI) {
+  const F = NI.furi;
+  const markupOk = (m) => typeof m === "string" && !/[{}|]/.test(F.base(m)) && F.base(m).length > 0;
+  const richOk = (t) => (String(t).match(/\[\[(.+?)\]\]/g) || []).every((x) => markupOk(x.slice(2, -2)));
+  let n = 0;
+  for (const e of NI.lex.byKey.values()) {
+    if (!e.parts) continue;
+    n++;
+    const where = "parts of " + e.s;
+    if (!Array.isArray(e.parts) || e.parts.length < 2) err(where, "needs two parts or more");
+    const joined = e.parts.map((p) => F.base(p[0])).join("");
+    if (joined !== e.s) err(where, "the parts read " + joined + ": write each part as it appears in the word, and the word it comes from third");
+    for (const [piece, en, from] of e.parts) {
+      if (!markupOk(piece) || (from != null && !markupOk(from))) err(where, "bad markup in " + piece + (from ? " / " + from : ""));
+      if (!en || !richOk(en)) err(where, "the meaning of " + piece + " is missing or has bad [[markup]]");
+    }
+    if (!e.why) err(where, "say why the parts give the meaning (why: …)");
+    else if (!richOk(e.why)) err(where, "bad [[markup]] in why");
+  }
+  if (n < 30) err("parts", "only " + n + " words have breakdowns; expected the glossary, lines, trains, titles and fortunes");
+}
+
 // A picture belongs to one meaning (父 and お父さん may share: same person).
 function emojiTests(NI) {
   const by = new Map();
@@ -290,6 +315,7 @@ function main() {
   NI.course.init();
   NI.lex.build();
   segmentTests(NI);
+  partsTests(NI);
   emojiTests(NI);
   builderTests(NI);
   lessonTests(NI);

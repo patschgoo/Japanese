@@ -1,4 +1,4 @@
-/* Nihongo Ippo — small shared helpers.
+/* 日本 (Nihon) — small shared helpers.
    Every script attaches to one global namespace, NI, so the site runs from
    file:// as well as from a web server (no modules, no build step). */
 (function (root) {

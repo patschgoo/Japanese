@@ -29,14 +29,15 @@
   // Level n starts at 100(n−1) + 25(n−1)(n−2) XP: each level takes 50 XP more than the one before.
   const levelStart = (n) => 100 * (n - 1) + 25 * (n - 1) * (n - 2);
   const TITLES = [
-    // [from level, title, English, the parts of the title]
-    [1, "{見習|みなら}い", "Trainee", [["{見|み}る", "watch"], ["{習|なら}う", "learn"]]],
-    [3, "{乗客|じょうきゃく}", "Passenger", [["{乗|じょう}", "ride"], ["{客|きゃく}", "guest, customer"]]],
-    [6, "{旅人|たびびと}", "Traveller", [["{旅|たび}", "journey"], ["{人|ひと}", "person (ひと becomes びと here)"]]],
-    [10, "{車掌|しゃしょう}", "Conductor", [["{車|しゃ}", "vehicle, car"], ["{掌|しょう}", "be in charge of"]]],
-    [15, "{運転士|うんてんし}", "Driver", [["{運転|うんてん}", "driving"], ["{士|し}", "someone with a skill"]]],
-    [20, "{駅長|えきちょう}", "Station master", [["{駅|えき}", "station"], ["{長|ちょう}", "head, chief"]]],
-    [30, "{名人|めいじん}", "Master", [["{名|めい}", "name, fame"], ["{人|じん}", "person"]]],
+    // [from level, title, English, its parts (each as written in the title, with
+    // the word it comes from), and why the parts mean what the title means]
+    [1, "{見習|みなら}い", "Trainee", [["{見|み}", "watch", "{見|み}る"], ["{習|なら}い", "learn", "{習|なら}う"]], "Verbs join up in their ます stem ([[{見|み}ます]], [[{習|なら}います]]), making [[{見習|みなら}う]]: to learn by watching people who know how. [[{見習|みなら}い]] is someone doing that: a trainee."],
+    [3, "{乗客|じょうきゃく}", "Passenger", [["{乗|じょう}", "ride, as in [[{乗|の}る]]"], ["{客|きゃく}", "guest, customer"]], "A customer who rides: a passenger."],
+    [6, "{旅人|たびびと}", "Traveller", [["{旅|たび}", "journey"], ["{人|ひと}", "person (ひと becomes びと here)"]], "A person on a journey: a traveller."],
+    [10, "{車掌|しゃしょう}", "Conductor", [["{車|しゃ}", "vehicle, car"], ["{掌|しょう}", "be in charge of"]], "The one in charge of the train’s cars: the conductor."],
+    [15, "{運転士|うんてんし}", "Driver", [["{運転|うんてん}", "driving"], ["{士|し}", "someone with a skill"]], "Someone whose skill is driving: the train driver."],
+    [20, "{駅長|えきちょう}", "Station master", [["{駅|えき}", "station"], ["{長|ちょう}", "head, chief"]], "The head of a station: the station master."],
+    [30, "{名人|めいじん}", "Master", [["{名|めい}", "name, fame"], ["{人|じん}", "person"]], "A person who has made a name, famous for their skill: a master."],
   ];
 
   function titleFor(n) {

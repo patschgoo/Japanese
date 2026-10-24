@@ -218,6 +218,39 @@
   // A single kana (or one with a small ゃ, ァ…), as in “シ (shi): dots on the left”.
   const isKanaUnit = (w) => /^[ぁ-ゖァ-ヺ][ぁぃぅぇぉゃゅょァィゥェォャュョ]?$/.test(w);
 
+  // Which characters (code points) belong to words the lexicon doesn't know.
+  function unknownAt(toks, n) {
+    const u = new Array(n).fill(false);
+    for (const x of toks) if (x.unknown) for (let i = x.start; i < x.end; i++) u[i] = true;
+    return u;
+  }
+  const KANJI = /[㐀-鿿豈-﫿々〆]/;
+  const OKURI = /[ぁ-ゖ]/;
+  const PARTICLE = /[はがをにでとのもへやかよねわだなぞぜ]/;
+  /* An unknown word [s, e) reaches over kana between unknown kanji (推し活)
+     and one kana of okurigana ending it (推す, 尊い), never over a particle. */
+  function glue(chars, u, s, e) {
+    const k = (i) => KANJI.test(chars[i] || "");
+    const kana = (i) => OKURI.test(chars[i] || "") && !PARTICLE.test(chars[i]);
+    while (k(e - 1)) {
+      let j = e;
+      while (j < e + 2 && kana(j)) j++;
+      if (j > e && k(j) && u[j]) {
+        for (e = j; e < chars.length && u[e]; ) e++;
+        continue;
+      }
+      if (j > e) e++;
+      break;
+    }
+    while (k(s)) {
+      let j = s;
+      while (j > s - 2 && kana(j - 1)) j--;
+      if (!(j < s && k(j - 1) && u[j - 1])) break;
+      for (s = j; s > 0 && u[s - 1]; ) s--;
+    }
+    return [s, e];
+  }
+
   const BLOCK = ".jp, p, li, dd, dt, td, th, h1, h2, h3, h4, figcaption, .prompt-word, .word-big, div";
 
   /* Handles a click on text that isn't a token: finds the word under it and
@@ -257,13 +290,15 @@
       ui.showWord(tk.entry.key, anchor, m);
       return true;
     }
-    // Unknown characters: take the whole run of them as one word.
+    // Unknown characters: take the whole run of them as one word, with the
+    // kana inside it and ending it (推し活, not 推).
     let a = k;
     let b = k;
     while (a > 0 && toks[a - 1].unknown) a--;
     while (b < toks.length - 1 && toks[b + 1].unknown) b++;
-    const word = toks.slice(a, b + 1).map((x) => x.text).join("");
-    const alone = !CHUNK.test(chars[toks[a].start - 1] || "") && !CHUNK.test(chars[toks[b].end] || "");
+    const [ws, we] = glue(chars, unknownAt(toks, chars.length), toks[a].start, toks[b].end);
+    const word = chars.slice(ws, we).join("");
+    const alone = !CHUNK.test(chars[ws - 1] || "") && !CHUNK.test(chars[we] || "");
     if (isKanaUnit(word) && alone) showKana(word, anchor, m);
     else showText(word, anchor, m, readingFrom(word, furigana));
     return true;
@@ -286,9 +321,19 @@
       if (run) rows.push('<li><span lang="ja">' + esc(run) + "</span>" + (rd && rd !== run ? ' <span class="pop-reading" lang="ja">' + esc(rd) + "</span>" : "") + ui.say(rd || run) + '<span class="muted">not in this course yet</span>' + '<button class="chip small ghost" type="button" data-add-word="' + esc(run) + '"' + (rd ? ' data-r="' + esc(rd) + '"' : "") + ">＋ Word book</button></li>");
       run = "";
     };
-    for (const t of NI.lex.readPlain(text)) {
+    const toks = NI.lex.readPlain(text);
+    const chars = Array.from(text);
+    const u = unknownAt(toks, chars.length);
+    let upto = 0; // characters before this are in a row already
+    for (let i = 0; i < toks.length; i++) {
+      const t = toks[i];
+      if (t.start < upto) continue;
       if (t.unknown) {
-        run += t.text;
+        let j = i;
+        while (j + 1 < toks.length && toks[j + 1].unknown) j++;
+        upto = glue(chars, u, t.start, toks[j].end)[1];
+        run = chars.slice(t.start, upto).join("");
+        flush();
         continue;
       }
       flush();

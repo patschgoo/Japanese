@@ -60,7 +60,7 @@
       const earned = NI.game.BADGES.filter((b) => st.badges[b.id]).length;
       let html =
         '<header class="page-head"><h1>Stamp book <span class="sub">' + ui.jp("スタンプ{帳|ちょう}", { tokens: false }) + "</span></h1>" +
-        "<p>Finish every part of a unit to collect its station stamp, like the rubber stamps at Japanese railway stations. Pass a line exam to turn its line gold.</p></header>" +
+        "<p>Finish every part of a unit to collect its station stamp, like the rubber stamps at Japanese railway stations. Pass a line exam to turn its line gold. <a href=\"#stats\">📊 All your statistics</a></p></header>" +
         '<section class="u-sec stat-cards">' +
         '<div class="stat-card"><span class="lvl-badge big">Lv ' + L.n + "</span><div><b>" + ui.jp(L.title.ja, { tokens: false, ro: true }) + " · " + esc(L.title.en) + "</b>" + ui.progressBar(L.frac, "Progress to the next level") + '<span class="small muted">' + st.xp + " XP in total · " + (L.need - L.into) + " to level " + (L.n + 1) + "</span></div></div>" +
         '<div class="stat-card"><span class="big-num">' + NI.store.streak() + '</span><div><b>Day streak</b><span class="small muted">Best: ' + NI.game.bestStreak() + " days</span>" + weekDots() + "</div></div>" +

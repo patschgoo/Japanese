@@ -159,10 +159,10 @@
       const r = NI.kana.romaji(kana.replace(/せん$/, ""));
       return r.charAt(0).toUpperCase() + r.slice(1) + "-sen";
     };
-    for (const l of D.lines || []) add(l.ja, l.en, { ro: lineRo(l.kana), parts: l.parts });
-    if (NI.srs) for (const t of NI.srs.TIERS) add("{" + t.ja + "|" + t.kana + "}", t.en + " (a train; also a review stage here)", { parts: t.parts });
-    if (NI.game && NI.game.TITLES) for (const t of NI.game.TITLES) add(t[1], t[2] + " (a level title)", { parts: t[3] });
-    if (D.omikuji) for (const o of D.omikuji.levels) add(o[0], o[1] + " (an omikuji fortune)", { parts: o[4] });
+    for (const l of D.lines || []) add(l.ja, l.en, { ro: lineRo(l.kana), parts: l.parts, why: l.why });
+    if (NI.srs) for (const t of NI.srs.TIERS) add("{" + t.ja + "|" + t.kana + "}", t.en + " (a train; also a review stage here)", { parts: t.parts, why: t.why });
+    if (NI.game && NI.game.TITLES) for (const t of NI.game.TITLES) add(t[1], t[2] + " (a level title)", { parts: t[3], why: t[4] });
+    if (D.omikuji) for (const o of D.omikuji.levels) add(o[0], o[1] + " (an omikuji fortune)", { parts: o[4], why: o[5] });
     if (D.kana) for (const w of D.kana.LOANWORDS) add(w.k, w.en);
     if (D.builder) for (const w of D.builder.COUNTRIES.concat(D.builder.JOBS, D.builder.HOBBIES)) add(w.j, w.en);
     if (D.builder) for (const c of D.builder.COUNTRIES) PROPER.add(NI.furi.base(c.j));
@@ -253,7 +253,7 @@
       const r = x.r || F.reading(x.j);
       const key = "x:" + s;
       if (this.byKey.has(key) || (this.index.get(s) || []).some((e) => e.r === r)) return;
-      this.add({ key, kind: "extra", unit: 0, s, r, j: x.j || s, en: x.en, pos: x.pos || "n", ro: x.ro, parts: x.parts });
+      this.add({ key, kind: "extra", unit: 0, s, r, j: x.j || s, en: x.en, pos: x.pos || "n", ro: x.ro, parts: x.parts, why: x.why });
       if (!NI.conj.isVerb(x.pos) && !NI.conj.isAdj(x.pos)) return;
       const forms = NI.conj.forms({ j: x.j, pos: x.pos });
       for (const f in forms) {
@@ -265,6 +265,29 @@
 
     get(key) {
       return this.byKey.get(key) || null;
+    },
+
+    /* The profile's own words (the word book's u:…) join in, so tapping one
+       shows your meaning and the Reader knows it. Called again whenever they
+       change or another profile is used. A course or glossary word with the
+       same spelling and reading wins. */
+    setMine(custom) {
+      const F = NI.furi;
+      for (const [k, e] of this.byKey) {
+        if (e.kind !== "mine") continue;
+        this.byKey.delete(k);
+        const rest = (this.index.get(e.s) || []).filter((x) => x !== e);
+        if (rest.length) this.index.set(e.s, rest);
+        else this.index.delete(e.s);
+      }
+      for (const id in custom || {}) {
+        const c = custom[id];
+        const s = F.base(c.j || "");
+        const r = c.r || F.reading(c.j || "");
+        if (!s || (this.index.get(s) || []).some((e) => e.r === r)) continue;
+        this.add({ key: id, kind: "mine", id, unit: 0, s, r, j: c.j, en: c.en, pos: c.pos || "n" });
+      }
+      this.readIndex = null;
     },
 
     /* An entry in romaji, as it's said: particles は へ を are wa, e, o (and so

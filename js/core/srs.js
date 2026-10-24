@@ -13,11 +13,11 @@
   const MAX = INTERVALS.length - 1;
 
   const TIERS = [
-    { id: "local", ja: "各停", kana: "かくてい", en: "Local", stages: [1, 2], parts: [["{各|かく}", "each"], ["{停|てい}", "stop (it stops at each station)"]] },
-    { id: "rapid", ja: "快速", kana: "かいそく", en: "Rapid", stages: [3, 4], parts: [["{快|かい}", "brisk"], ["{速|そく}", "speed"]] },
-    { id: "express", ja: "急行", kana: "きゅうこう", en: "Express", stages: [5, 6], parts: [["{急|きゅう}", "hurry"], ["{行|こう}", "go"]] },
-    { id: "limited", ja: "特急", kana: "とっきゅう", en: "Limited express", stages: [7], parts: [["{特|とく}", "special (とく becomes とっ here)"], ["{急|きゅう}", "hurry"]] },
-    { id: "shinkansen", ja: "新幹線", kana: "しんかんせん", en: "Shinkansen", stages: [8], parts: [["{新|しん}", "new"], ["{幹|かん}", "trunk, main"], ["{線|せん}", "line"]] },
+    { id: "local", ja: "各停", kana: "かくてい", en: "Local", stages: [1, 2], parts: [["{各|かく}", "each"], ["{停|てい}", "stop"]], why: "Short for [[{各駅停車|かくえきていしゃ}]], “stopping at each station”: the slow local train." },
+    { id: "rapid", ja: "快速", kana: "かいそく", en: "Rapid", stages: [3, 4], parts: [["{快|かい}", "brisk"], ["{速|そく}", "speed"]], why: "Brisk speed: a rapid train skips some stations." },
+    { id: "express", ja: "急行", kana: "きゅうこう", en: "Express", stages: [5, 6], parts: [["{急|きゅう}", "hurry"], ["{行|こう}", "go"]], why: "Going in a hurry: an express stops only at the bigger stations." },
+    { id: "limited", ja: "特急", kana: "とっきゅう", en: "Limited express", stages: [7], parts: [["{特|とく}", "special (とく becomes とっ here)"], ["{急|きゅう}", "hurry"]], why: "A special express (short for [[{特別急行|とくべつきゅうこう}]]): faster still, and you often pay a little extra to ride it." },
+    { id: "shinkansen", ja: "新幹線", kana: "しんかんせん", en: "Shinkansen", stages: [8], parts: [["{新|しん}", "new"], ["{幹|かん}", "trunk, main"], ["{線|せん}", "line"]], why: "The new main line: Japan’s high-speed bullet trains." },
   ];
 
   function tierOf(stage) {

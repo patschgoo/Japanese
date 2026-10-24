@@ -1,10 +1,13 @@
-# Nihongo Ippo · 日本語いっぽ
+# 日本 · Nihon
+
+<img src="img/icon-192.png" alt="" width="96" height="96" align="right">
 
 A free, static website for learning Japanese **once you can read hiragana**.
 Thirty short units take you from greetings to real conversations, with
 spaced-repetition reviews, audio for every word and sentence, games, graded
 stories and an optional katakana trainer. No accounts, no tracking, no build
-step: open `index.html` or host the folder anywhere.
+step: open `index.html` or host the folder anywhere. (It used to be called
+Nihongo Ippo; progress saved under that name carries on.)
 
 The course is drawn as a railway map: six lines, thirty stations. Each unit
 opens with a station name board, you collect a station stamp for every unit
@@ -21,7 +24,7 @@ shinkansen (新幹線) as you remember them.
 | **Games** | Time Attack (meanings, listening or pictures), Kana Rain, Memory Match and Sentence Sprint, built from the words and sentences you've met; a relaxed mode takes out clocks and hearts |
 | **More ways to practise** | Role-play any course conversation (pick or say your lines), Listen on the go (hands-free audio with pauses to recall, Japanese or English first), write kana by hand on a tracing pad, and a pronunciation check with the browser's speech recognition that marks the sounds it missed |
 | **Motivation** | XP and levels, a daily goal and streak with rest days that cover a missed day, combos, 30 badges, three daily missions, an omikuji fortune once the goal is reached, a stamp for every station, a gold exam for every line, a mistakes notebook |
-| **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings or romaji (Hepburn, as it's said: Hajime-sen, ohayō gozaimasu) under every word or just in pop-ups, colour-coded particles; tap any Japanese anywhere to hear it and see its meaning, or select a stretch to listen (slowly, too) or translate it. That covers the site's own Japanese too: headings, line names, the phrasebook and culture notes (a glossary), grammar written into English (い-adjective, 〜ませんか, linked to its unit) and single kana. Names and compounds show their parts (はじめ線 = はじめ “the start” + 線 “line”). During a question the meaning stays hidden until you ask, and counts as a hint |
+| **Reading help** | Furigana on every kanji (or on tap, or kana only), hiragana above katakana until you can read it, English meanings or romaji (Hepburn, as it's said: Hajime-sen, ohayō gozaimasu) under every word or just in pop-ups, colour-coded particles; tap any Japanese anywhere to hear it and see its meaning, or select a stretch to listen (slowly, too) or translate it. That covers the site's own Japanese too: headings, line names, the phrasebook and culture notes (a glossary), grammar written into English (い-adjective, 〜ませんか, linked to its unit) and single kana. Names and compounds show their parts, as written in the word, and why they give its meaning (見習い “trainee” = 見 “watch”, from 見る, + 習い “learn”, from 習う: someone learning by watching). During a question the meaning stays hidden until you ask, and counts as a hint |
 | **Sentence breakdown** | Any sentence, word by word: each particle's job, each verb form, slow audio, and record-and-compare for your own pronunciation |
 | **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
@@ -30,7 +33,9 @@ shinkansen (新幹線) as you remember them.
 | **Word book** | Save any word you meet (tap it and choose Save, or the bookmark beside it) into All saved words and lists of your own; add words from outside the course with their reading and meaning; search, sort, copy a list as text, or put a whole list into your reviews |
 | **Vocabulary tests** | Test yourself on a list, your saved words, your reviews, your mistakes or any range of units: choose the questions (meaning, Japanese, listening, typing, kanji readings), the length, and a scored test or practice with hints; each list keeps its last and best score, and missed words can go straight into a list. Flashcards for a quick run-through |
 | **Learning profiles** | One for each person learning on the device (or a fresh start): each has its own progress, reviews, word book, plan and settings, and you switch from the button at the top |
-| **Settings** | Per profile: plan, lessons and reviews (session length, moving on after a right answer, missed questions coming back, the handwriting-style font), reading aids, audio, theme, backups |
+| **Statistics** | XP over the last 30 days against your daily goal, a 16-week activity calendar, review cards by train and those due in the week ahead, kana known, test and exam results and all-time totals; every chart has tooltips on hover and keyboard focus and opens as a table |
+| **Move to another device** | Send a profile, or all of them, to another phone, tablet or computer in a link (Share, or Copy) or a file. Opening the link there (or pasting it, or choosing the file) shows what arrived and lets you put it over a profile there or next to them as a new one; nothing changes until you choose. The profile travels inside the link's `#move=` part, which browsers never send to a server |
+| **Settings** | Per profile: plan, lessons and reviews (session length, moving on after a right answer, missed questions coming back, the handwriting-style font), reading aids, audio, theme |
 
 ## The method, in short
 
@@ -93,8 +98,9 @@ Any static file server works, or just open `index.html` in a browser.
 python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
-Progress is saved in the browser (`localStorage`). Options → *Your progress*
-copies or downloads a backup that you can restore on another device.
+Progress is saved in the browser (`localStorage`). Options → *Move to
+another device* sends your profiles to another device in a link or a file;
+the file doubles as a backup, and older backups still open.
 
 Audio uses the browser's built-in speech synthesis. If no Japanese voice is
 installed, the Options page explains how to add one (Windows, macOS, Android,
@@ -125,8 +131,10 @@ js/ui/                pages, exercise types, lesson/review sessions, games,
                       reader and maker, stories, stamps, the sentence breakdown,
                       role-play, hands-free listening, kana practice, the
                       stroke-order pad, kana writing, the pronunciation
-                      check, and the word book with vocabulary tests,
-                      flashcards and profiles (book.js)
+                      check, the word book with vocabulary tests,
+                      flashcards and profiles (book.js), statistics
+                      (stats.js) and moving profiles to another device
+                      (move.js)
 js/app.js             router and start-up
 tools/validate.js     content checks and engine tests (`npm test`)
 tools/vocab.js        what a learner knows by a given unit (for writers)
@@ -167,6 +175,8 @@ the learner knows, and that every lesson can be generated.
 
 Content and code are provided as-is for learning. Fonts are loaded from
 Google Fonts (Fira Sans, BIZ UDPGothic, Klee One) under their own licences.
+
+The app icon, the daruma with 日本 (`img/`), is the project's own artwork.
 
 The kana stroke order in `js/data/strokes.js` comes from
 [KanjiVG](http://kanjivg.tagaini.net), Copyright (C) 2009–2011 Ulrich Apel,

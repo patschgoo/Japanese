@@ -375,15 +375,16 @@
     draw();
   }
 
-  function copyText(text) {
-    const done = () => ui.toast("Copied.");
+  // Copies text; msg is what the toast says once it's done.
+  function copyText(text, msg) {
+    const done = () => ui.toast(msg || "Copied.");
     try {
-      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text));
+      navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, msg));
     } catch (e) {
-      fallbackCopy(text);
+      fallbackCopy(text, msg);
     }
   }
-  function fallbackCopy(text) {
+  function fallbackCopy(text, msg) {
     const t = document.createElement("textarea");
     t.value = text;
     document.body.appendChild(t);
@@ -395,7 +396,7 @@
       ok = false;
     }
     t.remove();
-    ui.toast(ok ? "Copied." : "Select the text and copy it manually.");
+    ui.toast(ok ? msg || "Copied." : "Select the text and copy it manually.");
   }
   NI.copyText = copyText;
 
@@ -699,10 +700,8 @@
         radio("theme", "system", s.theme, "Match my device") + radio("theme", "light", s.theme, "Light") + radio("theme", "dark", s.theme, "Dark") +
         "</fieldset></section>" +
         '<section class="u-sec opt-sec" id="opt-data"><h2>Your progress</h2>' +
-        "<p>Progress lives in this browser only. To move this profile to another device, copy the backup text and paste it there.</p>" +
-        '<div class="row wrap"><button class="btn small" type="button" data-export>Copy backup</button>' + (root.NI_EMBED ? "" : '<button class="btn small ghost" type="button" data-download>Download backup</button>') + "</div>" +
-        '<label for="import-text">Restore from a backup</label><textarea id="import-text" rows="3" placeholder="Paste backup text here"></textarea>' +
-        '<div class="row wrap"><button class="btn small" type="button" data-import>Restore</button><button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
+        "<p>Progress lives in this browser only. To carry on on another phone, tablet or computer, or to keep a backup, send your profiles there in a link or a file. A link or file you sent yourself earlier opens there too.</p>" +
+        '<div class="row wrap"><a class="btn small primary" href="#move">📲 Move to another device</a><button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
         "</section>"
       );
     },
@@ -741,35 +740,6 @@
       if (voice) voice.addEventListener("change", () => NI.store.set("voice", voice.value));
       const test = el.querySelector("[data-test-voice]");
       if (test) test.addEventListener("click", () => NI.speech.speak("こんにちは。日本語の勉強、頑張ってください。"));
-      el.querySelector("[data-export]").addEventListener("click", () => copyText(NI.store.exportJson()));
-      const dl = el.querySelector("[data-download]");
-      if (dl) dl.addEventListener("click", () => {
-        try {
-          const blob = new Blob([NI.store.exportJson()], { type: "application/json" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = "nihongo-ippo-backup-" + NI.util.dayKey() + ".json";
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => {
-            URL.revokeObjectURL(a.href);
-            a.remove();
-          }, 500);
-        } catch (e) {
-          ui.toast("Download isn't available here. Use Copy backup instead.");
-        }
-      });
-      el.querySelector("[data-import]").addEventListener("click", () => {
-        const text = el.querySelector("#import-text").value.trim();
-        if (!text) return ui.toast("Paste a backup first.");
-        try {
-          NI.store.importJson(text);
-          ui.toast("Progress restored.");
-          NI.app.go("home");
-        } catch (e) {
-          ui.toast(e.message || "That backup couldn't be read.");
-        }
-      });
       el.querySelector("[data-reset]").addEventListener("click", () =>
         ui.confirm({ title: "Reset " + NI.store.profile.name + "'s progress?", body: "Finished lessons, every review card and the word book of this profile will be deleted. Settings and other profiles stay as they are.", ok: "Reset progress", danger: true }).then((yes) => {
           if (!yes) return;
@@ -789,6 +759,8 @@
       return (
         '<header class="page-head"><h1>More</h1></header><section class="home-links">' +
         link("#stamps", "🏅 Stamp book", "Station stamps, badges, your level and records.") +
+        link("#stats", "📊 Statistics", "XP day by day, your activity calendar, review cards, kana and tests.") +
+        link("#move", "📲 Move to another device", "Take your profiles to a phone, tablet or computer in a link or a file; also for backups.") +
         link("#mistakes", "📝 Mistakes notebook", "Everything you got wrong, ready to practise.") +
         link("#stories", "📖 Stories", "Graded stories with audio.") +
         link("#kana", "あ Kana trainer", "Katakana charts, drills, loanwords and look-alikes.") +
