@@ -344,8 +344,23 @@
   }
 
   const KR_RELAXED = 30;
-  // The on-screen keys: only the letters romaji needs, in keyboard order.
-  const KR_ROWS = ["wertyuiop", "asdfghjk", "zcbnm"];
+  // The on-screen keys: only the letters romaji needs, in the order of an
+  // English (QWERTY) or a German (QWERTZ) keyboard, where Z and Y swap.
+  const KR_LAYOUTS = {
+    en: { short: "EN", name: "English keyboard (QWERTY)", rows: ["wertyuiop", "asdfghjk", "zcbnm"] },
+    de: { short: "DE", name: "German keyboard (QWERTZ)", rows: ["wertzuiop", "asdfghjk", "ycbnm"] },
+  };
+  // The layout to start with: the one chosen before, or the browser's language.
+  function krLayout() {
+    const saved = NI.store.state.intro.krLayout;
+    if (KR_LAYOUTS[saved]) return saved;
+    const langs = (root.navigator && (root.navigator.languages || [root.navigator.language])) || [];
+    return /^de\b/i.test(langs[0] || "") ? "de" : "en";
+  }
+  const krKeysHtml = (layout) =>
+    KR_LAYOUTS[layout].rows
+      .map((r, i) => '<div class="kr-row">' + r.split("").map((c) => '<button class="kr-key" type="button" data-k="' + c + '">' + c + "</button>").join("") + (i === 2 ? '<button class="kr-key del" type="button" data-k="del" aria-label="Delete">⌫</button>' : "") + "</div>")
+      .join("");
 
   function kanaRain(box) {
     const g = GAMES[1];
@@ -368,13 +383,16 @@
          game has keys of its own (the phone's is a tap away). */
       const touch = !!(root.matchMedia && root.matchMedia("(pointer: coarse)").matches);
       let onScreen = touch && NI.store.state.intro.krKeys !== false;
+      let layout = krLayout();
       area.innerHTML =
         '<div class="rain" aria-label="Falling kana"><div class="rain-floor" aria-hidden="true"></div></div>' +
         '<div class="answer-row rain-input"><label class="sr" for="kr-in">Type the romaji</label><input id="kr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" lang="en"></div>' +
-        '<div class="kr-keys" role="group" aria-label="Romaji keys">' +
-        KR_ROWS.map((r, i) => '<div class="kr-row">' + r.split("").map((c) => '<button class="kr-key" type="button" data-k="' + c + '">' + c + "</button>").join("") + (i === 2 ? '<button class="kr-key del" type="button" data-k="del" aria-label="Delete">⌫</button>' : "") + "</div>").join("") +
-        "</div>" +
-        (touch ? '<p class="kr-switch"><button class="btn small ghost" type="button" data-kr-switch></button></p>' : "");
+        '<div class="kr-keys" role="group" aria-label="Romaji keys">' + krKeysHtml(layout) + "</div>" +
+        (touch
+          ? '<div class="kr-switch"><div class="seg small" role="group" aria-label="Keyboard layout">' +
+            Object.keys(KR_LAYOUTS).map((id) => '<button class="seg-b" type="button" data-kr-layout="' + id + '" aria-label="' + KR_LAYOUTS[id].name + '" title="' + KR_LAYOUTS[id].name + '">' + KR_LAYOUTS[id].short + "</button>").join("") +
+            '</div><button class="btn small ghost" type="button" data-kr-switch></button></div>'
+          : "");
       const sky = area.querySelector(".rain");
       const input = area.querySelector("#kr-in");
       const keysEl = area.querySelector(".kr-keys");
@@ -387,8 +405,26 @@
         input.readOnly = on;
         input.setAttribute("inputmode", on ? "none" : "text");
         input.placeholder = on ? "tap the keys: ka, shi, tsu…" : "type romaji: ka, shi, tsu…";
-        if (switchBtn) switchBtn.textContent = on ? "Use the phone’s keyboard instead" : "Use the on-screen keys instead";
+        if (switchBtn) switchBtn.textContent = on ? "Use the phone’s keyboard" : "Use the on-screen keys";
+        area.querySelectorAll("[data-kr-layout]").forEach((b) => (b.closest(".seg").hidden = !on));
       }
+      // English or German key order; the choice stays with the profile.
+      function useLayout(id) {
+        layout = id;
+        keysEl.innerHTML = krKeysHtml(id);
+        area.querySelectorAll("[data-kr-layout]").forEach((b) => {
+          const here = b.getAttribute("data-kr-layout") === id;
+          b.classList.toggle("on", here);
+          b.setAttribute("aria-pressed", String(here));
+        });
+      }
+      useLayout(layout);
+      area.querySelectorAll("[data-kr-layout]").forEach((b) =>
+        b.addEventListener("click", () => {
+          useLayout(b.getAttribute("data-kr-layout"));
+          NI.store.setIntro("krLayout", layout);
+        })
+      );
       useKeys(onScreen);
       if (switchBtn)
         switchBtn.addEventListener("click", () => {
