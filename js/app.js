@@ -44,6 +44,15 @@
     NI.book.profileButton();
   }
 
+  // The tab bar steps aside only while a lesson, review or game is running
+  // (its top bar with the ✕ is on screen). Empty and finished screens, like
+  // Review with nothing due, keep it.
+  function sessionMode() {
+    const main = doc.getElementById("main");
+    const on = !!(current && current.page && current.page.session && main && main.querySelector(".sess-top"));
+    if (doc.body.classList.contains("in-session") !== on) doc.body.classList.toggle("in-session", on);
+  }
+
   let shows = 0; // pages shown so far
   function show(r) {
     shows++;
@@ -60,11 +69,11 @@
     current = { name: r.name, args: r.args, page };
     try {
       main.innerHTML = page.render(r.args);
-      doc.body.classList.toggle("in-session", !!page.session);
       const title = typeof page.title === "function" ? page.title(r.args) : page.title;
       doc.title = (title && r.name !== "home" ? title + " · " : "") + "日本";
       renderNav(page.nav || r.name);
       if (page.mount) page.mount(main, r.args);
+      sessionMode();
     } catch (e) {
       console.error(e);
       main.innerHTML = '<p class="empty">Something went wrong on this page. <a href="#home">Back to the route map</a></p>';
@@ -232,6 +241,7 @@
       if (current && current.name === "options") render();
     });
     doc.addEventListener("click", onClick);
+    if (root.MutationObserver) new root.MutationObserver(sessionMode).observe(doc.getElementById("main"), { childList: true, subtree: true });
     doc.addEventListener("keydown", (e) => {
       if (e.key === "Escape") ui.hidePop();
     });

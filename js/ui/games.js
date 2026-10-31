@@ -344,6 +344,8 @@
   }
 
   const KR_RELAXED = 30;
+  // The on-screen keys: only the letters romaji needs, in keyboard order.
+  const KR_ROWS = ["wertyuiop", "asdfghjk", "zcbnm"];
 
   function kanaRain(box) {
     const g = GAMES[1];
@@ -353,7 +355,7 @@
       '<label class="radio"><input type="radio" name="kr-set" value="kata" checked><span><b>Katakana</b></span></label>' +
       '<label class="radio"><input type="radio" name="kr-set" value="both"><span><b>Both</b></span></label></fieldset>' +
       '<label class="toggle"><input type="checkbox" id="kr-dk"><span><b>Add が, ざ, ぱ …</b><small>Kana with dakuten and handakuten</small></span></label>';
-    intro(box, g, "<p>Kana fall from the sky. Type each one in romaji (ka, shi, tsu…) before it lands. Three misses and the round is over.</p>", opts + relaxedBox("Slower kana and no hearts to lose: the round ends after " + KR_RELAXED + " kana."), (el) => {
+    intro(box, g, "<p>Kana fall from the sky. Type each one in romaji (ka, shi, tsu…) before it lands. Three misses and the round is over.</p>" + (root.matchMedia && root.matchMedia("(pointer: coarse)").matches ? '<p class="small muted">On a phone the game has its own keys, so your keyboard doesn’t cover the rain.</p>' : ""), opts + relaxedBox("Slower kana and no hearts to lose: the round ends after " + KR_RELAXED + " kana."), (el) => {
       const kind = (el.querySelector('input[name="kr-set"]:checked') || {}).value || "kata";
       play(kind, el.querySelector("#kr-dk").checked, isRelaxed(el));
     });
@@ -362,11 +364,69 @@
       const area = box.querySelector(".game-area");
       const stats = box.querySelector(".g-stats");
       box.querySelector(".sess-bar").innerHTML = "";
+      /* On a phone the phone's own keyboard covers half the screen, so the
+         game has keys of its own (the phone's is a tap away). */
+      const touch = !!(root.matchMedia && root.matchMedia("(pointer: coarse)").matches);
+      let onScreen = touch && NI.store.state.intro.krKeys !== false;
       area.innerHTML =
         '<div class="rain" aria-label="Falling kana"><div class="rain-floor" aria-hidden="true"></div></div>' +
-        '<div class="answer-row rain-input"><label class="sr" for="kr-in">Type the romaji</label><input id="kr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type romaji: ka, shi, tsu…" lang="en"></div>';
+        '<div class="answer-row rain-input"><label class="sr" for="kr-in">Type the romaji</label><input id="kr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" lang="en"></div>' +
+        '<div class="kr-keys" role="group" aria-label="Romaji keys">' +
+        KR_ROWS.map((r, i) => '<div class="kr-row">' + r.split("").map((c) => '<button class="kr-key" type="button" data-k="' + c + '">' + c + "</button>").join("") + (i === 2 ? '<button class="kr-key del" type="button" data-k="del" aria-label="Delete">⌫</button>' : "") + "</div>").join("") +
+        "</div>" +
+        (touch ? '<p class="kr-switch"><button class="btn small ghost" type="button" data-kr-switch></button></p>' : "");
       const sky = area.querySelector(".rain");
       const input = area.querySelector("#kr-in");
+      const keysEl = area.querySelector(".kr-keys");
+      const switchBtn = area.querySelector("[data-kr-switch]");
+      // The keys type into the box; with them on, the box never opens the phone's keyboard.
+      function useKeys(on) {
+        onScreen = on;
+        area.classList.toggle("kr-on", on);
+        keysEl.hidden = !on;
+        input.readOnly = on;
+        input.setAttribute("inputmode", on ? "none" : "text");
+        input.placeholder = on ? "tap the keys: ka, shi, tsu…" : "type romaji: ka, shi, tsu…";
+        if (switchBtn) switchBtn.textContent = on ? "Use the phone’s keyboard instead" : "Use the on-screen keys instead";
+      }
+      useKeys(onScreen);
+      if (switchBtn)
+        switchBtn.addEventListener("click", () => {
+          useKeys(!onScreen);
+          NI.store.setIntro("krKeys", onScreen);
+          if (!onScreen) input.focus();
+          else input.blur();
+        });
+      const press = (k) => {
+        if (over || !k) return;
+        input.value = k === "del" ? input.value.slice(0, -1) : input.value + k;
+        typed();
+      };
+      // Pointer down answers at once; the click that follows a tap is skipped,
+      // but a click with no tap before it (keyboard, switch access) still counts.
+      let tapAt = 0;
+      keysEl.addEventListener("pointerdown", (e) => {
+        const b = e.target.closest("[data-k]");
+        if (!b) return;
+        e.preventDefault();
+        tapAt = Date.now();
+        b.classList.add("down");
+        setTimeout(() => b.classList.remove("down"), 120);
+        press(b.getAttribute("data-k"));
+      });
+      keysEl.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-k]");
+        if (b && Date.now() - tapAt > 800) press(b.getAttribute("data-k"));
+      });
+      // A real keyboard (a tablet's, say) still types while the box is read-only.
+      const onKey = (e) => {
+        if (!onScreen || over || e.altKey || e.ctrlKey || e.metaKey) return;
+        if (/^[a-z]$/i.test(e.key)) press(e.key.toLowerCase());
+        else if (e.key === "Backspace") press("del");
+        else return;
+        e.preventDefault();
+      };
+      document.addEventListener("keydown", onKey);
       const set = kanaSet(kind, dk);
       let drops = [];
       let score = 0;
@@ -430,6 +490,8 @@
         ended = true;
         over = true;
         cancelAnimationFrame(box._raf);
+        document.removeEventListener("keydown", onKey);
+        document.removeEventListener("visibilitychange", vis);
         input.disabled = true;
         const list = Array.from(missed.entries());
         results(box, g, {
@@ -440,7 +502,8 @@
           again: () => play(kind, dk, relaxed),
         });
       }
-      input.addEventListener("input", () => {
+      input.addEventListener("input", typed);
+      function typed() {
         const typed = input.value.toLowerCase().replace(/[^a-z']/g, "");
         if (!typed) return;
         // A lone "n" waits while な, に … are falling too; "nn" is always ん.
@@ -462,7 +525,7 @@
         } else if (typed.length >= 3 && !drops.some((d) => d.k.ro.startsWith(typed))) {
           input.value = "";
         }
-      });
+      }
       const vis = () => {
         if (document.hidden && !over) {
           over = true;
@@ -476,8 +539,10 @@
         over = true;
         cancelAnimationFrame(box._raf);
         document.removeEventListener("visibilitychange", vis);
+        document.removeEventListener("keydown", onKey);
       };
-      input.focus();
+      if (!onScreen) input.focus();
+      else area.scrollIntoView({ block: "end" });
       box._raf = requestAnimationFrame((t) => {
         last = t;
         frame(t);
