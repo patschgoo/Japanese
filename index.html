@@ -13,6 +13,8 @@
 <link rel="icon" href="img/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<!-- Kanji stroke order, loaded when first shown; listed here so the app keeps it offline. -->
+<link rel="prefetch" href="js/data/kanji-strokes.js" as="script">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Web fonts (the Japanese ones are large): js/app.js adds them once the app
@@ -64,6 +66,7 @@
 <script src="js/data/phrases.js"></script>
 <script src="js/data/kana.js"></script>
 <script src="js/data/strokes.js"></script>
+<script src="js/data/kanji.js"></script>
 <script src="js/data/emoji.js"></script>
 <script src="js/data/maker.js"></script>
 <script src="js/data/omikuji.js"></script>
@@ -88,6 +91,7 @@
 <script src="js/ui/strokes.js"></script>
 <script src="js/ui/write.js"></script>
 <script src="js/ui/kana-practice.js"></script>
+<script src="js/ui/kanji.js"></script>
 <script src="js/ui/book.js"></script>
 <script src="js/ui/stats.js"></script>
 <script src="js/ui/move.js"></script>

@@ -29,6 +29,7 @@ shinkansen (新幹線) as you remember them.
 | **Stories** | 6 graded stories with audio and shadowing, written only with words you know |
 | **Tools** | Reader (paste any Japanese: coverage check, meanings, Jisho/Google Translate/DeepL links, English → Japanese look-up), Sentence Maker (build correct sentences in any tense, polite or casual), phrasebook (~90 survival phrases) |
 | **Kana trainer** | **Practice:** let it choose the kana as you improve (a new row once you know the last), or tick the rows yourself, look-alikes and the ones you often miss included. Saved setups, like Kana Pro's profiles (Hiragana, Katakana and any you make), each remember their kana, stages and mode and show how much of it you know. Nine stages: kana → sound, sound → kana, find the pairs, type the sound, type a word, read a line, listen, trace and write from memory. Train with no end (it moves up a stage when you get 9 of 10 right) or take a scored test. Quick settings: stay on a stage, turn one off, timer, sounds, typed answers checked without Enter, word meanings; the eye shows an answer. **Chart:** hiragana and katakana side by side, coloured by how well you know each; tap one to hear it, watch its stroke order and trace it. **Write:** trace, then write from memory, with every stroke checked for shape, direction and order. Also 75 loanwords and look-alike katakana (シ/ツ, ソ/ン…) |
+| **Kanji** | The 407 kanji in the course's words, unit by unit (and on each unit's page): a short meaning, on and kun readings with the ones the course uses first, stroke order to watch, trace or write from memory (checked stroke by stroke), and the course words that use it. Add a unit's kanji (or those of every unit you've finished) to your reviews as kanji cards; Statistics counts how many you know well |
 | **Your plan** | Pick a goal (travel, anime, work, the JLPT, people, curiosity), a daily target and a focus (listening, speaking, reading, exam); lessons adapt their mix of exercises. A daily reminder goes into your calendar as a repeating event with an alert (a Google Calendar link, or an .ics file for Apple Calendar, Outlook and the rest) |
 | **Word book** | Save any word you meet (tap it and choose Save, or the bookmark beside it) into All saved words and lists of your own; add words from outside the course with their reading and meaning; search, sort, copy a list as text, or put a whole list into your reviews |
 | **Vocabulary tests** | Test yourself on a list, your saved words, your reviews, your mistakes or any range of units: choose the questions (meaning, Japanese, listening, typing, kanji readings), the length, and a scored test or practice with hints; each list keeps its last and best score, and missed words can go straight into a list. Flashcards for a quick run-through |
@@ -189,6 +190,12 @@ Content and code are provided as-is for learning. Fonts are loaded from
 Google Fonts (Fira Sans, BIZ UDPGothic, Klee One) under their own licences.
 
 The app icon, the daruma with 日本 (`img/`), is the project's own artwork.
+
+Kanji readings and stroke counts in `js/data/kanji.js` come from KANJIDIC
+(the Electronic Dictionary Research and Development Group,
+http://www.edrdg.org/), under the Creative Commons Attribution-ShareAlike 4.0
+licence; the short meanings were written for this course. The kanji stroke
+order in `js/data/kanji-strokes.js` comes from KanjiVG, like the kana's.
 
 The kana stroke order in `js/data/strokes.js` comes from
 [KanjiVG](http://kanjivg.tagaini.net), Copyright (C) 2009–2011 Ulrich Apel,

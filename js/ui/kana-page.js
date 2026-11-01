@@ -17,10 +17,11 @@
     ["write", "Write", "かく"],
     ["loan", "Loanwords", "がいらいご"],
     ["pairs", "Look-alikes", "にている じ"],
+    ["kanji", "Kanji", "かんじ", "#kanji"],
   ];
   // Older links: #kana-kata, #kana-hira and #kana-test open a ready-made practice.
   const ALIAS = { kata: "kata", hira: "hira", test: "mixed" };
-  const tabOf = (args) => (ALIAS[args[0]] ? "practice" : TABS.some((t) => t[0] === args[0]) ? args[0] : "practice");
+  const tabOf = (args) => (ALIAS[args[0]] ? "practice" : TABS.some((t) => t[0] === args[0] && !t[3]) ? args[0] : "practice");
 
   // ---------------------------------------------------------------------------
   // The chart
@@ -311,7 +312,7 @@
       if (ALIAS[args[0]]) NI.kanaPractice.preset(ALIAS[args[0]]);
       return (
         '<header class="page-head"><h1>Kana trainer</h1>' +
-        '<nav class="tabs" aria-label="Kana sections">' + TABS.map((t) => '<a class="tab' + (t[0] === tab ? " on" : "") + '" href="#kana-' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : "") + "><span>" + esc(t[1]) + '</span><small lang="ja">' + esc(t[2]) + "</small></a>").join("") + "</nav></header>" +
+        '<nav class="tabs" aria-label="Kana sections">' + TABS.map((t) => '<a class="tab' + (t[0] === tab ? " on" : "") + '" href="' + (t[3] || "#kana-" + t[0]) + '"' + (t[0] === tab ? ' aria-current="page"' : "") + "><span>" + esc(t[1]) + '</span><small lang="ja">' + esc(t[2]) + "</small></a>").join("") + "</nav></header>" +
         '<div class="kana-body" data-tab="' + tab + '">' + tabBody(tab) + "</div>"
       );
     },

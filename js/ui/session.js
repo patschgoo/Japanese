@@ -531,6 +531,7 @@
   // Reviews
 
   function modeFor(id, st) {
+    if (id.startsWith("j:")) return "recog";
     const h = (U.hash(id) + (st ? st.n : 0)) % 3;
     const voice = NI.speech.supported && NI.speech.hasVoice;
     if (id.startsWith("v:")) {
@@ -543,6 +544,7 @@
   }
 
   function front(it, mode) {
+    if (it.kind === "kanji") return NI.kanji.reviewFront(it);
     if (it.kind === "word") {
       if (mode === "produce") {
         return (
@@ -558,6 +560,7 @@
   }
 
   function back(it) {
+    if (it.kind === "kanji") return NI.kanji.reviewBack(it);
     if (it.kind === "word") {
       const ex = NI.items.bestExample(it);
       return (
@@ -570,6 +573,7 @@
   }
 
   function audioFor(it, mode) {
+    if (it.kind === "kanji") return null;
     if (it.kind === "word") return mode === "produce" ? null : ui.wordAudio(it);
     return ui.sentenceAudio(it.jp);
   }
@@ -719,7 +723,7 @@
         else NI.fx.play("right");
       } else {
         combo = 0;
-        if (q.first) NI.store.addMistake(q.id);
+        if (q.first && !q.id.startsWith("j:")) NI.store.addMistake(q.id);
       }
       comboEl.hidden = combo < 3;
       comboEl.innerHTML = '<span aria-hidden="true">🔥</span> ' + combo;

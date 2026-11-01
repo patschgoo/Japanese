@@ -25,6 +25,7 @@
         card("#words", "📚", "Word list", "{単語|たんご}リスト", "Every word in the course, searchable in English, kana or romaji.") +
         card("#grammar", "📐", "Grammar reference", "{文法|ぶんぽう}", "Particles, verb and adjective tables, numbers and counters.") +
         card("#kana", "あ", "Kana trainer", "かな", "Katakana charts and drills, loanwords and look-alike characters.") +
+        card("#kanji", "漢", "Kanji", "{漢字|かんじ}", "The kanji in the course, unit by unit: meanings, readings, stroke order, and kanji cards for your reviews.") +
         "</div>"
       );
     },

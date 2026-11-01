@@ -1989,3 +1989,27 @@ kbd { font: 600 0.72em var(--f-ui); padding: 1px 6px; border-radius: 5px; border
 .sync-steps input { flex: 1; min-width: 0; }
 .sync-on { margin-bottom: 4px; }
 .sync-offer { margin: 10px 0 14px; }
+
+/* Kanji (kanji.js): the grid reuses the kana chart's cells and colours */
+.kj-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.kj-lines { margin-top: 10px; }
+.kj-unit-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 8px 0; }
+.kj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
+.kj-cell { padding: 6px 2px 5px; border-color: var(--rule); text-decoration: none; }
+.kj-cell b { font: 600 1.7rem/1.15 var(--f-hand); }
+.kj-cell small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 3px; }
+.kj-strip { margin-top: 8px; }
+.kj-card h2 span { font-size: 2.2rem; }
+.kj-reads { display: grid; gap: 4px; margin: 4px 0 6px; }
+.kj-reads div { display: flex; gap: 10px; align-items: baseline; }
+.kj-reads dt { min-width: 2.6em; font-size: 0.78rem; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.kj-reads dd { margin: 0; font-size: 1.05rem; }
+.kj-reads [lang="ja"] { font-family: var(--f-jp); }
+.okuri { color: var(--ink-3); }
+.kj-reads .used { font-weight: 700; }
+.kj-used { margin: 0 0 4px; }
+.kj-h { font-size: 0.95rem; margin: 14px 0 4px; }
+.kj-diagram svg { width: min(56vw, 220px); height: auto; }
+.kj-prompt { font-size: clamp(4rem, 22vw, 6rem); line-height: 1.1; text-align: center; }
+.kj-rv-words { margin-top: 8px; }
+.kj-credit { margin-top: 28px; }

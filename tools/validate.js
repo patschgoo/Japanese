@@ -14,10 +14,13 @@ const vm = require("vm");
 const ROOT = path.join(__dirname, "..");
 const CORE = ["util", "kana", "furigana", "conjugate", "numbers", "course", "lexicon", "srs", "items", "game", "maker"];
 
+let vmContext = null; // the context the site's scripts run in, for files loaded later
+
 function loadContext() {
   const ctx = { console, setTimeout, clearTimeout };
   ctx.window = ctx;
   vm.createContext(ctx);
+  vmContext = ctx;
   const run = (rel) => vm.runInContext(fs.readFileSync(path.join(ROOT, rel), "utf8"), ctx, { filename: rel });
   for (const f of CORE) run("js/core/" + f + ".js");
   ctx.NI.store = { settings: { furigana: "furigana", kataHelp: true, gaps: true, autoplay: false }, item: () => null, isSaved: () => false, listsOf: () => [], books: { lists: [], saved: {}, custom: {} } };
@@ -301,6 +304,29 @@ function partsTests(NI) {
   if (n < 30) err("parts", "only " + n + " words have breakdowns; expected the glossary, lines, trains, titles and fortunes");
 }
 
+/* Kanji: every kanji in the course's words has a meaning, readings and its
+   stroke order, with as many strokes as KANJIDIC counts. */
+function kanjiTests(NI) {
+  const D = NI.data.kanji || {};
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "js/data/kanji-strokes.js"), "utf8"), vmContext, { filename: "js/data/kanji-strokes.js" });
+  const seen = new Set();
+  for (const w of NI.course.words)
+    for (const ch of NI.furi.base(w.j)) {
+      if (!/[一-鿿]/.test(ch) || seen.has(ch)) continue;
+      seen.add(ch);
+      const d = D[ch];
+      if (!d) {
+        err("kanji", ch + " (in " + w.w + ") has no entry in js/data/kanji.js");
+        continue;
+      }
+      if (!d[1] || (!d[2] && !d[3])) err("kanji", ch + " needs a meaning and a reading");
+      const st = NI.data.strokes[ch];
+      if (!st) err("kanji", ch + " has no stroke order in js/data/kanji-strokes.js");
+      else if (st.length !== d[0]) err("kanji", ch + ": " + st.length + " strokes drawn, KANJIDIC says " + d[0]);
+    }
+  for (const k in D) if (!seen.has(k)) err("kanji", k + " is in js/data/kanji.js but no course word uses it");
+}
+
 // A picture belongs to one meaning (父 and お父さん may share: same person).
 function emojiTests(NI) {
   const by = new Map();
@@ -319,6 +345,7 @@ function main() {
   if (Number(swVersion) !== NI.VERSION) err("version", "sw.js caches as nihon-v" + swVersion + " but util.js says NI.VERSION = " + NI.VERSION + ": bump both together");
   segmentTests(NI);
   partsTests(NI);
+  kanjiTests(NI);
   emojiTests(NI);
   builderTests(NI);
   lessonTests(NI);

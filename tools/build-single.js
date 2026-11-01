@@ -29,7 +29,9 @@ const body = html
 const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || "日本";
 const icon = dataUri("img/favicon-32.png");
 
-const js = scripts.map((src) => "<script>/* " + src + " */\n" + safeScript(read(src)) + "\n</script>").join("\n");
+// Files the site loads only when needed (kanji stroke order) come along in the one file.
+const LAZY = ["js/data/kanji-strokes.js"];
+const js = scripts.concat(LAZY).map((src) => "<script>/* " + src + " */\n" + safeScript(read(src)) + "\n</script>").join("\n");
 const flag = "<script>window.NI_EMBED = " + (embed ? "true" : "false") + ";</script>";
 
 let page;

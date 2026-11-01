@@ -239,6 +239,16 @@
     return out;
   }
 
+  // Kanji: how many of the course's kanji are known well, and how many are in the reviews.
+  function kanjiMeter() {
+    if (!NI.kanji) return "";
+    const all = NI.kanji.list();
+    const lv = all.map((x) => NI.kanji.level(x.k));
+    const known = lv.filter((l) => l === "known").length;
+    const rev = lv.filter((l) => l !== "new").length;
+    return meter(known / all.length, 'Kanji <span lang="ja">漢字</span>', known + " of " + all.length + " known well", rev ? rev + ' in your reviews · <a href="#kanji">the kanji</a>' : '<a href="#kanji">Put a unit’s kanji into your reviews</a>');
+  }
+
   function kana() {
     const c = kanaCounts();
     let right = 0;
@@ -250,9 +260,10 @@
     const tests = NI.store.state.intro.kanaTests || [];
     const line = (x) => x.learning + " learning · " + x.weak + " weak · " + x.new + " new";
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-kana"><h2 id="vz-kana">Kana</h2><div class="vz-box">' +
+      '<section class="u-sec vz-card" aria-labelledby="vz-kana"><h2 id="vz-kana">Kana and kanji</h2><div class="vz-box">' +
       meter(c.hira.known / c.hira.total, 'Hiragana <span lang="ja">ひらがな</span>', c.hira.known + " of " + c.hira.total + " known", line(c.hira)) +
       meter(c.kata.known / c.kata.total, 'Katakana <span lang="ja">カタカナ</span>', c.kata.known + " of " + c.kata.total + " known", line(c.kata)) +
+      kanjiMeter() +
       '<p class="small">' + (right + wrong ? "Kana answers: <b>" + Math.round((right / (right + wrong)) * 100) + "%</b> right, of " + fmt(right + wrong) + "." : "No kana practice yet.") +
       (tests.length ? " Last kana test: <b>" + tests[tests.length - 1].pct + "%</b>." : "") +
       ' <a href="#kana-chart">The chart, kana by kana</a></p></div></section>'

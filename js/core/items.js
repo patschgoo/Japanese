@@ -3,7 +3,8 @@
      s:6:3         sentence 3 of unit 6
      p:food:2      phrase 2 of the "food" phrasebook section
      x:線          a word from the site's glossary, saved to the word book
-     u:3           a word the learner added to their word book */
+     u:3           a word the learner added to their word book
+     j:漢          a kanji (js/ui/kanji.js) */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
@@ -30,6 +31,11 @@
       if (id.startsWith("x:")) {
         const e = NI.lex.get(id);
         return e && e.kind === "extra" ? word(id, e.j, e.r, e.en, e.pos) : null;
+      }
+      if (id.startsWith("j:")) {
+        const k = id.slice(2);
+        const d = NI.data.kanji && NI.data.kanji[k];
+        return d ? { id, kind: "kanji", k, en: d[1] } : null;
       }
       if (id.startsWith("u:")) {
         const c = NI.store.state.books && NI.store.state.books.custom[id];

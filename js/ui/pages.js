@@ -434,6 +434,14 @@
 
       html += '<section class="u-sec" aria-labelledby="w-h"><h2 id="w-h">Words <span class="count">' + u.words.length + "</span></h2>" + NI.views.wordList(u.words) + "</section>";
 
+      // The kanji this unit's words bring in, each opening its card.
+      const kj = NI.kanji ? NI.kanji.list().filter((x) => x.unit === u.n) : [];
+      if (kj.length)
+        html +=
+          '<section class="u-sec" aria-labelledby="k-h"><h2 id="k-h">New kanji <span class="count">' + kj.length + "</span></h2>" +
+          '<div class="kj-grid kj-strip">' + kj.map((x) => '<a class="kc-cell kj-cell lv-' + NI.kanji.level(x.k) + '" href="#kanji-' + encodeURIComponent(x.k) + '"><b lang="ja">' + esc(x.k) + "</b><small>" + esc(NI.data.kanji[x.k][1].split(/[;,(]/)[0].trim()) + "</small></a>").join("") + "</div>" +
+          '<p class="small muted">Tap one for its readings, stroke order and words, and to put it in your reviews.</p></section>';
+
       if (u.grammar && u.grammar.length) {
         html +=
           '<section class="u-sec" aria-labelledby="g-h"><h2 id="g-h">Grammar</h2>' +
@@ -884,6 +892,7 @@
         link("#guide", "🧭 How this course works", "The research behind the course, and routes for different learners.") +
         link("#grammar", "📐 Grammar reference", "Particles, verb and adjective forms, numbers and counters.") +
         link("#book", "🔖 Word book", "Words you've saved, your own lists and words, vocabulary tests and flashcards.") +
+        link("#kanji", "漢 Kanji", "The kanji in the course: meanings, readings, stroke order, and kanji cards for your reviews.") +
         link("#words", "📚 Word list", "Every word in the course, searchable.") +
         link("#phrases", "💬 Phrasebook", "Survival phrases by situation.") +
         link("#profiles", NI.store.profile.icon + " Learning profiles", "A profile for each person learning here, each with its own progress.") +
