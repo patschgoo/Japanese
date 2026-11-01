@@ -606,6 +606,7 @@
   }
 
   pages.vtest = {
+    session: true,
     title: "Vocabulary test",
     nav: "tools",
     render() {
@@ -753,6 +754,7 @@
   // Flashcards: turn a card over, then say whether you knew it
 
   pages.cards = {
+    session: true,
     title: "Flashcards",
     nav: "tools",
     render() {

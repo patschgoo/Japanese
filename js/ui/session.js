@@ -653,6 +653,7 @@
       const input = card.querySelector(".kana-input");
       if (input) {
         const ime = NI.kana.bindIme(input);
+        if (NI.keys) NI.keys.attach(input, { kana: true, enter: "Show answer" });
         input.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             e.preventDefault();

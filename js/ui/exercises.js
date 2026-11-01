@@ -103,6 +103,8 @@
     const input = card.querySelector(".kana-input");
     input.setAttribute("data-ans", accept.find((a) => /^[ぁ-ゖァ-ヺー]+$/.test(a)) || accept[0]);
     const ime = K.bindIme(input);
+    // On a phone, the on-screen romaji keys instead of the phone's keyboard.
+    if (NI.keys) NI.keys.attach(input, { kana: true, enter: "Check" });
     const check = () => {
       if (card.dataset.answered) return;
       const val = ime.finalize().trim();

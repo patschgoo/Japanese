@@ -45,11 +45,12 @@
   }
 
   // The tab bar steps aside only while a lesson, review or game is running
-  // (its top bar with the ✕ is on screen). Empty and finished screens, like
-  // Review with nothing due, keep it.
+  // (its top bar with the ✕ is on screen), or a practice box marked
+  // data-session is open. Empty and finished screens, like Review with
+  // nothing due, keep it.
   function sessionMode() {
     const main = doc.getElementById("main");
-    const on = !!(current && current.page && current.page.session && main && main.querySelector(".sess-top"));
+    const on = !!(current && current.page && main && ((current.page.session && main.querySelector(".sess-top")) || main.querySelector("[data-session]:not([hidden])")));
     if (doc.body.classList.contains("in-session") !== on) doc.body.classList.toggle("in-session", on);
     if (!on) showUpdate();
   }
@@ -305,7 +306,7 @@
       if (current && current.name === "options") render();
     });
     doc.addEventListener("click", onClick);
-    if (root.MutationObserver) new root.MutationObserver(sessionMode).observe(doc.getElementById("main"), { childList: true, subtree: true });
+    if (root.MutationObserver) new root.MutationObserver(sessionMode).observe(doc.getElementById("main"), { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
     doc.addEventListener("keydown", (e) => {
       if (e.key === "Escape") ui.hidePop();
     });

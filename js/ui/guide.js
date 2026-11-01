@@ -221,6 +221,7 @@
         '<li><b><a href="#reader">Reader</a>:</b> paste any Japanese text to see how much of it you know, look up the rest, or send it to Google Translate or DeepL. It also finds course words and sentences for English you type.</li>' +
         '<li><b><a href="#maker">Sentence Maker</a>:</b> pick a pattern and the parts, and it builds a correct sentence in any tense, polite or casual, as a question or a request.</li>' +
         "<li><b>Hints</b> in every lesson (press H): fewer options, or the first letters of the answer, for half the XP.</li>" +
+        "<li><b>On-screen keys</b> on phones and tablets: typed answers use romaji keys of the app's own (English or German key order) instead of the phone's keyboard, which would cover half the question. The phone's keyboard is a tap away.</li>" +
         '<li><b><a href="#mistakes">Mistakes notebook</a>:</b> everything you get wrong, until you get it right twice.</li>' +
         '<li><b><a href="#book">Word book</a>:</b> save any word you meet (tap it and choose Save, or the bookmark beside it), sort words into your own lists next to All saved words, and add words from outside the course. Any list can go into your reviews.</li>' +
         '<li><b><a href="#vtest">Vocabulary tests</a>:</b> test yourself on a list, your saved words, your reviews, your mistakes or any course units, with the question types you choose (meaning, Japanese, listening, typing, kanji readings). Each list keeps its last and best score; flashcards are there for a quick run-through.</li>' +

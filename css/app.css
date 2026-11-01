@@ -1330,24 +1330,26 @@ input[type="range"] { width: 100%; max-width: 360px; accent-color: var(--navy); 
 @keyframes pop { to { opacity: 0; scale: 1.8; } }
 .rain-input { margin-top: 12px; }
 .rain-input input { flex: 1; font-size: 1.2rem; padding: 10px 14px; }
-/* Kana Rain's own keys on phones: the rain keeps the room the phone's keyboard would take. */
-.kr-keys { display: grid; gap: 6px; max-width: 480px; margin: 8px auto 0; user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-touch-callout: none; }
-.kr-keys[hidden] { display: none; }
-.kr-row { display: flex; justify-content: center; gap: 5px; }
-.kr-key { flex: 0 0 calc((100% - 40px) / 9); min-width: 0; height: 46px; padding: 0; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); color: var(--ink); font: 600 1.2rem var(--f-ui); box-shadow: 0 2px 0 var(--rule); cursor: pointer; }
-.kr-key.del { flex-basis: calc((100% - 40px) / 9 * 1.7); font-size: 1.1rem; }
-.kr-key.down, .kr-key:active { background: var(--navy-soft); transform: translateY(1px); box-shadow: 0 1px 0 var(--rule); }
-.kr-switch { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 10px; margin: 8px 0 0; }
-.kr-switch .seg[hidden] { display: none; }
-.kr-on .rain-input { margin-top: 8px; }
-.kr-on .rain-input input { padding: 6px 12px; caret-color: transparent; }
-.kr-on .rain { height: clamp(220px, calc(100vh - 400px), 520px); height: clamp(220px, calc(100dvh - 400px), 520px); }
+/* On-screen romaji keys (keys.js): on phones they take the place of the phone's keyboard. */
+.kb-keys { display: grid; gap: 6px; max-width: 480px; margin: 8px auto 0; user-select: none; -webkit-user-select: none; touch-action: manipulation; -webkit-touch-callout: none; }
+.kb-keys[hidden] { display: none; }
+.kb-row { display: flex; justify-content: center; gap: 5px; }
+.kb-key { flex: 0 0 calc((100% - 40px) / 9); min-width: 0; height: 46px; padding: 0; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); color: var(--ink); font: 600 1.2rem var(--f-ui); box-shadow: 0 2px 0 var(--rule); cursor: pointer; }
+.kb-key.wide { flex-basis: calc((100% - 40px) / 9 * 1.7); font-size: 1.1rem; }
+.kb-key.enter { flex: 0 1 calc((100% - 40px) / 9 * 3.4); background: var(--navy); color: var(--navy-ink); border-color: var(--navy); font-size: 1rem; }
+.answer-row:has(input:disabled) + .kb .kb-keys { opacity: 0.45; pointer-events: none; }
+.kb-key.down, .kb-key:active { background: var(--navy-soft); transform: translateY(1px); box-shadow: 0 1px 0 var(--rule); }
+.kb-switch { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 10px; margin: 8px 0 0; }
+.kb-switch .seg[hidden] { display: none; }
+.kb-on .rain-input { margin-top: 8px; }
+.kb-on .rain-input input { padding: 6px 12px; caret-color: transparent; }
+.kb-on .rain { height: clamp(220px, calc(100vh - 400px), 520px); height: clamp(220px, calc(100dvh - 400px), 520px); }
 @media (max-height: 640px) {
-  .kr-on .rain { height: clamp(150px, calc(100vh - 380px), 520px); height: clamp(150px, calc(100dvh - 380px), 520px); }
-  .kr-key { height: 40px; }
-  .kr-keys { gap: 5px; margin-top: 6px; }
-  .kr-on .rain-input { margin-top: 6px; }
-  .kr-switch { margin-top: 4px; }
+  .kb-on .rain { height: clamp(150px, calc(100vh - 380px), 520px); height: clamp(150px, calc(100dvh - 380px), 520px); }
+  .kb-key { height: 40px; }
+  .kb-keys { gap: 5px; margin-top: 6px; }
+  .kb-on .rain-input { margin-top: 6px; }
+  .kb-switch { margin-top: 4px; }
 }
 .memory { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 @media (max-width: 520px) { .memory { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

@@ -357,7 +357,7 @@
         : "") +
       '<div class="kp-go"><span class="kp-sum small" aria-live="polite"></span><button class="btn primary" type="button" data-kp-start>Start ' + ICON.next + "</button></div>" +
       "</div>" +
-      '<div class="kp-box session" hidden></div>'
+      '<div class="kp-box session" data-session hidden></div>'
     );
   }
 
@@ -925,6 +925,7 @@
         input.value = u.r;
         check(true, true);
       };
+      if (NI.keys) NI.keys.attach(input, { enter: "OK", placeholder: "tap the keys: ka, shi, tsu…" });
       input.focus({ preventScroll: true });
       return input;
     }

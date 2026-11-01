@@ -344,24 +344,6 @@
   }
 
   const KR_RELAXED = 30;
-  // The on-screen keys: only the letters romaji needs, in the order of an
-  // English (QWERTY) or a German (QWERTZ) keyboard, where Z and Y swap.
-  const KR_LAYOUTS = {
-    en: { short: "EN", name: "English keyboard (QWERTY)", rows: ["wertyuiop", "asdfghjk", "zcbnm"] },
-    de: { short: "DE", name: "German keyboard (QWERTZ)", rows: ["wertzuiop", "asdfghjk", "ycbnm"] },
-  };
-  // The layout to start with: the one chosen before, or the browser's language.
-  function krLayout() {
-    const saved = NI.store.state.intro.krLayout;
-    if (KR_LAYOUTS[saved]) return saved;
-    const langs = (root.navigator && (root.navigator.languages || [root.navigator.language])) || [];
-    return /^de\b/i.test(langs[0] || "") ? "de" : "en";
-  }
-  const krKeysHtml = (layout) =>
-    KR_LAYOUTS[layout].rows
-      .map((r, i) => '<div class="kr-row">' + r.split("").map((c) => '<button class="kr-key" type="button" data-k="' + c + '">' + c + "</button>").join("") + (i === 2 ? '<button class="kr-key del" type="button" data-k="del" aria-label="Delete">⌫</button>' : "") + "</div>")
-      .join("");
-
   function kanaRain(box) {
     const g = GAMES[1];
     const opts =
@@ -379,90 +361,13 @@
       const area = box.querySelector(".game-area");
       const stats = box.querySelector(".g-stats");
       box.querySelector(".sess-bar").innerHTML = "";
-      /* On a phone the phone's own keyboard covers half the screen, so the
-         game has keys of its own (the phone's is a tap away). */
-      const touch = !!(root.matchMedia && root.matchMedia("(pointer: coarse)").matches);
-      let onScreen = touch && NI.store.state.intro.krKeys !== false;
-      let layout = krLayout();
       area.innerHTML =
         '<div class="rain" aria-label="Falling kana"><div class="rain-floor" aria-hidden="true"></div></div>' +
-        '<div class="answer-row rain-input"><label class="sr" for="kr-in">Type the romaji</label><input id="kr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" lang="en"></div>' +
-        '<div class="kr-keys" role="group" aria-label="Romaji keys">' + krKeysHtml(layout) + "</div>" +
-        (touch
-          ? '<div class="kr-switch"><div class="seg small" role="group" aria-label="Keyboard layout">' +
-            Object.keys(KR_LAYOUTS).map((id) => '<button class="seg-b" type="button" data-kr-layout="' + id + '" aria-label="' + KR_LAYOUTS[id].name + '" title="' + KR_LAYOUTS[id].name + '">' + KR_LAYOUTS[id].short + "</button>").join("") +
-            '</div><button class="btn small ghost" type="button" data-kr-switch></button></div>'
-          : "");
+        '<div class="answer-row rain-input"><label class="sr" for="kr-in">Type the romaji</label><input id="kr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" lang="en" placeholder="type romaji: ka, shi, tsu…"></div>';
       const sky = area.querySelector(".rain");
       const input = area.querySelector("#kr-in");
-      const keysEl = area.querySelector(".kr-keys");
-      const switchBtn = area.querySelector("[data-kr-switch]");
-      // The keys type into the box; with them on, the box never opens the phone's keyboard.
-      function useKeys(on) {
-        onScreen = on;
-        area.classList.toggle("kr-on", on);
-        keysEl.hidden = !on;
-        input.readOnly = on;
-        input.setAttribute("inputmode", on ? "none" : "text");
-        input.placeholder = on ? "tap the keys: ka, shi, tsu…" : "type romaji: ka, shi, tsu…";
-        if (switchBtn) switchBtn.textContent = on ? "Use the phone’s keyboard" : "Use the on-screen keys";
-        area.querySelectorAll("[data-kr-layout]").forEach((b) => (b.closest(".seg").hidden = !on));
-      }
-      // English or German key order; the choice stays with the profile.
-      function useLayout(id) {
-        layout = id;
-        keysEl.innerHTML = krKeysHtml(id);
-        area.querySelectorAll("[data-kr-layout]").forEach((b) => {
-          const here = b.getAttribute("data-kr-layout") === id;
-          b.classList.toggle("on", here);
-          b.setAttribute("aria-pressed", String(here));
-        });
-      }
-      useLayout(layout);
-      area.querySelectorAll("[data-kr-layout]").forEach((b) =>
-        b.addEventListener("click", () => {
-          useLayout(b.getAttribute("data-kr-layout"));
-          NI.store.setIntro("krLayout", layout);
-        })
-      );
-      useKeys(onScreen);
-      if (switchBtn)
-        switchBtn.addEventListener("click", () => {
-          useKeys(!onScreen);
-          NI.store.setIntro("krKeys", onScreen);
-          if (!onScreen) input.focus();
-          else input.blur();
-        });
-      const press = (k) => {
-        if (over || !k) return;
-        input.value = k === "del" ? input.value.slice(0, -1) : input.value + k;
-        typed();
-      };
-      // Pointer down answers at once; the click that follows a tap is skipped,
-      // but a click with no tap before it (keyboard, switch access) still counts.
-      let tapAt = 0;
-      keysEl.addEventListener("pointerdown", (e) => {
-        const b = e.target.closest("[data-k]");
-        if (!b) return;
-        e.preventDefault();
-        tapAt = Date.now();
-        b.classList.add("down");
-        setTimeout(() => b.classList.remove("down"), 120);
-        press(b.getAttribute("data-k"));
-      });
-      keysEl.addEventListener("click", (e) => {
-        const b = e.target.closest("[data-k]");
-        if (b && Date.now() - tapAt > 800) press(b.getAttribute("data-k"));
-      });
-      // A real keyboard (a tablet's, say) still types while the box is read-only.
-      const onKey = (e) => {
-        if (!onScreen || over || e.altKey || e.ctrlKey || e.metaKey) return;
-        if (/^[a-z]$/i.test(e.key)) press(e.key.toLowerCase());
-        else if (e.key === "Backspace") press("del");
-        else return;
-        e.preventDefault();
-      };
-      document.addEventListener("keydown", onKey);
+      // On a phone, keys of the game's own: the phone's keyboard would cover half the rain.
+      const keys = NI.keys.attach(input, { host: area, global: true, placeholder: "tap the keys: ka, shi, tsu…" });
       const set = kanaSet(kind, dk);
       let drops = [];
       let score = 0;
@@ -526,7 +431,7 @@
         ended = true;
         over = true;
         cancelAnimationFrame(box._raf);
-        document.removeEventListener("keydown", onKey);
+        if (keys) keys.destroy();
         document.removeEventListener("visibilitychange", vis);
         input.disabled = true;
         const list = Array.from(missed.entries());
@@ -575,10 +480,10 @@
         over = true;
         cancelAnimationFrame(box._raf);
         document.removeEventListener("visibilitychange", vis);
-        document.removeEventListener("keydown", onKey);
+        if (keys) keys.destroy();
       };
-      if (!onScreen) input.focus();
-      else area.scrollIntoView({ block: "end" });
+      if (keys && keys.on) area.scrollIntoView({ block: "end" });
+      else input.focus();
       box._raf = requestAnimationFrame((t) => {
         last = t;
         frame(t);
