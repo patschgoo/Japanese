@@ -112,6 +112,12 @@ Settings → Pages → *Deploy from a branch* → `main`, folder `/ (root)`. The
 site is plain HTML/CSS/JS, so nothing needs building. Once it's served over
 HTTPS, a small service worker (`sw.js`) lets it open offline too.
 
+For each release, raise `NI.VERSION` in `js/core/util.js` and the cache name
+in `sw.js` together (`npm test` checks they match). An app that's left open
+or comes back from the background notices the newer `sw.js` and offers a
+reload (never in the middle of a lesson); Options shows the version and can
+check by hand.
+
 ## Project layout
 
 ```

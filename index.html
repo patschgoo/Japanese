@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>日本</title>
 <meta name="description" content="Learn Japanese once you can read hiragana: 30 short units of high-frequency words, grammar and conversations, with spaced repetition, audio, games and graded stories.">
-<meta name="theme-color" content="#f5f6f3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#12161b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a2026" media="(prefers-color-scheme: dark)">
 <meta name="application-name" content="日本">
 <meta name="apple-mobile-web-app-title" content="日本">
 <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
@@ -15,7 +15,9 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Klee+One:wght@400;600&display=swap">
+<!-- Web fonts (the Japanese ones are large): js/app.js adds them once the app
+     is running, so on a slow connection the scripts come first. -->
+<noscript data-fonts><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Klee+One:wght@600&display=swap"></noscript>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -30,7 +32,7 @@
     <button id="profbtn" class="prof-btn" type="button" data-profiles aria-haspopup="dialog" title="Learning profile"></button>
   </div>
 </header>
-<main id="main" tabindex="-1"></main>
+<main id="main" tabindex="-1"><p class="boot" role="status">Loading… <span lang="ja">よみこみちゅう</span></p></main>
 <nav id="tabbar" class="tabbar" aria-label="Main"></nav>
 <div id="pop" class="pop" role="dialog" aria-label="Word" hidden></div>
 <div id="modal" class="modal" hidden></div>

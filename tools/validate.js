@@ -314,6 +314,9 @@ function main() {
   engineTests(NI);
   NI.course.init();
   NI.lex.build();
+  // The release number and the offline cache's name go up together.
+  const swVersion = (/nihon-v(\d+)/.exec(fs.readFileSync(path.join(ROOT, "sw.js"), "utf8")) || [])[1];
+  if (Number(swVersion) !== NI.VERSION) err("version", "sw.js caches as nihon-v" + swVersion + " but util.js says NI.VERSION = " + NI.VERSION + ": bump both together");
   segmentTests(NI);
   partsTests(NI);
   emojiTests(NI);

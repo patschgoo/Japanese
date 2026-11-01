@@ -19,7 +19,7 @@ const safeScript = (js) => js.replace(/<\/script/gi, "<\\/script");
 
 const css = read("css/app.css");
 const scripts = (html.match(/<script src="([^"]+)"><\/script>/g) || []).map((tag) => tag.match(/src="([^"]+)"/)[1]);
-const fonts = (html.match(/<link rel="stylesheet" href="(https:\/\/fonts[^"]+)">/) || [])[1];
+const fonts = (html.match(/<link rel="stylesheet" href="(https:\/\/fonts[^"]+)"/) || [])[1];
 const dataUri = (rel) => "data:image/png;base64," + fs.readFileSync(path.join(ROOT, rel)).toString("base64");
 // Images in the page (the logo) travel inside it too.
 const body = html

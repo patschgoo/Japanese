@@ -51,6 +51,66 @@
     const main = doc.getElementById("main");
     const on = !!(current && current.page && current.page.session && main && main.querySelector(".sess-top"));
     if (doc.body.classList.contains("in-session") !== on) doc.body.classList.toggle("in-session", on);
+    if (!on) showUpdate();
+  }
+
+  /* A new version: the site's sw.js names the newest release (nihon-v13). An
+     app left open, or brought back from the background, finds out and offers
+     a reload, never in the middle of a lesson. */
+  let newer = false;
+  let checkedAt = 0;
+  function checkVersion(say) {
+    if (!/^https?:$/.test(root.location.protocol) || root.NI_EMBED || !root.fetch) return;
+    checkedAt = Date.now();
+    root
+      .fetch("sw.js", { cache: "no-store" })
+      .then((r) => (r.ok ? r.text() : ""))
+      .then((t) => {
+        const m = /nihon-v(\d+)/.exec(t);
+        newer = !!(m && Number(m[1]) > NI.VERSION);
+        if (newer) showUpdate();
+        else if (say) ui.toast("You have the newest version (" + NI.VERSION + ").");
+      })
+      .catch(() => say && ui.toast("Couldn't check: this device seems to be offline."));
+  }
+  function showUpdate() {
+    if (!newer || doc.body.classList.contains("in-session") || doc.getElementById("update-bar")) return;
+    const bar = doc.createElement("div");
+    bar.id = "update-bar";
+    bar.className = "update-bar";
+    bar.setAttribute("role", "status");
+    bar.innerHTML = '<span>A new version of <span lang="ja">日本</span> is ready.</span><button class="btn small primary" type="button" data-reload>Reload</button><button class="icon-btn" type="button" data-later aria-label="Not now">' + ui.ICON.close + "</button>";
+    bar.querySelector("[data-reload]").addEventListener("click", () => {
+      NI.store.flush();
+      root.location.reload();
+    });
+    bar.querySelector("[data-later]").addEventListener("click", () => {
+      newer = false;
+      bar.remove();
+    });
+    doc.body.appendChild(bar);
+  }
+
+  /* Web fonts come after the app has started: on a slow connection the
+     scripts get the bandwidth first, and text shows in the device's own
+     fonts until these arrive. The address is in index.html's <noscript>. */
+  function loadFonts() {
+    if (doc.querySelector('link[rel="stylesheet"][href*="fonts.googleapis"]')) return;
+    const ns = doc.querySelector("noscript[data-fonts]");
+    const m = ns && /href="([^"]+)"/.exec(ns.textContent || ns.innerHTML);
+    if (!m) return;
+    const link = doc.createElement("link");
+    link.rel = "stylesheet";
+    link.href = m[1].replace(/&amp;/g, "&");
+    doc.head.appendChild(link);
+  }
+
+  // The phone's status bar takes the colour of the top bar, in the theme in use.
+  function themeColor() {
+    const bar = doc.querySelector(".topbar");
+    if (!bar || !root.getComputedStyle) return;
+    const c = root.getComputedStyle(bar).backgroundColor;
+    doc.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", c));
   }
 
   let shows = 0; // pages shown so far
@@ -125,6 +185,7 @@
     doc.body.classList.toggle("no-hand", s.handFont === false);
     if (s.textSize && s.textSize !== "m") el.setAttribute("data-size", s.textSize);
     else el.removeAttribute("data-size");
+    themeColor();
   }
 
   function onClick(e) {
@@ -207,7 +268,10 @@
   function registerWorker() {
     if (!("serviceWorker" in navigator) || !/^https:$/.test(root.location.protocol)) return;
     try {
+      const had = !!navigator.serviceWorker.controller;
       navigator.serviceWorker.register("sw.js").catch(() => {});
+      // The worker swapped itself for a newer one: the page may be the older version.
+      navigator.serviceWorker.addEventListener("controllerchange", () => had && checkVersion());
     } catch (e) {
       /* not available here (e.g. sandboxed preview) */
     }
@@ -257,16 +321,25 @@
     });
     doc.addEventListener("visibilitychange", () => {
       if (doc.visibilityState === "hidden") NI.store.flush();
-      else renderNav();
+      else {
+        renderNav();
+        if (Date.now() - checkedAt > 10 * 60 * 1000) checkVersion();
+      }
     });
+    root.setInterval(() => doc.visibilityState === "visible" && checkVersion(), 60 * 60 * 1000);
+    if (root.matchMedia) {
+      const dark = root.matchMedia("(prefers-color-scheme: dark)");
+      if (dark.addEventListener) dark.addEventListener("change", themeColor);
+    }
     // Back after a missed day or two: rest days keep the streak going.
     const rested = NI.store.useRestDays();
     render();
     if (rested) NI.fx.banner('<span class="rw-icon" aria-hidden="true">🎫</span><span><b>Welcome back!</b> ' + (rested === 1 ? "A rest day" : rested + " rest days") + " kept your " + NI.store.streak() + "-day streak going.</span>", "rw-bonus");
     registerWorker();
+    loadFonts();
   }
 
-  NI.app = { render, go, renderNav, parse, applySettings };
+  NI.app = { render, go, renderNav, parse, applySettings, checkVersion };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot);
   else boot();
 })(typeof window !== "undefined" ? window : globalThis);

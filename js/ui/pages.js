@@ -702,11 +702,14 @@
         '<section class="u-sec opt-sec" id="opt-data"><h2>Your progress</h2>' +
         "<p>Progress lives in this browser only. To carry on on another phone, tablet or computer, or to keep a backup, send your profiles there in a link or a file. A link or file you sent yourself earlier opens there too.</p>" +
         '<div class="row wrap"><a class="btn small primary" href="#move">📲 Move to another device</a><button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
-        "</section>"
+        "</section>" +
+        '<p class="small muted opt-version"><span lang="ja">日本</span> version ' + NI.VERSION + (root.NI_EMBED ? "" : ' · <button class="btn small ghost" type="button" data-check-update>Check for a new version</button>') + "</p>"
       );
     },
     mount(el) {
       el.querySelectorAll("[data-switch]").forEach((b) => b.addEventListener("click", () => NI.store.switchProfile(b.getAttribute("data-switch"))));
+      const upd = el.querySelector("[data-check-update]");
+      if (upd) upd.addEventListener("click", () => NI.app.checkVersion(true));
       const preview = el.querySelector(".preview");
       const refreshPreview = () => (preview.innerHTML = ui.jp("{私|わたし}は コーヒーを {飲|の}みます。"));
       el.querySelectorAll('input[type="radio"]').forEach((r) =>
