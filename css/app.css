@@ -2013,3 +2013,12 @@ kbd { font: 600 0.72em var(--f-ui); padding: 1px 6px; border-radius: 5px; border
 .kj-prompt { font-size: clamp(4rem, 22vw, 6rem); line-height: 1.1; text-align: center; }
 .kj-rv-words { margin-top: 8px; }
 .kj-credit { margin-top: 28px; }
+
+/* What the station numbers mean, above the route map */
+.map-why { margin: 18px 0 0; color: var(--ink-2); font-size: 0.92rem; }
+.map-why summary { cursor: pointer; color: var(--ink-2); font-weight: 500; }
+.map-why p { margin: 8px 0; }
+.map-lines { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 6px; }
+.map-lines li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.map-lines .line-badge { flex: none; }
+.map-lines .line-badge { width: 30px; height: 30px; border-width: 4px; font-size: 0.85rem; }

@@ -75,9 +75,19 @@
     return h;
   }
 
+  // A line's name in romaji, the way real line names are written: Hajime-sen.
+  function lineRomaji(line) {
+    const r = NI.kana.romaji(line.kana.replace(/せん$/, ""));
+    return r.charAt(0).toUpperCase() + r.slice(1) + "-sen";
+  }
+
+  /* A station number, like real ones in Japan (G09 is the ninth stop on
+     Tokyo's Ginza Line): the letter is the first of the line's Japanese
+     name, so H01 is station 1 of the Hajime-sen, the Starting Line. */
   function stationCode(n, cls) {
     const line = NI.course.lineOf(n);
-    return '<span class="code ' + (cls || "") + ' line-' + (line ? line.color : "h") + '" aria-label="Unit ' + n + '">' + esc(NI.course.code(n)) + "</span>";
+    const title = line ? lineRomaji(line) + " (" + line.en + "), station " + (line.units.indexOf(Number(n)) + 1) : "";
+    return '<span class="code ' + (cls || "") + ' line-' + (line ? line.color : "h") + '" aria-label="Unit ' + n + '"' + (title ? ' title="' + esc(title) + '"' : "") + ">" + esc(NI.course.code(n)) + "</span>";
   }
 
   // ---------------------------------------------------------------------------
@@ -260,5 +270,5 @@
      to fit on one line (よろしくお願いします) instead of wrapping one character. */
   const fit = (markup) => ' style="--n:' + Math.max(3, Array.from(NI.furi.base(String(markup))).length) + '"';
 
-  NI.ui = { ICON, esc, jp, rich, romajiOn, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
+  NI.ui = { ICON, esc, jp, rich, romajiOn, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, lineRomaji, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
 })(typeof window !== "undefined" ? window : globalThis);

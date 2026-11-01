@@ -9,7 +9,11 @@ stories and an optional katakana trainer. No accounts, no tracking, no build
 step: open `index.html` or host the folder anywhere. (It used to be called
 Nihongo Ippo; progress saved under that name carries on.)
 
-The course is drawn as a railway map: six lines, thirty stations. Each unit
+The course is drawn as a railway map: six lines, thirty stations. Stations
+are numbered like real ones in Japan, by the first letter of the line's
+Japanese name: H01 is station 1 of the Hajime-sen (Starting Line), then M
+Mainichi-sen (Everyday), D Dekiru-sen (Can-Do), K Kaiwa-sen (Conversation),
+T Tsunagaru-sen (Connections) and S Susumu-sen (Onward). Each unit
 opens with a station name board, you collect a station stamp for every unit
 you finish, and review cards “speed up” from the local train (各停) to the
 shinkansen (新幹線) as you remember them.

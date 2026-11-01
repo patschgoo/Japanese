@@ -247,6 +247,11 @@
       html += omikujiCard();
       html += '<div class="home-row">' + NI.missionsCard() + wotdCard() + "</div>" + routeCard();
 
+      // What the station numbers mean (H01, M06…): the lines' Japanese names.
+      html +=
+        '<details class="map-why"><summary>What do H01, M06… mean?</summary><p>Stations are numbered the way real ones are in Japan, where G09 is the ninth stop on Tokyo’s Ginza Line. The letter is the first letter of the line’s Japanese name, so <b>H01</b> is station 1 of the <b>H</b>ajime-sen, the Starting Line.</p><ul class="map-lines">' +
+        NI.course.lines.map((l) => '<li><span class="line-badge line-' + l.color + '" aria-hidden="true">' + l.id + "</span>" + ui.jp(l.ja, { tokens: false }) + " <b>" + esc(ui.lineRomaji(l)) + "</b> " + esc(l.en) + "</li>").join("") +
+        "</ul><p class=\"small muted\">English initials wouldn’t work: Starting and Onward would both be S, and Can-Do, Conversation and Connections all C.</p></details>";
       html += '<section class="routemap" aria-label="Course route map">';
       const stampEm = {};
       for (const st of NI.game.stamps()) stampEm[st.unit.n] = st.em;
@@ -256,7 +261,7 @@
         const pct = NI.store.state.exams[line.id];
         html +=
           '<section class="line line-' + line.color + (pct >= 80 ? " gold" : "") + '" aria-labelledby="line-' + line.id + '">' +
-          '<header class="line-head"><span class="line-badge" aria-hidden="true">' + line.id + "</span>" +
+          '<header class="line-head"><span class="line-badge" aria-hidden="true" title="' + esc(line.id + " = " + ui.lineRomaji(line)) + '">' + line.id + "</span>" +
           '<div><h2 id="line-' + line.id + '">' + ui.jp(line.ja, { tokens: false, ro: true }) + ' <span class="line-en">' + esc(line.en) + "</span>" + (pct >= 80 ? ' <span class="gold-badge" title="Line exam passed">★</span>' : "") + "</h2>" +
           '<p class="line-blurb">' + esc(line.blurb) + ' <span class="muted">' + done + "/" + units.length + " stations</span>" +
           (done === units.length && units.length && !(pct >= 80) ? ' · <a href="#exam-' + line.id + '">Take the line exam</a>' : "") + "</p></div></header>" +
