@@ -103,9 +103,13 @@ Progress is saved in the browser (`localStorage`). Options → *Move to
 another device* sends your profiles to another device in a link or a file;
 the file doubles as a backup, and older backups still open.
 
-Audio uses the browser's built-in speech synthesis. If no Japanese voice is
-installed, the Options page explains how to add one (Windows, macOS, Android,
-iOS). Recordings made in the sentence breakdown stay on the device.
+Audio uses the browser's built-in speech synthesis, with the best-sounding
+Japanese voice the device has: natural, enhanced and premium voices first,
+then online ones (falling back to an on-device voice offline or when one
+fails). Options lists the voices best first, marks the natural and online
+ones, and, when the device only has a basic voice, says how to get a better
+one there (iPhone/iPad, Mac, Android, or Edge on Windows). If no Japanese
+voice is installed, it explains how to add one. Recordings made in the sentence breakdown stay on the device.
 
 ### Publish with GitHub Pages
 

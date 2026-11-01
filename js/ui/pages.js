@@ -705,10 +705,27 @@
       if (!NI.speech.supported) {
         voices = '<p class="note">This browser has no speech synthesis, so audio is unavailable.</p>';
       } else {
+        // Voices best first, with what kind each is; and, when the best here is
+        // a basic one, where this device can get a more natural one.
+        const best = NI.speech.best;
+        const KIND = { natural: " · natural", online: " · online", basic: "" };
+        const ua = navigator.userAgent;
+        const ipad = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+        const tip =
+          /iPhone|iPad|iPod/.test(ua) || ipad
+            ? "<b>iPhone/iPad:</b> Settings → Accessibility → Spoken Content → Voices → Japanese, and download <b>Kyoko (Enhanced)</b>, <b>Otoya (Enhanced)</b> or <b>O-Ren (Premium)</b>. Then reload this page."
+            : /Macintosh/.test(ua)
+              ? "<b>Mac:</b> System Settings → Accessibility → Spoken Content → System voice → Manage Voices → Japanese, and add <b>Kyoko (Enhanced)</b> or <b>O-Ren (Premium)</b>. Then reload this page."
+              : /Android/.test(ua)
+                ? "<b>Android:</b> Settings → Text-to-speech (under System or Accessibility) → Google speech services → Install voice data → Japanese, and download a voice. Then reload this page."
+                : /Windows/.test(ua)
+                  ? "<b>Windows:</b> open this site in <b>Microsoft Edge</b>: its natural Japanese voices (Nanami, Keita) sound far better than the built-in ones."
+                  : "";
         voices =
-          '<label for="voice">Voice</label><select id="voice"><option value="">Automatic</option>' +
-          NI.speech.voices.map((v) => '<option value="' + esc(v.voiceURI) + '"' + (s.voice === v.voiceURI ? " selected" : "") + ">" + esc(v.name) + "</option>").join("") +
+          '<label for="voice">Voice</label><select id="voice"><option value="">Automatic' + (best ? " (" + esc(best.v.name) + ")" : "") + "</option>" +
+          NI.speech.ranked.map(({ v, kind }) => '<option value="' + esc(v.voiceURI) + '"' + (s.voice === v.voiceURI ? " selected" : "") + ">" + esc(v.name + KIND[kind]) + "</option>").join("") +
           "</select>" +
+          (NI.speech.hasVoice && best && best.kind !== "natural" && tip ? '<p class="note">For a more natural voice: ' + tip + "</p>" : "") +
           (NI.speech.hasVoice ? "" : '<p class="note">No Japanese voice found on this device. To add one: <b>Windows</b> Settings → Time &amp; language → Speech → Add voices → Japanese. <b>macOS</b> System Settings → Accessibility → Spoken Content → System voice → Manage voices → Japanese. <b>Android</b> install Google Speech Services and add Japanese. <b>iPhone/iPad</b> Settings → Accessibility → Spoken Content → Voices → Japanese. Then reload this page.</p>');
       }
       return (

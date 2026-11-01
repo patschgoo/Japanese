@@ -1,10 +1,12 @@
-/* Audio through the browser's built-in speech synthesis (no recordings, no
-   network). Picks a Japanese voice when the device has one. */
+/* Audio through the browser's built-in speech synthesis (no recordings).
+   Picks the best-sounding Japanese voice the device has: natural, enhanced
+   and premium voices first, then online ones (good, but only with a
+   connection), then the rest; offline, or when an online voice fails, an
+   on-device one speaks instead. */
 (function (root) {
   "use strict";
   const NI = (root.NI = root.NI || {});
   const synth = root.speechSynthesis;
-  const PREFERRED = [/google.*日本語/i, /nanami/i, /kyoko/i, /o-ren/i, /otoya/i, /haruka/i, /ayumi/i, /keita/i, /ichiro/i, /japan/i];
   let voices = [];
   const listeners = [];
 
@@ -20,17 +22,28 @@
     else synth.onvoiceschanged = refresh;
   }
 
+  // How good a voice is likely to sound, from what its name and kind say.
+  function quality(v) {
+    let q = 0;
+    if (/natural|neural|premium|enhanced|wavenet|studio/i.test(v.name)) q += 100;
+    if (v.localService === false) q += 30;
+    if (/nanami|keita|o-?ren|kyoko|otoya|hattori|google/i.test(v.name)) q += 20;
+    if (/compact|eloquence|espeak|novelty/i.test(v.name)) q -= 60;
+    if (/^ja[-_]jp$/i.test(v.lang)) q += 5;
+    return q;
+  }
+  const kind = (v) => (quality(v) >= 100 ? "natural" : v.localService === false ? "online" : "basic");
+  const ranked = () => voices.slice().sort((a, b) => quality(b) - quality(a));
+  // Online voices need a connection.
+  const usable = (v) => v.localService !== false || !root.navigator || root.navigator.onLine !== false;
+
   function pickVoice() {
     const want = NI.store && NI.store.settings.voice;
     if (want) {
       const v = voices.find((x) => x.voiceURI === want);
-      if (v) return v;
+      if (v && usable(v)) return v;
     }
-    for (const re of PREFERRED) {
-      const v = voices.find((x) => re.test(x.name));
-      if (v) return v;
-    }
-    return voices[0] || null;
+    return ranked().find(usable) || voices[0] || null;
   }
 
   const speech = {
@@ -40,6 +53,15 @@
     },
     get hasVoice() {
       return voices.length > 0;
+    },
+    // Japanese voices, best first, each with what kind it is.
+    get ranked() {
+      return ranked().map((v) => ({ v, kind: kind(v) }));
+    },
+    // The voice "Automatic" uses on this device.
+    get best() {
+      const v = ranked().find(usable) || null;
+      return v && { v, kind: kind(v) };
     },
     // Listening exercises need a real Japanese voice, not just any voice.
     get canListen() {
@@ -53,19 +75,24 @@
     speak(text, opts) {
       if (!this.supported || !text) return false;
       const o = opts || {};
-      try {
-        synth.cancel();
+      const say = (v, retry) => {
         const u = new root.SpeechSynthesisUtterance(text);
         u.lang = "ja-JP";
-        const v = pickVoice();
         if (v) u.voice = v;
         u.rate = o.rate || (NI.store ? NI.store.settings.rate : 0.9) || 0.9;
         u.pitch = o.pitch || 1;
-        if (o.onend) {
-          u.onend = o.onend;
-          u.onerror = o.onend;
-        }
+        if (o.onend) u.onend = o.onend;
+        u.onerror = (e) => {
+          // An online voice that fails (no connection, service down): an on-device voice instead.
+          const local = retry && v && v.localService === false && !/interrupted|canceled/.test((e && e.error) || "") && ranked().find((x) => x.localService !== false);
+          if (local) say(local, false);
+          else if (o.onend) o.onend();
+        };
         synth.speak(u);
+      };
+      try {
+        synth.cancel();
+        say(pickVoice(), true);
         return true;
       } catch (e) {
         return false;

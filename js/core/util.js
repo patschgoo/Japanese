@@ -5,7 +5,7 @@
   "use strict";
   const NI = (root.NI = root.NI || {});
   // This release. sw.js names its cache after it (nihon-v13): bump both together.
-  NI.VERSION = 15;
+  NI.VERSION = 16;
 
   const HOUR = 3600 * 1000;
   const DAY = 24 * HOUR;
