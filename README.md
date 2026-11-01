@@ -233,4 +233,5 @@ from this site (`fonts/`, with `css/fonts.css`), so visitors' browsers don't
 contact Google; the licence texts are in `fonts/OFL-*.txt`. The pieces and
 their character ranges are the ones Google Fonts serves for the same fonts.
 
-**App icon.** The daruma with 日本 (`img/`) is the project's own artwork.
+**App icon.** The daruma with 日本 (`img/`) was designed by the project's
+author with ChatGPT.

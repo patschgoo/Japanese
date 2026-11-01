@@ -411,6 +411,7 @@
           "rest",
           "What else the app uses",
           '<ul class="cr-list">' +
+            "<li><b>The app icon</b>, the daruma with 日本, was designed by the app’s author with ChatGPT.</li>" +
             "<li><b>Audio</b> is spoken by your device’s own voices; nothing is recorded or uploaded. The pronunciation check uses your browser’s speech recognition, which some browsers (Chrome, for one) run on their maker’s servers.</li>" +
             "<li><b>Emoji</b> are drawn by your device’s own emoji font.</li>" +
             "<li><b>Look-ups</b> in the Reader and word pop-ups link to Jisho, Google Translate and DeepL; those open the other site, under its own terms.</li>" +
