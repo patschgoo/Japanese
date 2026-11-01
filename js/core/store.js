@@ -94,6 +94,7 @@
   function write() {
     timer = null;
     if (!dirty) return;
+    state.mod = Date.now(); // when this profile last changed (sync compares them)
     persistent = put(keyOf(index.cur), JSON.stringify(state));
     dirty = false;
   }
@@ -102,14 +103,19 @@
   function readIndex() {
     const saved = read(PKEY);
     if (!saved || !Array.isArray(saved.list) || !saved.list.length) return index;
-    const list = saved.list.filter((p) => p && typeof p.id === "string" && /^(main|p[a-z0-9]+)$/.test(p.id)).map((p) => ({ id: p.id, name: String(p.name || "Me").slice(0, 30), icon: safeIcon(p.icon, ICONS[0]), t: p.t || Date.now() }));
+    const list = saved.list
+      .filter((p) => p && typeof p.id === "string" && /^(main|p[a-z0-9]+)$/.test(p.id))
+      .map((p) => Object.assign({ id: p.id, name: String(p.name || "Me").slice(0, 30), icon: safeIcon(p.icon, ICONS[0]), t: p.t || Date.now() }, isSid(p.sid) ? { sid: p.sid } : {}));
     if (!list.length) return index;
-    return { cur: list.some((p) => p.id === saved.cur) ? saved.cur : list[0].id, list };
+    const gone = (Array.isArray(saved.gone) ? saved.gone : []).filter(isSid).slice(-50);
+    return { cur: list.some((p) => p.id === saved.cur) ? saved.cur : list[0].id, list, gone };
   }
   function writeIndex() {
     if (!put(PKEY, JSON.stringify(index))) persistent = false;
   }
 
+  // A profile's sync id: the same on every device it's synced to.
+  const isSid = (x) => typeof x === "string" && /^[a-z0-9]{8,32}$/.test(x);
   // An icon is one emoji or so, never markup (states can come from another device).
   const safeIcon = (x, dflt) => (typeof x === "string" && x && x.length <= 8 && !/[<>&"'\s]/.test(x) ? x : dflt);
   const isObj = (x) => !!x && typeof x === "object" && !Array.isArray(x);
@@ -142,6 +148,7 @@
     s.onboarded = !!saved.onboarded;
     s.planned = !!saved.planned;
     s.created = saved.created || s.created;
+    s.mod = Number(saved.mod) || 0;
     return s;
   }
 
@@ -464,6 +471,8 @@
     removeProfile(id) {
       if (index.list.length < 2 || !index.list.some((p) => p.id === id)) return false;
       if (id === index.cur) this.switchProfile(index.list.find((p) => p.id !== id).id);
+      const was = index.list.find((p) => p.id === id);
+      if (was.sid) index.gone = (index.gone || []).concat(was.sid).slice(-50);
       index.list = index.list.filter((p) => p.id !== id);
       writeIndex();
       delete mem[keyOf(id)];
@@ -489,6 +498,44 @@
         emit("profile");
       }
     },
+    // ---- sync (js/ui/sync.js) ---------------------------------------------------
+    // Every profile with its sync id (made on first use) and its whole state.
+    syncList() {
+      this.flush();
+      let changed = false;
+      for (const p of index.list)
+        if (!p.sid) {
+          p.sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+          changed = true;
+        }
+      if (changed) writeIndex();
+      return index.list.map((p) => ({ id: p.id, sid: p.sid, name: p.name, icon: p.icon, state: p.id === index.cur ? JSON.parse(JSON.stringify(state)) : read(keyOf(p.id)) || blank() }));
+    },
+    // Sync ids of profiles deleted on this device, so other devices drop them too.
+    get gone() {
+      return (index.gone || []).slice();
+    },
+    // A profile's sync id, name and icon as another device has them.
+    linkSync(id, sid, name, icon) {
+      const p = index.list.find((x) => x.id === id);
+      if (!p || !isSid(sid)) return;
+      p.sid = sid;
+      if (name != null) p.name = String(name).trim().slice(0, 30) || p.name;
+      if (icon) p.icon = safeIcon(icon, p.icon);
+      writeIndex();
+      emit("profile");
+    },
+    // Puts a synced state in place without making it look newly changed here.
+    putSynced(id, st) {
+      const s = merge(st);
+      if (id === index.cur) {
+        state = s;
+        persistent = put(keyOf(id), JSON.stringify(s));
+        dirty = false;
+        emit("all");
+      } else if (!put(keyOf(id), JSON.stringify(s))) persistent = false;
+    },
+
     // A profile's numbers without switching to it, for the profile list.
     peek(id) {
       return this.sum(id === index.cur ? state : read(keyOf(id)));
@@ -542,11 +589,12 @@
         const local = index.list.find((x) => x.id === id);
         local.name = p.name;
         local.icon = p.icon;
+        if (isSid(p.sid)) local.sid = p.sid;
       } else {
         id = newId();
         let name = p.name;
         for (let n = 2; index.list.some((x) => x.name === name); n++) name = p.name.slice(0, 27) + " " + n;
-        index.list.push({ id, name, icon: p.icon, t: Date.now() });
+        index.list.push(Object.assign({ id, name, icon: p.icon, t: Date.now() }, isSid(p.sid) ? { sid: p.sid } : {}));
       }
       writeIndex();
       if (id === index.cur) {

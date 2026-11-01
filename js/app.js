@@ -21,8 +21,9 @@
   function parse(hash) {
     const h = String(hash || "").replace(/^#\/?/, "");
     if (!h) return { name: "home", args: [] };
-    // A link from another device carries a profile: #move=nihon1.…
+    // A link from another device carries a profile (#move=nihon1.…) or a sync key (#sync=…).
     if (/^move=/.test(h)) return { name: "move", args: [] };
+    if (/^sync=/.test(h)) return { name: "move", args: ["sync"] };
     const parts = h.split("-");
     if (!NI.pages[parts[0]]) return null; // an in-page anchor, not a route
     return { name: parts[0], args: parts.slice(1) };
@@ -338,6 +339,7 @@
     if (rested) NI.fx.banner('<span class="rw-icon" aria-hidden="true">🎫</span><span><b>Welcome back!</b> ' + (rested === 1 ? "A rest day" : rested + " rest days") + " kept your " + NI.store.streak() + "-day streak going.</span>", "rw-bonus");
     registerWorker();
     loadFonts();
+    if (NI.sync) NI.sync.init();
   }
 
   NI.app = { render, go, renderNav, parse, applySettings, checkVersion };

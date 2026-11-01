@@ -228,6 +228,7 @@
         '<li><b><a href="#vtest">Vocabulary tests</a>:</b> test yourself on a list, your saved words, your reviews, your mistakes or any course units, with the question types you choose (meaning, Japanese, listening, typing, kanji readings). Each list keeps its last and best score; flashcards are there for a quick run-through.</li>' +
         '<li><b><a href="#profiles">Learning profiles</a>:</b> one for each person learning on this device, each with its own progress, word book, plan and settings.</li>' +
         '<li><b><a href="#stats">Statistics</a>:</b> XP day by day, an activity calendar, your review cards by train and the week ahead, kana, tests and all-time totals, for the profile in use.</li>' +
+        '<li><b><a href="#move-sync">Sync automatically</a>:</b> connect your devices once with a GitHub key and your profiles stay the same on all of them, kept in a secret gist on your own GitHub account. Optional: without it, nothing leaves your device.</li>' +
         '<li><b><a href="#move">Move to another device</a>:</b> progress is kept in your browser, so send a profile (or all of them) to your phone, tablet or another computer in a link or a file, and open it there. Nothing is uploaded; nothing is changed until you say where it goes.</li>' +
         '<li><b><a href="#phrases">Phrasebook</a>:</b> ready-made phrases for shops, restaurants, stations and emergencies.</li>' +
         '<li><b><a href="#roleplays">Role-play</a>:</b> take a part in any course conversation and answer your partner.</li>' +

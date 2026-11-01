@@ -34,6 +34,7 @@ shinkansen (新幹線) as you remember them.
 | **Vocabulary tests** | Test yourself on a list, your saved words, your reviews, your mistakes or any range of units: choose the questions (meaning, Japanese, listening, typing, kanji readings), the length, and a scored test or practice with hints; each list keeps its last and best score, and missed words can go straight into a list. Flashcards for a quick run-through |
 | **Learning profiles** | One for each person learning on the device (or a fresh start): each has its own progress, reviews, word book, plan and settings, and you switch from the button at the top |
 | **Statistics** | XP over the last 30 days against your daily goal, a 16-week activity calendar, review cards by train and those due in the week ahead, kana known, test and exam results and all-time totals; every chart has tooltips on hover and keyboard focus and opens as a table |
+| **Sync automatically** | Opt-in: connect each device with a GitHub key that can only reach gists, and your profiles are kept in one secret gist on your own account and stay the same everywhere, synced when the app opens, after each lesson and when you come back to it (never mid-lesson). Learning is never lost when two devices were used in between: review cards, days, finished parts, kana, badges and exams are combined, and settings and the word book merge three-way against the last synced copy. Without a key nothing leaves the device |
 | **Move to another device** | Send a profile, or all of them, to another phone, tablet or computer in a link (Share, or Copy) or a file. Opening the link there (or pasting it, or choosing the file) shows what arrived and lets you put it over a profile there or next to them as a new one; nothing changes until you choose. The profile travels inside the link's `#move=` part, which browsers never send to a server |
 | **Settings** | Per profile: plan, lessons and reviews (session length, moving on after a right answer, missed questions coming back, the handwriting-style font), reading aids, audio, theme |
 
@@ -139,8 +140,9 @@ js/ui/                pages, exercise types, lesson/review sessions, games,
                       stroke-order pad, kana writing, the pronunciation
                       check, the word book with vocabulary tests,
                       flashcards and profiles (book.js), statistics
-                      (stats.js) and moving profiles to another device
-                      (move.js)
+                      (stats.js), moving profiles to another device
+                      (move.js), sync through a GitHub gist (sync.js) and
+                      the on-screen romaji keys (keys.js)
 js/app.js             router and start-up
 tools/validate.js     content checks and engine tests (`npm test`)
 tools/vocab.js        what a learner knows by a given unit (for writers)

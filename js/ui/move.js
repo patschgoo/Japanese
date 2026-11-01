@@ -203,10 +203,11 @@
         "<p>Or paste the link (or an old backup) here, or choose the file:</p>" +
         '<div class="mv-drop"><label for="mv-text" class="sr">The link or backup</label><textarea id="mv-text" rows="3" placeholder="Paste the link here" autocomplete="off" spellcheck="false"></textarea>' +
         '<div class="row wrap"><button class="btn small primary" type="button" data-mv-open>Open it</button><label class="btn small ghost mv-pick">Choose a file…<input type="file" accept=".json,application/json,text/plain" hidden></label></div></div>' +
-        '<p class="small muted">Using 日本 from your home screen? There it keeps its own progress, apart from the browser, so copy the link and paste it here rather than tapping it.</p></section>'
+        '<p class="small muted">Using 日本 from your home screen? There it keeps its own progress, apart from the browser, so copy the link and paste it here rather than tapping it.</p></section>' +
+        (NI.sync ? NI.sync.sectionHtml() : "")
       );
     },
-    mount(el) {
+    mount(el, args) {
       const box = el.querySelector("#mv-in");
       const text = el.querySelector("#mv-text");
       let got = null;
@@ -333,6 +334,12 @@
       });
       // Opened from a link: what it carries.
       if (/^#move=/.test(root.location.hash)) open(root.location.hash);
+      if (NI.sync) {
+        NI.sync.bindSection(el, () => NI.app.render());
+        NI.sync.fromLink(el, () => NI.app.go("move-sync"));
+        // After the page has been put at the top.
+        if (args && args[0] === "sync") setTimeout(() => el.querySelector("#sync") && el.querySelector("#sync").scrollIntoView({ block: "start" }), 0);
+      }
     },
   };
 

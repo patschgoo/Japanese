@@ -767,7 +767,8 @@
         "</fieldset></section>" +
         '<section class="u-sec opt-sec" id="opt-data"><h2>Your progress</h2>' +
         "<p>Progress lives in this browser only. To carry on on another phone, tablet or computer, or to keep a backup, send your profiles there in a link or a file. A link or file you sent yourself earlier opens there too.</p>" +
-        '<div class="row wrap"><a class="btn small primary" href="#move">📲 Move to another device</a><button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
+        (NI.sync && NI.sync.connected ? '<p class="small">⟳ Syncing with GitHub as <b>' + esc(NI.sync.status.login) + "</b>.</p>" : "") +
+        '<div class="row wrap"><a class="btn small primary" href="#move">📲 Move to another device</a>' + (root.NI_EMBED ? "" : '<a class="btn small ghost" href="#move-sync">⟳ Sync automatically</a>') + '<button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
         "</section>" +
         '<p class="small muted opt-version"><span lang="ja">日本</span> version ' + NI.VERSION + (root.NI_EMBED ? "" : ' · <button class="btn small ghost" type="button" data-check-update>Check for a new version</button>') + "</p>"
       );
