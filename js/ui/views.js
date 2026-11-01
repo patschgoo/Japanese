@@ -14,22 +14,55 @@
     return t ? '<span class="tier tier-' + t.id + '" title="Review stage: ' + esc(t.en) + '">' + esc(t.ja) + "</span>" : "";
   }
 
+  /* A line's stations as stops on a rail: finished ones filled, half-done
+     ones half filled, the focus station ringed. The rail is coloured up to
+     the furthest station reached. */
+  function lineStrip(line, focusN) {
+    const units = line.units.map((n) => NI.course.unit(n)).filter(Boolean);
+    const step = NI.nextStep();
+    const states = units.map((u) => {
+      const ps = NI.course.parts(u);
+      const d = ps.filter((p) => NI.store.partDone(u.n, p.key)).length;
+      return d === ps.length ? "done" : d ? "started" : "todo";
+    });
+    let reach = -1;
+    units.forEach((u, i) => {
+      if (states[i] !== "todo" || (step && step.u.n === u.n)) reach = i;
+    });
+    const n = units.length;
+    return (
+      '<ol class="mline" style="--n:' + n + ";--f:" + (reach < 0 ? 0 : reach / Math.max(1, n - 1)) + '">' +
+      units
+        .map((u, i) => {
+          const cur = u.n === focusN;
+          const label = NI.course.code(u.n) + " " + u.en + (states[i] === "done" ? ", done" : "") + (step && step.u.n === u.n ? ", you are here" : "");
+          return '<li class="' + states[i] + (cur ? " current" : "") + '"><a href="#unit-' + u.n + '" aria-label="' + esc(label) + '"' + (cur ? ' aria-current="true"' : "") + '><i class="mn" aria-hidden="true"></i><span aria-hidden="true">' + esc(NI.course.code(u.n)) + "</span></a></li>";
+        })
+        .join("") +
+      "</ol>"
+    );
+  }
+
+  // The station card at the top of a unit: its code, name, line and goal.
   function sign(u) {
     const line = NI.course.lineOf(u.n);
     const prev = NI.course.unit(u.n - 1);
     const next = NI.course.unit(u.n + 1);
+    const step = NI.nextStep();
     const link = (x, dir) =>
       x
-        ? '<a class="' + dir + '" href="#unit-' + x.n + '">' + (dir === "prev" ? ui.ICON.arrowL : "") + '<span class="sn-code">' + esc(NI.course.code(x.n)) + '</span><span class="sn-name">' + ui.jp(x.ja, { tokens: false, gaps: false }) + "</span>" + (dir === "next" ? ui.ICON.arrowR : "") + "</a>"
+        ? '<a class="' + dir + '" href="#unit-' + x.n + '">' + (dir === "prev" ? "‹ " : "") + '<span class="sn-code">' + esc(NI.course.code(x.n)) + '</span> <span class="sn-name">' + ui.jp(x.ja, { tokens: false, gaps: false }) + "</span>" + (dir === "next" ? " ›" : "") + "</a>"
         : '<span class="' + dir + ' end">' + (dir === "prev" ? "Start of the line" : "End of the line") + "</span>";
     return (
-      '<header class="sign line-' + line.color + '">' +
-      '<div class="sign-top">' + ui.stationCode(u.n) + '<span class="sign-line">' + ui.jp(line.ja, { tokens: false, ro: true }) + " · " + esc(line.en) + "</span></div>" +
-      '<h1 class="sign-name">' + ui.jp(u.ja, { tokens: false, gaps: true, ro: true }) + "</h1>" +
+      '<section class="card sign line-' + line.color + '" aria-labelledby="sign-h">' +
+      '<div class="sign-top">' + ui.stationCode(u.n) + '<span class="sign-line">' + ui.jp(line.ja, { tokens: false, ro: true }) + " <span>" + esc(line.en) + "</span></span>" +
+      (step && step.u.n === u.n ? '<span class="here" title="You are here">' + ui.jp("{現在地|げんざいち}", { tokens: false }) + "</span>" : "") + "</div>" +
+      '<h2 class="sign-name" id="sign-h">' + ui.jp(u.ja, { tokens: false, gaps: true, ro: true }) + "</h2>" +
       '<p class="sign-en">' + esc(u.en) + "</p>" +
-      '<div class="sign-band" aria-hidden="true"></div>' +
+      lineStrip(line, u.n) +
+      '<p class="sign-goal">' + esc(u.goal) + "</p>" +
       '<nav class="sign-nav" aria-label="Neighbouring units">' + link(prev, "prev") + link(next, "next") + "</nav>" +
-      "</header>"
+      "</section>"
     );
   }
 
@@ -260,5 +293,5 @@
     );
   }
 
-  NI.views = { sign, wordList, wordRow, sentenceList, examples, dialogue, bindDialogue, bindPlayer, playLines, playerButtons, shadowDone, stopDialogue: stopPlayer, stopPlayer, tierBadge, aids, bindAids };
+  NI.views = { sign, lineStrip, wordList, wordRow, sentenceList, examples, dialogue, bindDialogue, bindPlayer, playLines, playerButtons, shadowDone, stopDialogue: stopPlayer, stopPlayer, tierBadge, aids, bindAids };
 })(typeof window !== "undefined" ? window : globalThis);

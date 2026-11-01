@@ -7,15 +7,13 @@
   const ui = NI.ui;
   let current = null;
 
+  // The five places, the same on phone (icons over labels) and desktop (a pill of labels).
   const NAV = [
-    { id: "home", label: "Learn", ja: "{学|まな}ぶ" },
-    { id: "review", label: "Review", ja: "{復習|ふくしゅう}", badge: true },
-    { id: "play", label: "Play", ja: "{遊|あそ}ぶ" },
-    { id: "tools", label: "Tools", ja: "{道具|どうぐ}" },
-    { id: "kana", label: "Kana", ja: "かな", wide: true },
-    { id: "guide", label: "Guide", ja: "ガイド", wide: true },
-    { id: "options", label: "Options", icon: "gear", wide: true },
-    { id: "more", label: "More", ja: "その{他|た}", narrow: true },
+    { id: "home", label: "Learn", icon: "train" },
+    { id: "review", label: "Review", icon: "repeat", badge: true },
+    { id: "play", label: "Play", icon: "play" },
+    { id: "tools", label: "Tools", icon: "grid" },
+    { id: "more", label: "More", icon: "dots" },
   ];
 
   function parse(hash) {
@@ -30,18 +28,26 @@
   }
 
   function renderNav(active) {
-    const act = active || (current && (current.page.nav || current.name)) || "home";
+    let act = active || (current && (current.page.nav || current.name)) || "home";
+    // Pages without a place of their own (Kana, Guide, Options…) live under More.
+    if (!NAV.some((n) => n.id === act)) act = "more";
     const due = NI.srs.countDueBy(NI.store.state.srs, Date.now());
     const item = (n, cls) => {
       const on = n.id === act;
       const badge = n.badge && due ? '<span class="badge" aria-label="' + due + ' due">' + (due > 99 ? "99+" : due) + "</span>" : "";
-      const inner = n.icon ? ui.ICON[n.icon] + '<span class="sr">' + n.label + "</span>" : "<span>" + n.label + "</span>" + (n.ja ? '<small lang="ja">' + NI.furi.reading(n.ja) + "</small>" : "");
-      return '<a class="' + cls + (on ? " on" : "") + (n.icon ? " icon-link" : "") + '" href="#' + n.id + '"' + (on ? ' aria-current="page"' : "") + (n.icon ? ' title="' + n.label + '"' : "") + ">" + inner + badge + "</a>";
+      return '<a class="' + cls + (on ? " on" : "") + '" href="#' + n.id + '"' + (on ? ' aria-current="page"' : "") + ">" + (cls === "tab-link" ? ui.ICON[n.icon] : "") + "<span>" + n.label + "</span>" + badge + "</a>";
     };
     const top = doc.getElementById("topnav");
     const tab = doc.getElementById("tabbar");
-    if (top) top.innerHTML = NAV.filter((n) => !n.narrow).map((n) => item(n, "nav-link")).join("");
-    if (tab) tab.innerHTML = NAV.filter((n) => !n.wide).map((n) => item(n, "tab-link")).join("");
+    if (top) top.innerHTML = NAV.map((n) => item(n, "nav-link")).join("");
+    if (tab) tab.innerHTML = NAV.map((n) => item(n, "tab-link")).join("");
+    const streak = doc.getElementById("streakpill");
+    if (streak) {
+      const n = NI.store.streak();
+      streak.hidden = !n;
+      streak.textContent = "🔥 " + n;
+      streak.setAttribute("aria-label", n + "-day streak");
+    }
     NI.book.profileButton();
   }
 
@@ -108,10 +114,13 @@
   }
 
   // The phone's status bar takes the colour of the top bar, in the theme in use.
+  // The phone's status bar takes the colour of the paper behind the page
+  // (on phones the top bar itself is see-through).
   function themeColor() {
+    if (!root.getComputedStyle || !doc.body) return;
     const bar = doc.querySelector(".topbar");
-    if (!bar || !root.getComputedStyle) return;
-    const c = root.getComputedStyle(bar).backgroundColor;
+    let c = bar ? root.getComputedStyle(bar).backgroundColor : "";
+    if (!c || c === "transparent" || /rgba\(.*,\s*0\)$/.test(c)) c = root.getComputedStyle(doc.body).backgroundColor;
     doc.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", c));
   }
 
@@ -131,6 +140,8 @@
     current = { name: r.name, args: r.args, page };
     try {
       main.innerHTML = page.render(r.args);
+      // Page widths and per-page touches in the CSS hang on this.
+      doc.body.setAttribute("data-page", r.name);
       const title = typeof page.title === "function" ? page.title(r.args) : page.title;
       doc.title = (title && r.name !== "home" ? title + " · " : "") + "日本";
       renderNav(page.nav || r.name);
@@ -342,7 +353,7 @@
     if (NI.sync) NI.sync.init();
   }
 
-  NI.app = { render, go, renderNav, parse, applySettings, checkVersion };
+  NI.app = { render, go, renderNav, parse, applySettings, checkVersion, current: () => (current ? current.name : "") };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", boot);
   else boot();
 })(typeof window !== "undefined" ? window : globalThis);

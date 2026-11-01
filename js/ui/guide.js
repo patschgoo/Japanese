@@ -35,6 +35,16 @@
     ["An hour or more", "Split it into two or three sittings. Add the Reader with real texts and record yourself.", "Intense · 200 XP"],
   ];
 
+  // Your route: the goal from your plan, its tip and where to go for it.
+  function routeCard(goal) {
+    const g = NI.plan && NI.plan.GOALS.find((x) => x.id === goal);
+    if (!g) return '<section class="card g-route"><span class="g-route-ic" aria-hidden="true">🧭</span><div><b>Your route</b><p>Tell the course why you’re learning and it shapes lessons around it.</p><p class="chips"><a class="chip" href="#plan">Set up your plan</a></p></div></section>';
+    return (
+      '<section class="card g-route" aria-label="Your route"><span class="g-route-ic" aria-hidden="true">' + g.icon + "</span><div><span class=\"lbl\">Your route</span><b>" + esc(g.t) + "</b><p>" + esc(g.tip) + "</p>" +
+      '<p class="chips">' + g.go.map(([h, t]) => '<a class="chip" href="' + h + '">' + esc(t) + "</a>").join("") + '<a class="chip" href="#guide-routes">Other routes</a></p></div></section>'
+    );
+  }
+
   pages.guide = {
     title: "How this course works",
     nav: "guide",
@@ -56,8 +66,10 @@
       ];
       return (
         '<article class="guide">' +
-        '<header class="page-head"><p class="eyebrow">The method</p><h1>How to learn Japanese once you can read hiragana</h1>' +
-        "<p class=\"lede\">Hiragana is the perfect starting point: every Japanese word can be written in it, so from now on you can learn straight from Japanese script, without romaji. What matters next is <b>what</b> you learn, in <b>what order</b>, and <b>how</b> you make it stick. Here is the reasoning this course is built on, and how to make it fit you.</p></header>" +
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>How this course works<span class="sub">' + ui.jp("ガイド", { tokens: false }) + "</span></h1></header>" +
+        routeCard(goal) +
+        '<section class="g-intro"><h2>How to learn Japanese once you can read hiragana</h2>' +
+        "<p class=\"lede\">Hiragana is the perfect starting point: every Japanese word can be written in it, so from now on you can learn straight from Japanese script, without romaji. What matters next is <b>what</b> you learn, in <b>what order</b>, and <b>how</b> you make it stick. Here is the reasoning this course is built on, and how to make it fit you.</p></section>" +
         '<nav class="toc" aria-label="On this page">' + toc.map(([id, t]) => '<button class="chip" type="button" data-jump="' + id + '">' + t + "</button>").join("") + "</nav>" +
 
         '<section id="g-short"><h2>The short version</h2><ol class="short">' +

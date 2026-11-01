@@ -5,6 +5,7 @@
   const NI = root.NI;
   const ui = NI.ui;
   const esc = ui.esc;
+  const U = NI.util;
   const pages = (NI.pages = NI.pages || {});
 
   const reached = () => {
@@ -19,18 +20,25 @@
       const r = reached();
       const read = NI.store.state.stories;
       let html =
-        '<header class="page-head"><h1>Stories <span class="sub">' + ui.jp("{読|よ}み{物|もの}", { tokens: false }) + "</span></h1>" +
-        "<p>Short stories written with the words you’ve learned. Reading lots of easy text is one of the best ways to build fluency: don’t look everything up, just enjoy the story.</p></header>";
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Stories<span class="sub">' + ui.jp("{物語|ものがたり}", { tokens: false }) + "</span></h1></header>" +
+        '<p class="page-intro">Short graded stories with audio, written only with words you know. Reading lots of easy text builds fluency: don’t look everything up, just enjoy the story.</p>';
       if (!NI.course.stories.length) return html + '<p class="empty">No stories yet.</p>';
       html += '<ul class="story-list">';
       for (const st of NI.course.stories) {
         const line = NI.course.lines.find((l) => l.id === st.line);
         const open = st.unit <= r || st.unit <= Math.max(5, r);
+        const away = st.unit - r;
+        const first = (NI.furi.base(st.title).match(/[\u4e00-\u9faf]/) || [NI.furi.base(st.title).charAt(0)])[0];
+        const chip = read[st.id]
+          ? '<span class="pill ok">Read ✓ · shadow it again</span>'
+          : open ? '<span class="pill now">New · ' + st.lines.length + " lines</span>"
+          : away <= 5 ? '<span class="pill now">Unlocks at ' + esc(NI.course.code(st.unit)) + " · " + U.plural(away, "station") + " away</span>"
+          : '<span class="pill">Unlocks at ' + esc(NI.course.code(st.unit)) + "</span>";
         html +=
           '<li class="story-item line-' + (line ? line.color : "h") + (read[st.id] ? " read" : "") + (open ? "" : " ahead") + '"><a href="#story-' + esc(st.id) + '">' +
-          '<span class="line-badge" aria-hidden="true">' + esc(st.line) + "</span>" +
-          '<span class="st-text"><b>' + ui.jp(st.title, { tokens: false }) + "</b><span>" + esc(st.en) + " · " + st.lines.length + " lines · after " + esc(NI.course.code(st.unit)) + "</span></span>" +
-          (read[st.id] ? '<span class="tag ok">Read ✓</span>' : open ? '<span class="tag">New</span>' : '<span class="tag">Later</span>') + "</a></li>";
+          '<span class="st-cover" aria-hidden="true"><b lang="ja">' + esc(first) + "</b><small>" + esc(NI.course.code(st.unit)) + "</small></span>" +
+          '<span class="st-text"><b>' + ui.jp(st.title, { tokens: false }) + "</b><span>" + esc(st.en) + "</span>" + chip + "</span>" +
+          (read[st.id] ? '<span class="st-play" aria-hidden="true">' + ui.ICON.play + "</span>" : "") + "</a></li>";
       }
       return html + "</ul>";
     },

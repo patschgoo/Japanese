@@ -20,45 +20,44 @@
 
   const typing = (e) => /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
 
-  // はなまる: the spiral flower Japanese teachers draw on excellent work.
-  function hanamaru() {
-    const cx = 60;
-    const cy = 60;
-    const pts = [];
-    for (let t = 0; t <= Math.PI * 6.2; t += 0.12) {
-      const r = 3 + t * 1.45;
-      pts.push((cx + r * Math.cos(t)).toFixed(1) + " " + (cy + r * Math.sin(t)).toFixed(1));
-    }
-    const petals = [];
-    for (let t = 0; t <= Math.PI * 2 + 0.01; t += 0.04) {
-      const r = 38 + 9 * Math.abs(Math.sin(t * 3.5));
-      petals.push((cx + r * Math.cos(t)).toFixed(1) + " " + (cy + r * Math.sin(t)).toFixed(1));
-    }
-    return (
-      '<svg class="hanamaru" viewBox="0 0 120 120" role="img" aria-label="Hanamaru: a flower circle for excellent work">' +
-      '<path class="hm-spiral" d="M' + pts.join(" L") + '" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '<path class="hm-petals" d="M' + petals.join(" L") + 'Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    );
+  /* The よくできました stamp teachers press on good work: a red double ring,
+     slightly tilted. lines: the two lines of text inside. */
+  function hanamaru(lines) {
+    const [a, b] = lines || ["よく", "できました"];
+    return '<span class="hanamaru" role="img" aria-label="' + esc(a + b) + ': well done"><span lang="ja">' + esc(a) + "<br>" + esc(b) + "</span></span>";
+  }
+
+  /* Progress as stops on a line: passed stops filled, the current one
+     ringed. Past 16 stops it's a plain line. */
+  function stops(i, n, label) {
+    const many = n > 16;
+    let dots = "";
+    if (!many) for (let k = 0; k < n; k++) dots += '<i class="' + (k < i ? "past" : k === i ? "cur" : "") + '"></i>';
+    const f = many ? i / n : n > 1 ? Math.min(1, i / (n - 1)) : 0;
+    return '<div class="stops' + (many ? " many" : "") + '" role="progressbar" aria-label="' + esc(label || "Progress") + '" aria-valuemin="0" aria-valuemax="' + n + '" aria-valuenow="' + i + '" style="--f:' + f.toFixed(4) + '">' + dots + "</div>";
   }
 
   function shell(title, sub) {
     return (
-      '<div class="sess-top">' +
+      '<div class="sess-top line">' +
       '<button class="icon-btn" type="button" data-quit aria-label="Leave">' + ui.ICON.close + "</button>" +
-      '<div class="sess-title"><b>' + title + "</b>" + (sub ? "<span>" + sub + "</span>" : "") + "</div>" +
-      '<span class="sess-combo" hidden></span>' +
-      '<span class="sess-xp" title="XP this session">0 XP</span>' +
-      '<span class="sess-count" aria-live="polite"></span></div>' +
       '<div class="sess-bar"></div>' +
+      '<span class="sess-count" aria-live="polite"></span></div>' +
+      '<div class="sess-meta"><span class="sess-title"><b>' + title + "</b>" + (sub ? "<span> · " + sub + "</span>" : "") + "</span>" +
+      '<span class="sess-combo" hidden></span>' +
+      '<span class="sess-xp" title="XP this session">0 XP</span></div>' +
       '<div class="sess-card"></div>' +
       '<div class="sess-foot" hidden></div>'
     );
   }
 
+  /* The feedback card: a ◎ stamp and よくできました！ when right, a △ and
+     もう少し with the answer when not. extra: "+10 XP" for a right answer. */
   function feedback(ok, solutionHtml, extra) {
-    if (ok === null) return '<div class="fb neutral"><span></span><button class="btn primary" type="button" data-next>Continue</button></div>';
-    if (ok) return '<div class="fb ok"><span class="stamp" aria-hidden="true">○</span><div class="fb-text"><b>' + ui.jp("{正解|せいかい}！", { tokens: false }) + " Correct</b>" + (extra || "") + "</div>" + '<button class="btn primary" type="button" data-next>Continue</button></div>';
-    return '<div class="fb bad"><span class="stamp" aria-hidden="true">×</span><div class="fb-text"><b>Not quite.</b>' + (solutionHtml ? '<div class="sol">' + solutionHtml + "</div>" : "") + "</div>" + '<button class="btn primary" type="button" data-next>Continue</button></div>';
+    const next = '<button class="btn primary" type="button" data-next>Next</button>';
+    if (ok === null) return '<div class="fb neutral"><button class="btn primary" type="button" data-next>Continue</button></div>';
+    if (ok) return '<div class="fb ok"><span class="fb-mark" aria-hidden="true">◎</span><div class="fb-text"><b>' + ui.jp("よくできました！", { tokens: false }) + '</b><span class="fb-sub">Correct' + (extra ? " · " + extra : "") + "</span></div>" + next + "</div>";
+    return '<div class="fb bad"><span class="fb-mark" aria-hidden="true">△</span><div class="fb-text"><b>' + ui.jp("もう{少|すこ}し", { tokens: false }) + '</b><span class="fb-sub">Not quite.' + (solutionHtml ? " The answer:" : "") + "</span>" + (solutionHtml ? '<div class="sol">' + solutionHtml + "</div>" : "") + "</div>" + next + "</div>";
   }
 
   // ---------------------------------------------------------------------------
@@ -122,30 +121,32 @@
     );
   }
 
-  // now: the goal was reached by what just happened.
+  // The daily goal as a strip: reached (now: by what just happened) or how far.
   function goalLine(now) {
     const g = NI.game.goal();
+    const streak = NI.store.streak();
     return (
-      '<div class="goal-row' + (now ? " now" : "") + '"><div class="ring-box">' + ring(g.frac, g.done ? "✓" : Math.round(g.frac * 100) + "%") + "</div>" +
-      "<div><b>" + (now ? "Daily goal reached! 🎉" : g.done ? "Daily goal reached" : "Daily goal") + "</b><span>" + g.xp + " / " + g.target + " XP today · " + U.plural(NI.store.streak(), "day") + " streak</span></div></div>"
+      '<div class="goal-strip' + (g.done ? " done" : "") + (now ? " now" : "") + '"><span aria-hidden="true">🎯</span><span class="gs-t">' + (now ? "Daily goal reached! " : g.done ? "Daily goal reached · " : "Daily goal · ") + g.xp + " of " + g.target + " XP</span>" +
+      (streak ? '<span class="gs-s" title="' + U.plural(streak, "day") + ' in a row">🔥 ' + streak + "</span>" : "") + "</div>"
     );
   }
 
-  /* The XP summary on finish screens. res is what NI.fx.gain() returned and
+  /* The XP card on finish screens. res is what NI.fx.gain() returned and
      lines are [label, xp] pairs; the missions bonus, new badges, a level-up
      and the daily goal are listed here instead of popping up as banners. */
-  function xpBlock(res, lines) {
+  function xpBlock(res, lines, total) {
     const all = lines.concat(res.bonus ? [["Daily missions", res.bonus]] : []);
     const badges = res.badges || [];
     return (
-      '<div class="xp-sum"><p class="xp-big">+' + res.xp + " XP</p>" +
+      '<div class="card xp-sum">' +
       (all.length ? '<ul class="xp-lines">' + all.map(([t, n]) => "<li><span>" + esc(t) + "</span><b>+" + n + "</b></li>").join("") + "</ul>" : "") +
+      '<p class="xp-big"><b>' + esc(total || "Total") + "</b><b>+" + res.xp + " XP</b></p>" +
+      goalLine(res.goal) +
       levelLine(!!res.level) +
       (badges.length
         ? '<div class="new-badges"><p><b>New badge' + (badges.length > 1 ? "s" : "") + '</b> · <a href="#stamps">Stamp book</a></p><ul>' +
           badges.map((b) => '<li><span class="nb-icon" aria-hidden="true">' + b.icon + "</span><span><b>" + esc(b.t) + "</b>" + esc(b.d) + "</span></li>").join("") + "</ul></div>"
         : "") +
-      goalLine(res.goal) +
       (res.rest ? '<p class="rest-earned">🎫 <b>Rest day earned</b> for ' + NI.store.streak() + " days in a row: if you miss a day, it keeps your streak going.</p>" : "") +
       "</div>"
     );
@@ -197,8 +198,8 @@
     function show() {
       if (i >= queue.length) return finish();
       const ex = queue[i];
-      bar.innerHTML = ui.progressBar(i / queue.length, "Progress");
-      count.textContent = i + 1 + " / " + queue.length;
+      bar.innerHTML = stops(i, queue.length, "Progress");
+      count.textContent = i + 1 + " of " + queue.length;
       card.innerHTML = '<div class="ex ex-' + ex.type + '">' + ex.html() + "</div>";
       foot.hidden = true;
       foot.innerHTML = "";
@@ -280,7 +281,7 @@
       comboEl.hidden = combo < 3;
       comboEl.innerHTML = '<span aria-hidden="true">🔥</span> ' + combo;
       comboEl.setAttribute("aria-label", combo + " in a row");
-      const extra = gained ? ' <span class="fb-xp">+' + gained + " XP" + (ex.hinted ? " (hint)" : "") + "</span>" : "";
+      const extra = gained ? '<span class="fb-xp">+' + gained + " XP" + (ex.hinted ? " (hint)" : "") + "</span>" : "";
       foot.innerHTML = feedback(ok, ok === false && ex.solution ? ex.solution() : "", extra);
       foot.hidden = false;
       const b = foot.querySelector("[data-next]");
@@ -364,7 +365,7 @@
         NI.store.log("p", 1);
         const X = NI.game.XP;
         const perfect = sum.graded >= 3 && sum.misses === 0;
-        const lines = [["Answers", sum.xp], ["Lesson complete", X.lesson]];
+        const lines = [["Correct answers", sum.xp], ["Part finished", X.lesson]];
         if (perfect) {
           lines.push(["No mistakes", X.perfect]);
           NI.store.log("pf", 1);
@@ -383,25 +384,30 @@
         const nextPart = parts.find((p) => !NI.store.partDone(u.n, p.key));
         const nu = NI.course.unit(u.n + 1);
         const nextBtn = nextPart
-          ? '<a class="btn primary" href="#learn-' + u.n + "-" + nextPart.key + '">Next: ' + esc(nextPart.title) + "</a>"
+          ? '<a class="btn primary big" href="#learn-' + u.n + "-" + nextPart.key + '">Next: ' + esc(nextPart.title) + "</a>"
           : nu
-            ? '<a class="btn primary" href="#unit-' + nu.n + '">Next station: ' + esc(NI.course.code(nu.n)) + "</a>"
-            : '<a class="btn primary" href="#home">Back to the route map</a>';
+            ? '<a class="btn primary big" href="#unit-' + nu.n + '">Next station: ' + esc(NI.course.code(nu.n)) + "</a>"
+            : '<a class="btn primary big" href="#home">Back to the route map</a>';
         const pct = sum.graded ? Math.round((sum.right / sum.graded) * 100) : 100;
         const line = NI.course.lineOf(u.n);
         const lineDone = line && line.units.every((n) => NI.game.stamps().find((s) => s.unit.n === n && s.done));
+        const nDone = parts.filter((p) => NI.store.partDone(u.n, p.key)).length;
         return (
-          '<div class="finish">' + hanamaru() +
-          "<h2>" + ui.jp(pct >= 80 ? "よくできました！" : "がんばりました！", { tokens: false }) + "</h2>" +
-          '<p class="finish-en">' + (pct >= 80 ? "Well done!" : "Good effort!") + " " + (sum.graded ? "You got " + sum.right + " of " + sum.graded + " right" + (sum.bestCombo >= 3 ? ", with " + sum.bestCombo + " in a row" : "") + "." : "") + "</p>" +
-          xpBlock(res, lines) +
+          '<div class="finish">' +
+          '<div class="finish-head">' + hanamaru(pct >= 80 ? ["よく", "できました"] : ["がんばり", "ました"]) +
+          "<h1>" + ui.jp(pct >= 80 ? "よくできました！" : "がんばりました！", { tokens: false }) + "</h1>" +
+          '<p class="finish-en">' + (pct >= 80 ? "Well done!" : "Good effort!") + " " + (sum.graded ? "You got " + sum.right + " of " + sum.graded + " right" + (sum.bestCombo >= 3 ? ", with a combo of " + sum.bestCombo : "") + "." : "") + "</p></div>" +
+          xpBlock(res, lines, "This lesson") +
+          '<a class="card station-mini line-' + line.color + '" href="#unit-' + u.n + '"><span class="sm-top">' + ui.stationCode(u.n) + '<b class="sm-name">' + ui.jp(u.ja, { tokens: false, gaps: false }) + "</b></span>" +
+          '<span class="tk-parts" aria-hidden="true">' + parts.map((p) => '<i class="' + (NI.store.partDone(u.n, p.key) ? "on" : p === nextPart ? "next" : "") + '"></i>').join("") + "</span>" +
+          '<span class="sm-sub">' + esc(L.part.title) + " done · " + nDone + " of " + parts.length + " parts" + (nextPart ? " · next: " + esc(nextPart.title) : "") + "</span></a>" +
           (!wasStamped && nowStamped && NI.stampSvg
-            ? '<div class="stamp-earned"><div class="stamp-wrap">' + NI.stampSvg(u, { fresh: true }) + "</div><p><b>Station stamp collected!</b> " + esc(NI.course.code(u.n)) + " " + esc(u.en) + ' · <a href="#stamps">Stamp book</a></p></div>'
+            ? '<div class="card stamp-earned"><div class="stamp-wrap">' + NI.stampSvg(u, { fresh: true }) + "</div><p><b>Station stamp collected!</b> " + esc(NI.course.code(u.n)) + " " + esc(u.en) + ' · <a href="#stamps">Stamp book</a></p></div>'
             : "") +
-          (added ? '<p class="small">' + U.plural(added, L.srs[0] && L.srs[0].startsWith("s:") ? "sentence" : "word") + " added to your reviews. The first review comes up in about 4 hours.</p>" : "") +
-          (!nextPart ? '<p class="station-done">' + esc(NI.course.code(u.n)) + " complete. " + (nu ? "On to the next station." : "That's the end of the line: every unit done!") + "</p>" : "") +
-          (lineDone && !wasStamped && nowStamped ? '<p class="station-done">Every stamp on ' + ui.jp(line.ja, { tokens: false }) + ' collected. Take the <a href="#exam-' + line.id + '">line exam</a> for a gold badge.</p>' : "") +
-          '<div class="row center wrap">' + nextBtn + '<a class="btn ghost" href="#unit-' + u.n + '">Back to the unit</a></div></div>'
+          (added ? '<p class="finish-note">' + U.plural(added, L.srs[0] && L.srs[0].startsWith("s:") ? "sentence" : "word") + " added to your reviews. The first review comes up in about 4 hours.</p>" : "") +
+          (!nextPart ? '<p class="finish-note station-done">' + esc(NI.course.code(u.n)) + " complete. " + (nu ? "On to the next station." : "That's the end of the line: every unit done!") + "</p>" : "") +
+          (lineDone && !wasStamped && nowStamped ? '<p class="finish-note station-done">Every stamp on ' + ui.jp(line.ja, { tokens: false }) + ' collected. Take the <a href="#exam-' + line.id + '">line exam</a> for a gold badge.</p>' : "") +
+          '<div class="finish-btns">' + nextBtn + '<a class="btn ghost" href="#home">Back to home</a></div></div>'
         );
       },
     });
@@ -553,20 +559,50 @@
         );
       }
       if (mode === "listen") return '<p class="kicker">What does it mean?</p><div class="prompt-audio"><button class="big-play" type="button" data-say="' + esc(ui.wordAudio(it)) + '" aria-label="Play the word">' + ui.ICON.speaker + "</button></div>";
-      return '<p class="kicker">What does it mean?</p><div class="prompt-word hand"' + ui.fit(it.head) + ">" + ui.jp(it.head, { tokens: false }) + ui.say(ui.wordAudio(it), it.r) + "</div>";
+      // With furigana on tap, the reading is part of the question.
+      const ask = NI.store.settings.furigana === "hover" && NI.furi.reading(it.head) !== NI.furi.base(it.head) ? "How is it read, and what does it mean?" : "What does it mean?";
+      return '<div class="prompt-word hand rv-word"' + ui.fit(it.head) + ">" + ui.jp(it.head, { tokens: false }) + '</div><p class="rv-ask">' + ask + "</p>";
     }
     if (mode === "listen") return '<p class="kicker">What does it mean?</p><div class="prompt-audio"><button class="big-play" type="button" data-say="' + esc(ui.sentenceAudio(it.jp)) + '" aria-label="Play the sentence">' + ui.ICON.speaker + "</button></div>";
     return '<p class="kicker">What does it mean?</p><div class="prompt-sentence">' + ui.jp(it.jp) + ui.say(ui.sentenceAudio(it.jp)) + "</div>";
   }
 
-  function back(it) {
+  /* Which train a card rides, the five trains as a ladder, and where a
+     right answer takes it. */
+  function tierHead(st) {
+    const T = NI.srs.TIERS;
+    const t = NI.srs.tierOf(st ? st.st : 1);
+    if (!t) return "";
+    const ti = T.indexOf(t);
+    const up = st ? NI.srs.tierOf(Math.min(NI.srs.MAX, st.st + 1)) : null;
+    const nextT = T[ti + 1];
+    const note = !nextT ? "The fastest train: remember it to keep it here" : up && up !== t ? "Remember it and it moves up to " + nextT.ja + " " + nextT.en : "Remember it twice to move up to " + nextT.ja + " " + nextT.en;
+    return (
+      '<div class="rv-tier"><span class="tier big tier-' + t.id + '"><span lang="ja">' + esc(t.ja) + "</span> " + esc(t.en) + " train</span>" +
+      '<span class="ladder" aria-hidden="true">' + T.map((x, i) => '<span class="tier' + (i < ti ? " past tier-" + x.id : i === ti ? " on tier-" + x.id : "") + '" lang="ja">' + esc(x.ja) + "</span>").join("") + "</span>" +
+      '<span class="rv-note">' + esc(note) + "</span></div>"
+    );
+  }
+
+  function back(it, mode) {
     if (it.kind === "kanji") return NI.kanji.reviewBack(it);
     if (it.kind === "word") {
       const ex = NI.items.bestExample(it);
+      const exHtml = ex ? '<div class="word-ex">' + ui.jp(ex.jp) + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '<p class="en">' + esc(ex.en) + "</p></div>" : "";
+      // The word is already on the card: show how it's read and what it means.
+      if (mode === "recog") {
+        const kana = NI.furi.reading(it.head);
+        return (
+          '<div class="rv-back">' + (kana !== NI.furi.base(it.head) ? '<p class="rv-kana" lang="ja">' + esc(kana) + "</p>" : "") +
+          '<p class="word-en">' + (it.em ? '<span class="em" aria-hidden="true">' + it.em + "</span> " : "") + esc(it.en) + "</p>" +
+          '<p class="rv-tools">' + ui.posTag(it) + ui.say(ui.wordAudio(it), it.r) + NI.book.star(it.id) + "</p>" +
+          (it.dict ? '<p class="word-note">Dictionary form ' + ui.jp(it.dict, { tokens: false }) + "</p>" : "") +
+          (it.note ? '<p class="word-note">' + esc(it.note) + "</p>" : "") + exHtml + "</div>"
+        );
+      }
       return (
         '<div class="rv-back">' + (it.em ? '<div class="em-big" aria-hidden="true">' + it.em + "</div>" : "") + '<div class="word-big hand"' + ui.fit(it.head) + ">" + ui.wordHead(it, { tokens: false }) + "</div>" + ui.say(ui.wordAudio(it), it.r) + NI.book.star(it.id) +
-        '<p class="word-en">' + esc(it.en) + "</p>" + (it.note ? '<p class="word-note">' + esc(it.note) + "</p>" : "") +
-        (ex ? '<div class="word-ex">' + ui.jp(ex.jp) + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '<p class="en">' + esc(ex.en) + "</p></div>" : "") + "</div>"
+        '<p class="word-en">' + esc(it.en) + "</p>" + (it.note ? '<p class="word-note">' + esc(it.note) + "</p>" : "") + exHtml + "</div>"
       );
     }
     return '<div class="rv-back"><div class="prompt-sentence">' + ui.jp(it.jp) + ui.say(ui.sentenceAudio(it.jp)) + ui.breakdownBtn(it.jp, it.en) + '</div><p class="word-en">' + esc(it.en) + "</p>" + (it.note ? '<p class="word-note">' + esc(it.note) + "</p>" : "") + "</div>";
@@ -589,6 +625,83 @@
     return NI.fx.gain(xp, { quiet });
   }
 
+  // Review cards due on each of the next seven days; today includes any overdue.
+  function dueWeek() {
+    const srs = NI.store.state.srs;
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const out = [];
+    for (let i = 0; i < 7; i++) {
+      const to = new Date(end);
+      to.setDate(end.getDate() + i);
+      const from = new Date(to);
+      from.setDate(to.getDate() - 1);
+      let n = 0;
+      for (const id in srs) {
+        const due = srs[id].due;
+        if ((i === 0 && due <= to.getTime()) || (i > 0 && due > from.getTime() && due <= to.getTime())) n++;
+      }
+      const d = new Date(to);
+      d.setHours(12, 0, 0, 0);
+      out.push({ d, n, i });
+    }
+    return out;
+  }
+
+  // The week ahead as seven bars: today solid, the rest lighter.
+  function weekChart(ahead) {
+    const max = Math.max(1, ...ahead.map((x) => x.n));
+    const DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return (
+      '<div class="wk-chart" role="img" aria-label="' + esc(ahead.map((x) => (x.i ? DAY[x.d.getDay()] : "Today") + " " + x.n).join(", ")) + '">' +
+      ahead.map((x) => '<span class="wc-col' + (x.i ? "" : " today") + '"><b>' + x.n + '</b><i style="height:' + Math.max(4, Math.round((x.n / max) * 100)) + '%"></i><span>' + (x.i ? DAY[x.d.getDay()] : "Today") + "</span></span>").join("") +
+      "</div>"
+    );
+  }
+
+  /* Review with nothing (more) due: a done card, the week ahead and ways to
+     practise anyway. o.done: after a review, with o.summary (its XP). */
+  function nothingDue(o) {
+    o = o || {};
+    const srs = NI.store.state.srs;
+    const now = Date.now();
+    const any = Object.keys(srs).length > 0;
+    const next = NI.srs.nextDue(srs, now);
+    const step = NI.nextStep();
+    const today = NI.store.today().r || 0;
+    const ahead = dueWeek();
+    const total = ahead.reduce((a, x) => a + x.n, 0);
+    const mis = Object.keys(NI.store.state.mistakes).filter((r) => NI.items.get(r)).length;
+    const row = (href, icon, t, sub, chip, attr) =>
+      "<" + (href ? 'a href="' + href + '"' : 'button type="button" ' + attr) + ' class="list-row"><span class="lr-ic" aria-hidden="true">' + icon + '</span><span class="lr-t"><b>' + t + "</b><span>" + sub + "</span></span>" + (chip || "") + ui.ICON.chev + "</" + (href ? "a" : "button") + ">";
+    const sub = o.done
+      ? o.extra ? "Practice done. Your schedule hasn’t changed." : "Reviews done. You remembered " + o.good + " of " + o.firsts + "."
+      : any ? "Nothing to review right now." : "Reviews start once you finish your first lesson part.";
+    return (
+      '<header class="page-head"><h1>Review<span class="sub">' + ui.jp("{復習|ふくしゅう}", { tokens: false }) + "</span></h1></header>" +
+      '<div class="rv-done-wrap"><section class="card rv-done"><span class="rv-check" aria-hidden="true">' + ui.ICON.check + "</span>" +
+      "<h2>" + ui.jp(any ? "お{疲|つか}れ{様|さま}でした！" : "まだ カードが ありません", { tokens: false }) + "</h2>" +
+      '<p class="rv-done-t">' + sub + "</p>" +
+      (any ? '<p class="rv-done-s">' + (next ? "Next review in " + U.formatInterval(next - now) : "Nothing scheduled") + (today ? " · " + U.plural(today, "card") + " reviewed today" : "") + "</p>" : "") +
+      (!any && step ? '<a class="btn primary" href="#learn-' + step.u.n + "-" + step.p.key + '">Start ' + esc(NI.course.code(step.u.n)) + " " + esc(step.p.title) + "</a>" : "") +
+      "</section>" +
+      (o.summary || "") +
+      (any ? '<section class="h-sec"><div class="sec-head"><h2>Due in the week ahead</h2><span class="meta">' + U.plural(total, "card") + '</span></div><div class="card">' + weekChart(ahead) + "</div></section>" : "") +
+      '<section class="h-sec"><div class="sec-head"><h2>Practise anyway</h2></div><div class="card list-card">' +
+      (any ? row("", "🚃", "Extra practice", "15 cards · your schedule stays the same", "", "data-extra") : "") +
+      row("#mistakes", "📝", "Mistakes notebook", mis ? "Get each one right twice to clear it" : "Empty: nothing to fix", mis ? '<span class="pill bad">' + mis + "</span>" : "") +
+      (any ? row("#cards-rev", "🃏", "Flashcards", "The words in your reviews", "") : "") +
+      row("#listen", "🎧", "Listen on the go", "Hands-free audio with pauses to answer", "") +
+      row("#play", "🎮", "Play a game", "Time Attack, Kana Rain and more", "") +
+      "</div></section></div>"
+    );
+  }
+
+  function bindNothingDue(box) {
+    const ex = box.querySelector("[data-extra]");
+    if (ex) ex.addEventListener("click", () => runReview(box, true));
+  }
+
   function runReview(box, extra) {
     const now = Date.now();
     const srs = NI.store.state.srs;
@@ -601,19 +714,8 @@
       ids = NI.srs.dueIds(srs, now).filter((id) => NI.items.get(id));
     }
     if (!ids.length) {
-      const next = NI.srs.nextDue(srs, now);
-      const any = Object.keys(srs).length > 0;
-      const step = NI.nextStep();
-      box.innerHTML =
-        '<div class="finish empty-review"><h2>' + ui.jp("{今日|きょう}は おしまい", { tokens: false }) + "</h2>" +
-        "<p>" + (any ? "Nothing to review right now." + (next ? " The next card is due in " + U.formatInterval(next - now) + "." : "") : "Reviews start once you finish your first lesson part.") + "</p>" +
-        '<div class="row center wrap">' +
-        (step ? '<a class="btn primary" href="#learn-' + step.u.n + "-" + step.p.key + '">Learn: ' + esc(NI.course.code(step.u.n)) + " " + esc(step.p.title) + "</a>" : "") +
-        (any ? '<button class="btn ghost" type="button" data-extra>Practise anyway</button>' : "") +
-        '<a class="btn ghost" href="#play">Play a game</a>' +
-        "</div>" + (any ? '<p class="small muted">Extra practice doesn’t change your review schedule.</p>' : "") + "</div>";
-      const ex = box.querySelector("[data-extra]");
-      if (ex) ex.addEventListener("click", () => runReview(box, true));
+      box.innerHTML = nothingDue();
+      bindNothingDue(box);
       return;
     }
     const LIMIT = Number(NI.store.settings.reviewLimit) || 50;
@@ -648,9 +750,9 @@
       mode = modeFor(q.id, st);
       revealed = false;
       typedOk = null;
-      bar.innerHTML = ui.progressBar(i / queue.length, "Review progress");
-      count.textContent = i + 1 + " / " + queue.length;
-      card.innerHTML = '<div class="ex rv rv-' + mode + '">' + front(it, mode) + '<div class="rv-reveal"></div></div>';
+      bar.innerHTML = stops(i, queue.length, "Review progress");
+      count.textContent = i + 1 + " of " + queue.length;
+      card.innerHTML = '<div class="ex rv rv-' + mode + '">' + (it.kind === "kanji" ? "" : tierHead(st)) + front(it, mode) + '<div class="rv-reveal"></div></div>';
       foot.hidden = false;
       foot.innerHTML = '<div class="fb neutral"><span></span><button class="btn primary" type="button" data-reveal>Show answer</button></div>';
       foot.querySelector("[data-reveal]").addEventListener("click", reveal);
@@ -688,7 +790,7 @@
           input.classList.add(typedOk ? "right" : "wrong");
         }
       }
-      card.querySelector(".rv-reveal").innerHTML = back(it);
+      card.querySelector(".rv-reveal").innerHTML = back(it, mode);
       if (mode !== "recog" && NI.store.settings.autoplay) NI.speech.speak(it.kind === "word" ? ui.wordAudio(it) : ui.sentenceAudio(it.jp));
       const st = NI.store.item(q.id) || NI.srs.fresh(Date.now());
       const pv = NI.srs.preview(st, Date.now());
@@ -735,19 +837,16 @@
     function finish() {
       setKeys(null);
       const res = settleReviewXp(true);
-      const next = NI.srs.nextDue(NI.store.state.srs, Date.now());
       const more = NI.srs.dueIds(NI.store.state.srs, Date.now()).length;
-      box.innerHTML =
-        '<div class="finish">' + hanamaru() + "<h2>" + ui.jp("お{疲|つか}れ{様|さま}でした！", { tokens: false }) + "</h2>" +
-        '<p class="finish-en">' + (extra ? "Practice done." : "Reviews done. You remembered " + good + " of " + firsts + ".") + "</p>" +
-        (res.xp ? xpBlock(res, [["Reviews", res.xp - res.bonus]]) : "") +
-        (!extra && next ? "<p>Next review in " + U.formatInterval(next - Date.now()) + ".</p>" : "") +
-        '<div class="row center wrap">' +
-        (more && !extra ? '<a class="btn primary" href="#review">Review ' + U.plural(more, "more card") + "</a>" : "") +
-        '<a class="btn ' + (more && !extra ? "ghost" : "primary") + '" href="#home">Back to the route map</a></div></div>';
+      const sumHtml =
+        (res.xp ? xpBlock(res, [[extra ? "Practice" : "Reviews", res.xp - res.bonus]], extra ? "This practice" : "This review") : "") +
+        (more && !extra ? '<a class="btn primary big" href="#review">Review ' + U.plural(more, "more card") + "</a>" : "");
+      box.innerHTML = nothingDue({ done: true, extra, good, firsts, summary: sumHtml });
+      bindNothingDue(box);
       NI.fx.reward(res, { inline: true });
       NI.fx.play("chime");
       if (remaining > 0 && !more) NI.app.renderNav();
+      root.scrollTo(0, 0);
     }
 
     setKeys((e) => {
@@ -781,5 +880,5 @@
     },
   };
 
-  NI.session = { hanamaru, setKeys, feedback, shell, runExercises, ring, xpBlock, levelLine, goalLine };
+  NI.session = { hanamaru, setKeys, feedback, shell, stops, runExercises, ring, xpBlock, levelLine, goalLine, dueWeek, weekChart };
 })(typeof window !== "undefined" ? window : globalThis);

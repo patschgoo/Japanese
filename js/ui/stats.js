@@ -57,7 +57,7 @@
         .map(
           (x, i) =>
             '<span class="vz-col" tabindex="0" role="img" aria-label="' + esc(x.tip) + '" data-tip="' + esc(x.tip) + '">' +
-            '<span class="vz-bar" style="height:' + pct(x.v).toFixed(2) + '%">' + (label(i) ? '<span class="vz-lab">' + fmt(x.v) + "</span>" : "") + "</span></span>"
+            '<span class="vz-bar' + (o.goal && x.v >= o.goal ? " met" : "") + (i === o.mark ? " now" : "") + '" style="height:' + pct(x.v).toFixed(2) + '%">' + (label(i) ? '<span class="vz-lab">' + fmt(x.v) + "</span>" : "") + "</span></span>"
         )
         .join("") +
       "</div>" +
@@ -78,46 +78,40 @@
   }
 
   // A share of a whole as a meter: the fill on a lighter track of the same blue.
-  function meter(frac, label, value, sub) {
+  function meter(frac, label, value, sub, cls) {
     return (
-      '<div class="vz-meter"><div class="vz-mhead"><span>' + label + '</span><b>' + esc(value) + "</b></div>" +
+      '<div class="vz-meter' + (cls ? " " + cls : "") + '"><div class="vz-mhead"><span>' + label + '</span><b>' + esc(value) + "</b></div>" +
       '<div class="vz-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + Math.round(frac * 100) + '" aria-label="' + esc(label.replace(/<[^>]+>/g, "")) + '"><i style="width:' + Math.max(0, Math.min(100, frac * 100)).toFixed(1) + '%"></i></div>' +
       (sub ? '<p class="small muted">' + sub + "</p>" : "") + "</div>"
     );
   }
 
   function tile(label, value, sub) {
-    return '<div class="vz-tile"><span class="vz-tl">' + label + '</span><b class="vz-tv">' + value + "</b>" + (sub ? '<span class="vz-ts">' + sub + "</span>" : "") + "</div>";
+    return '<div class="stile"><span class="lbl">' + label + '</span><b class="tile-v">' + value + "</b>" + (sub ? '<span class="tile-sub">' + sub + "</span>" : "") + "</div>";
   }
+
+  // A section's title row: the title, and a short note on the right.
+  const head = (id, title, meta) => '<div class="sec-head"><h2 id="' + id + '">' + title + "</h2>" + (meta ? '<span class="meta">' + meta + "</span>" : "") + "</div>";
 
   // ---------------------------------------------------------------------------
   // Sections
 
   function overview() {
     const st = NI.store.state;
-    const L = NI.game.level(st.xp);
-    const srs = st.srs;
+    const goal = Number(NI.store.settings.dailyGoal) || 60;
+    const week = days(7);
+    const wxp = week.reduce((a, x) => a + x.xp, 0);
+    const met = week.filter((x) => x.xp >= goal).length;
     let words = 0;
-    let strong = 0;
-    for (const id in srs) {
-      const it = /^[vxu]:/.test(id);
-      if (!it) continue;
-      words++;
-      if (srs[id].st >= 5) strong++;
-    }
-    const kana = kanaCounts();
-    const known = kana.hira.known + kana.kata.known;
-    const total = kana.hira.total + kana.kata.total;
-    const daysList = Object.keys(st.days).sort();
-    const saved = Object.keys(NI.store.books.saved).length;
+    for (const id in st.srs) if (/^[vxu]:/.test(id)) words++;
+    const kj = NI.kanji ? NI.kanji.list() : [];
+    const kjKnown = kj.filter((x) => NI.kanji.level(x.k) === "known").length;
     return (
-      '<div class="vz-tiles">' +
-      tile("Total XP", fmt(st.xp), "Level " + L.n + " · " + esc(L.title.en)) +
-      tile("Day streak", fmt(NI.store.streak()), "Best: " + U.plural(Math.max(NI.game.bestStreak(), NI.store.streak()), "day")) +
-      tile("Days of practice", fmt(daysList.length), daysList.length ? "Since " + esc(shortDate(new Date(daysList[0] + "T12:00:00"))) : "Starts with your first lesson") +
-      tile("Words in reviews", fmt(words), fmt(strong) + " on an express or faster") +
-      tile("Kana known", fmt(known), "of " + fmt(total) + " in the two charts") +
-      tile("Saved words", fmt(saved), U.plural(NI.store.books.lists.length, "list")) +
+      '<div class="tiles two">' +
+      tile("XP this week", fmt(wxp), "goal met " + met + " of 7 days") +
+      tile("Best streak", fmt(Math.max(NI.game.bestStreak(), NI.store.streak())), "days · now " + NI.store.streak()) +
+      tile("Words", fmt(words), "of " + fmt(NI.course.words.length) + " in the course") +
+      tile("Kanji", fmt(kjKnown), "known well, of " + fmt(kj.length)) +
       "</div>"
     );
   }
@@ -129,9 +123,9 @@
     const met = list.filter((x) => x.xp >= goal).length;
     const data = list.map((x) => ({ v: x.xp, tip: dayName(x.d) + " · " + fmt(x.xp) + " XP" + (x.rest && !x.xp ? " · rest day" : "") }));
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-xp"><h2 id="vz-xp">XP in the last 30 days</h2>' +
-      '<p class="small muted">' + fmt(total) + " XP in all, " + fmt(Math.round(total / 30)) + " a day on average. Daily goal reached on " + U.plural(met, "day") + ".</p>" +
-      '<div class="vz-box">' + columns(data, { title: "XP in the last 30 days", goal, label: true, mark: data.length - 1, ticks: [shortDate(list[0].d), shortDate(list[15].d), "Today"] }) + "</div>" +
+      '<section class="h-sec vz-card" aria-labelledby="vz-xp">' + head("vz-xp", "XP, last 30 days", "Goal: " + goal + " a day") +
+      '<div class="card vz-box">' + columns(data, { title: "XP in the last 30 days", goal, label: true, mark: data.length - 1, ticks: [shortDate(list[0].d), shortDate(list[15].d), "Today"] }) +
+      '<p class="small muted vz-sum">' + fmt(total) + " XP in all, " + fmt(Math.round(total / 30)) + " a day on average. Daily goal reached on " + U.plural(met, "day") + ".</p></div>" +
       table(["Day", "XP"], list.slice().reverse().map((x) => [dayName(x.d), fmt(x.xp)])) +
       "</section>"
     );
@@ -151,9 +145,8 @@
     const months = weeks.map((w, i) => (i === 0 || w[0].d.getMonth() !== weeks[i - 1][0].d.getMonth() ? w[0].d.toLocaleDateString("en-GB", { month: "short" }) : ""));
     const active = list.filter((x) => x.any).length;
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-cal"><h2 id="vz-cal">Activity, the last 16 weeks</h2>' +
-      '<p class="small muted">' + U.plural(active, "day") + " with practice. Each square is a day; the darker, the more XP.</p>" +
-      '<div class="vz-box"><div class="vz-cal" role="group" aria-label="Activity calendar">' +
+      '<section class="h-sec vz-card" aria-labelledby="vz-cal">' + head("vz-cal", "Activity", "Last 16 weeks · " + U.plural(active, "day")) +
+      '<div class="card vz-box"><div class="vz-cal" role="group" aria-label="Activity calendar">' +
       '<div class="vz-cal-m" aria-hidden="true">' + months.map((m) => "<span>" + esc(m) + "</span>").join("") + "</div>" +
       '<div class="vz-cal-d" aria-hidden="true"><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span><span></span></div>' +
       '<div class="vz-cal-g">' +
@@ -168,7 +161,7 @@
         )
         .join("") +
       "</div></div>" +
-      '<div class="vz-scale" aria-hidden="true"><span>None</span><i class="vz-day h0"></i><i class="vz-day h1"></i><i class="vz-day h2"></i><i class="vz-day h3"></i><i class="vz-day h4"></i><span>Twice your goal</span></div></div>' +
+      '<div class="vz-scale" aria-hidden="true"><span>Less</span><i class="vz-day h0"></i><i class="vz-day h1"></i><i class="vz-day h2"></i><i class="vz-day h3"></i><i class="vz-day h4"></i><span>More</span></div></div>' +
       table(["Day", "XP"], list.filter((x) => x.any || x.rest).reverse().map((x) => [dayName(x.d), x.xp ? fmt(x.xp) : x.rest ? "rest day" : "0"])) +
       "</section>"
     );
@@ -183,7 +176,6 @@
       const row = t && by.find((x) => x.t.id === t.id);
       if (row) row.n++;
     }
-    const max = Math.max(1, ...by.map((x) => x.n));
     const all = by.reduce((a, x) => a + x.n, 0);
     // The week ahead: due today (with anything overdue), then each day.
     const now = Date.now();
@@ -206,22 +198,17 @@
     }
     const dueNow = NI.srs.countDueBy(srs, now);
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-rev"><h2 id="vz-rev">Review cards</h2>' +
+      '<section class="h-sec vz-card" aria-labelledby="vz-rev">' + head("vz-rev", "Review cards by train", all ? U.plural(all, "card") : "") +
       (all
-        ? '<p class="small muted">' + U.plural(all, "card") + " on the trains. Each right answer moves a card to a faster train and a longer wait.</p>" +
-          '<div class="vz-box"><div class="vz-hbars" role="group" aria-label="Review cards by stage">' +
-          by
-            .map(
-              (x, i) =>
-                '<div class="vz-hrow"><span class="vz-hlab">' + ui.jp("{" + x.t.ja + "|" + x.t.kana + "}", { tokens: false }) + " <small>" + esc(x.t.en) + "</small></span>" +
-                '<span class="vz-htrack" tabindex="0" role="img" aria-label="' + esc(x.t.en + ": " + x.n + " cards") + '" data-tip="' + esc(x.t.en + " · " + U.plural(x.n, "card")) + '"><i class="o' + (i + 1) + '" style="width:calc((100% - 46px) * ' + (x.n / max).toFixed(3) + ')"></i><b>' + fmt(x.n) + "</b></span></div>"
-            )
-            .join("") +
-          "</div></div>" +
-          '<h3 class="vz-h3">Due in the next 7 days</h3><p class="small muted">' + (dueNow ? U.plural(dueNow, "card") + ' due now. <a href="#review">Review them</a>' : "Nothing due right now.") + "</p>" +
-          '<div class="vz-box">' + columns(ahead.map((x) => ({ v: x.n, tip: (x.i === 0 ? "Today" : dayName(x.d)) + " · " + U.plural(x.n, "card") })), { title: "Cards due in the next 7 days", label: true, mark: 0, ticks: ["Today", shortDate(ahead[3].d), shortDate(ahead[6].d)] }) + "</div>" +
+        ? '<div class="card vz-box"><div class="vz-stack" role="img" aria-label="' + esc(by.map((x) => x.t.en + " " + x.n).join(", ")) + '">' +
+          by.filter((x) => x.n).map((x) => '<i class="t-' + x.t.id + '" style="flex:' + x.n + '" aria-label="' + esc(x.t.en + ": " + U.plural(x.n, "card")) + '" data-tip="' + esc(x.t.en + " · " + U.plural(x.n, "card")) + '"></i>').join("") + "</div>" +
+          '<ul class="vz-legend">' +
+          by.map((x) => '<li><i class="t-' + x.t.id + '" aria-hidden="true"></i><span lang="ja">' + esc(x.t.ja) + "</span><span>" + esc(x.t.en) + "</span><b>" + fmt(x.n) + "</b></li>").join("") +
+          '</ul><p class="small muted vz-sum">Each right answer moves a card to a faster train and a longer wait.</p></div>' +
+          '<div class="sec-head vz-sub"><h2>Due in the week ahead</h2><span class="meta">' + U.plural(ahead.reduce((a, x) => a + x.n, 0), "card") + "</span></div>" +
+          '<div class="card vz-box">' + NI.session.weekChart(ahead) + '<p class="small muted vz-sum">' + (dueNow ? U.plural(dueNow, "card") + ' due now. <a href="#review">Review them</a>' : "Nothing due right now.") + "</p></div>" +
           table(["Stage", "Cards"], by.map((x) => [x.t.en + " (" + x.t.ja + ")", fmt(x.n)]).concat(ahead.map((x) => ["Due " + (x.i === 0 ? "today" : dayName(x.d)), fmt(x.n)])))
-        : '<p class="empty small">No review cards yet. Finish a lesson part and its words join your reviews.</p>') +
+        : '<p class="card empty small">No review cards yet. Finish a lesson part and its words join your reviews.</p>') +
       "</section>"
     );
   }
@@ -246,7 +233,7 @@
     const lv = all.map((x) => NI.kanji.level(x.k));
     const known = lv.filter((l) => l === "known").length;
     const rev = lv.filter((l) => l !== "new").length;
-    return meter(known / all.length, 'Kanji <span lang="ja">漢字</span>', known + " of " + all.length + " known well", rev ? rev + ' in your reviews · <a href="#kanji">the kanji</a>' : '<a href="#kanji">Put a unit’s kanji into your reviews</a>');
+    return meter(known / all.length, '<span lang="ja">漢字</span> Kanji', known + "/" + all.length, rev ? rev + ' in your reviews · <a href="#kanji">the kanji</a>' : '<a href="#kanji">Put a unit’s kanji into your reviews</a>');
   }
 
   function kana() {
@@ -260,9 +247,9 @@
     const tests = NI.store.state.intro.kanaTests || [];
     const line = (x) => x.learning + " learning · " + x.weak + " weak · " + x.new + " new";
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-kana"><h2 id="vz-kana">Kana and kanji</h2><div class="vz-box">' +
-      meter(c.hira.known / c.hira.total, 'Hiragana <span lang="ja">ひらがな</span>', c.hira.known + " of " + c.hira.total + " known", line(c.hira)) +
-      meter(c.kata.known / c.kata.total, 'Katakana <span lang="ja">カタカナ</span>', c.kata.known + " of " + c.kata.total + " known", line(c.kata)) +
+      '<section class="h-sec vz-card" aria-labelledby="vz-kana">' + head("vz-kana", "Kana", "") + '<div class="card vz-box">' +
+      meter(c.hira.known / c.hira.total, '<span lang="ja">ひらがな</span> Hiragana', c.hira.known + "/" + c.hira.total, line(c.hira), "ok") +
+      meter(c.kata.known / c.kata.total, '<span lang="ja">カタカナ</span> Katakana', c.kata.known + "/" + c.kata.total, line(c.kata), "xp") +
       kanjiMeter() +
       '<p class="small">' + (right + wrong ? "Kana answers: <b>" + Math.round((right / (right + wrong)) * 100) + "%</b> right, of " + fmt(right + wrong) + "." : "No kana practice yet.") +
       (tests.length ? " Last kana test: <b>" + tests[tests.length - 1].pct + "%</b>." : "") +
@@ -274,24 +261,36 @@
     const st = NI.store.state;
     const vt = NI.store.books.tests;
     const pct = (t) => (t.n ? Math.round((t.right / t.n) * 100) : 0);
-    const lines = NI.course.lines.map((l) => [esc(l.en), st.exams[l.id] != null ? st.exams[l.id] + "%" + (st.exams[l.id] >= 80 ? " ★" : "") : "not taken"]);
+    const exams = NI.course.lines.filter((l) => st.exams[l.id] != null);
+    // The latest test for each list or source, newest first.
+    const seen = {};
+    const last = vt.slice().reverse().filter((t) => !seen[t.src] && (seen[t.src] = 1)).slice(0, 5);
+    const name = (src) => {
+      if (src === "all") return "Saved words";
+      if (src === "rev") return "Words in your reviews";
+      if (src === "mis") return "Your mistakes";
+      const l = NI.store.books.lists.find((x) => x.id === src);
+      if (l) return l.name;
+      const m = /^u(\d+)(?:\.(\d+))?$/.exec(src || "");
+      return m ? (m[2] ? "Units " + m[1] + "–" + m[2] : NI.course.code(Number(m[1]))) : src;
+    };
+    const row = (t, v, star) => '<div class="vz-trow"><b>' + t + '</b><span>' + v + "</span>" + (star ? '<span class="vz-star" aria-label="gold">★</span>' : "") + "</div>";
+    const rows =
+      exams.map((l) => row(ui.jp(l.ja, { tokens: false }) + " line exam", st.exams[l.id] + "%", st.exams[l.id] >= 80)).join("") +
+      last.map((t) => { const b = NI.store.testsOf(t.src); return row(esc(name(t.src)) + " · vocabulary test", "last " + pct(t) + "%" + (b && b.n > 1 ? " · best " + b.best + "%" : "")); }).join("");
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-tests"><h2 id="vz-tests">Tests and exams</h2>' +
-      '<div class="vz-tiles small">' +
-      tile("Vocabulary tests", fmt(vt.length), vt.length ? "Average " + Math.round(vt.reduce((a, t) => a + pct(t), 0) / vt.length) + "% · best " + Math.max(...vt.map(pct)) + "%" : '<a href="#vtest">Take one</a>') +
-      tile("Line exams passed", Object.values(st.exams).filter((p) => p >= 80).length + " of " + NI.course.lines.length, "80% passes and turns a line gold") +
-      tile("Course parts finished", fmt(Object.keys(st.parts).length) + " of " + fmt(NI.course.units.reduce((a, u) => a + NI.course.parts(u).length, 0)), U.plural(NI.game.stamps().filter((s) => s.done).length, "station stamp")) +
-      "</div>" +
-      '<div class="table-wrap"><table class="ref vz-exams"><thead><tr><th>Line exam</th><th>Best</th></tr></thead><tbody>' +
-      lines.map(([n, v]) => "<tr><th>" + n + '</th><td class="num">' + esc(v) + "</td></tr>").join("") +
-      "</tbody></table></div></section>"
+      '<section class="h-sec vz-card" aria-labelledby="vz-tests">' + head("vz-tests", "Tests & exams", Object.values(st.exams).filter((p) => p >= 80).length + " of " + NI.course.lines.length + " lines gold") +
+      '<div class="card list-card vz-tests">' + (rows || '<p class="vz-trow muted">No tests yet. <a href="#vtest">Take a vocabulary test</a> or a <a href="#play">line exam</a>.</p>') + "</div></section>"
     );
   }
 
   function totals() {
     const S = NI.store;
     const rows = [
-      ["Lesson parts finished", Object.keys(S.state.parts).length],
+      ["Total XP", S.state.xp],
+      ["Days of practice", Object.keys(S.state.days).length],
+      ["Lesson parts finished", Object.keys(S.state.parts).length + " of " + NI.course.units.reduce((a, u) => a + NI.course.parts(u).length, 0)],
+      ["Vocabulary tests", S.books.tests.length],
       ["Questions answered in lessons", S.total("x")],
       ["Reviews", S.total("r")],
       ["Games played", S.total("g")],
@@ -307,8 +306,8 @@
       ["Badges", Object.keys(S.state.badges).length + " of " + NI.game.BADGES.length],
     ];
     return (
-      '<section class="u-sec vz-card" aria-labelledby="vz-all"><h2 id="vz-all">All-time totals</h2>' +
-      '<div class="table-wrap"><table class="ref vz-totals"><tbody>' + rows.map(([t, v]) => "<tr><th>" + esc(t) + '</th><td class="num">' + esc(typeof v === "number" ? fmt(v) : v) + "</td></tr>").join("") + "</tbody></table></div></section>"
+      '<section class="h-sec vz-card" aria-labelledby="vz-all">' + head("vz-all", "All-time totals", "") +
+      '<div class="card table-wrap"><table class="ref vz-totals"><tbody>' + rows.map(([t, v]) => "<tr><th>" + esc(t) + '</th><td class="num">' + esc(typeof v === "number" ? fmt(v) : v) + "</td></tr>").join("") + "</tbody></table></div></section>"
     );
   }
 
@@ -372,9 +371,10 @@
       const p = NI.store.profile;
       return (
         '<div class="vz">' +
-        '<header class="page-head"><h1>Statistics <span class="sub">' + ui.jp("{統計|とうけい}", { tokens: false }) + "</span></h1>" +
-        "<p>Everything learnt so far in the profile " + p.icon + " <b>" + esc(p.name) + "</b>. Hover over or tab to any bar or square for its number; each chart also opens as a table.</p></header>" +
-        overview() + xpChart() + calendar() + reviews() + kana() + tests() + totals() +
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Statistics<span class="sub">' + ui.jp("{統計|とうけい}", { tokens: false }) + "</span></h1></header>" +
+        overview() +
+        '<p class="small muted vz-intro">The profile ' + p.icon + " <b>" + esc(p.name) + "</b>. Hover over or tab to any bar or square for its number; each chart also opens as a table.</p>" +
+        '<div class="vz-cols2"><div class="h-col">' + xpChart() + reviews() + kana() + '</div><div class="h-col">' + calendar() + tests() + totals() + "</div></div>" +
         "</div>"
       );
     },

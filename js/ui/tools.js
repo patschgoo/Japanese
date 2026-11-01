@@ -12,20 +12,24 @@
     title: "Tools",
     nav: "tools",
     render() {
-      const card = (href, icon, t, ja, d) => '<a class="tool-card" href="' + href + '"><span class="g-icon" aria-hidden="true">' + icon + '</span><span class="g-text"><b>' + t + '</b><span class="g-ja">' + ui.jp(ja, { tokens: false }) + "</span><span>" + d + "</span></span></a>";
+      const n = NI.tileCounts();
       return (
-        '<header class="page-head"><h1>Tools <span class="sub">' + ui.jp("{道具|どうぐ}", { tokens: false }) + "</span></h1><p>Helpers for reading, translating and making your own sentences.</p></header>" +
-        '<div class="game-grid">' +
-        card("#reader", "🔎", "Reader & dictionary", "{読|よ}む・{調|しら}べる", "Paste any Japanese to see readings and meanings word by word, and look up English words.") +
-        card("#maker", "🛠️", "Sentence Maker", "{文|ぶん}を{作|つく}る", "Pick the pieces, choose polite or casual, past or negative: get a correct sentence with audio.") +
-        card("#stories", "📖", "Stories", "{読|よ}み{物|もの}", "Short graded stories with audio, using only words you’ve learned.") +
-        card("#phrases", "💬", "Phrasebook", "フレーズ", "Ready-made phrases for restaurants, shops, trains and emergencies.") +
-        card("#book", "🔖", "Word book", "{単語帳|たんごちょう}", "Your saved words in lists of your own, words you add yourself, vocabulary tests and flashcards.") +
-        card("#vtest", "✍️", "Vocabulary test", "{単語|たんご}テスト", "Test yourself on a list, your saved words, your reviews or any course units.") +
-        card("#words", "📚", "Word list", "{単語|たんご}リスト", "Every word in the course, searchable in English, kana or romaji.") +
-        card("#grammar", "📐", "Grammar reference", "{文法|ぶんぽう}", "Particles, verb and adjective tables, numbers and counters.") +
-        card("#kana", "あ", "Kana trainer", "かな", "Katakana charts and drills, loanwords and look-alike characters.") +
-        card("#kanji", "漢", "Kanji", "{漢字|かんじ}", "The kanji in the course, unit by unit: meanings, readings, stroke order, and kanji cards for your reviews.") +
+        '<header class="page-head"><h1>Tools<span class="sub">' + ui.jp("{道具|どうぐ}", { tokens: false }) + "</span></h1></header>" +
+        '<div class="tg-wrap">' +
+        ui.tileGroup("Look things up", [
+          ["#reader", "🔎", "Reader & dictionary"],
+          ["#maker", "🛠️", "Sentence Maker"],
+          ["#book", "🔖", "Word book", n.saved || ""],
+          ["#vtest", "✍️", "Vocabulary test"],
+        ]) +
+        ui.tileGroup("Reference", [
+          ["#kana", "あ", "Kana trainer", n.kana, "ok"],
+          ["#kanji", "漢", "Kanji", n.kanji ? n.kanji + " known" : "", "ok"],
+          ["#grammar", "📐", "Grammar reference"],
+          ["#words", "📚", "Word list", n.words],
+          ["#phrases", "💬", "Phrasebook"],
+          ["#stories", "📖", "Stories", n.stories ? n.stories + " read" : ""],
+        ]) +
         "</div>"
       );
     },
@@ -129,8 +133,8 @@
         }
       })();
       return (
-        '<header class="page-head"><h1>Reader & dictionary <span class="sub">' + ui.jp("{読|よ}む・{調|しら}べる", { tokens: false }) + "</span></h1>" +
-        "<p>Paste Japanese from anywhere: a sign, a message, a song. You’ll see which words this course has taught you, with readings and meanings, and how much of the text you can already read.</p></header>" +
+        '<header class="page-head"><p class="crumb"><a href="#tools">Tools</a></p><h1>Reader<span class="sub">' + ui.jp("{読|よ}む・{調|しら}べる", { tokens: false }) + "</span></h1></header>" +
+        '<p class="page-intro">Paste Japanese from anywhere: a sign, a message, a song. You’ll see which words this course has taught you, with readings and meanings, and how much of the text you can already read.</p>' +
         '<section class="u-sec reader-in"><label for="rd-text">Japanese text</label>' +
         '<textarea id="rd-text" rows="4" lang="ja" placeholder="例：私は毎朝コーヒーを飲みます。">' + esc(saved) + "</textarea>" +
         '<div class="answer-row"><label class="sr" for="rd-romaji">Type in romaji</label><input id="rd-romaji" class="kana-input" type="text" placeholder="…or type romaji here: watashi wa gakusei desu"><button class="btn small ghost" type="button" data-add>Add</button></div>' +

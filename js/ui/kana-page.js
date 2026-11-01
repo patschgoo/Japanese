@@ -311,7 +311,7 @@
       const tab = tabOf(args);
       if (ALIAS[args[0]]) NI.kanaPractice.preset(ALIAS[args[0]]);
       return (
-        '<header class="page-head"><h1>Kana trainer</h1>' +
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Kana trainer<span class="sub" lang="ja">かな</span></h1>' +
         '<nav class="tabs" aria-label="Kana sections">' + TABS.map((t) => '<a class="tab' + (t[0] === tab ? " on" : "") + '" href="' + (t[3] || "#kana-" + t[0]) + '"' + (t[0] === tab ? ' aria-current="page"' : "") + "><span>" + esc(t[1]) + '</span><small lang="ja">' + esc(t[2]) + "</small></a>").join("") + "</nav></header>" +
         '<div class="kana-body" data-tab="' + tab + '">' + tabBody(tab) + "</div>"
       );

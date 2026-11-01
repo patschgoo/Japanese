@@ -37,23 +37,6 @@
   NI.nextStep = nextStep;
   NI.counts = counts;
 
-  // How many review cards ride each train type, local to shinkansen.
-  function tierSummary() {
-    const srs = NI.store.state.srs;
-    const ids = Object.keys(srs);
-    if (!ids.length) return "";
-    const n = {};
-    for (const id of ids) {
-      const t = NI.srs.tierOf(srs[id].st);
-      if (t) n[t.id] = (n[t.id] || 0) + 1;
-    }
-    return (
-      '<p class="tiers" aria-label="Review cards by stage">' +
-      NI.srs.TIERS.map((t) => '<span class="tier tier-' + t.id + '" title="' + esc(t.en) + '">' + esc(t.ja) + ' <b>' + (n[t.id] || 0) + "</b></span>").join("") +
-      '<a class="small" href="#guide">What are these?</a></p>'
-    );
-  }
-
   // ---------------------------------------------------------------------------
   // The learner's plan: a goal, a daily XP target and a focus for lessons.
   const PLAN = {
@@ -83,22 +66,30 @@
   PLAN.focusLine = (id) => (id === "balanced" ? "Lessons now practise a bit of everything." : "Lessons now focus on " + ((PLAN.FOCI.find((f) => f[0] === id) || [])[1] || id).toLowerCase() + ".");
   NI.plan = PLAN;
 
-  function planCard() {
+  // The logo, as the top bar shows it (inside the page in the one-file build).
+  const markSrc = () => {
+    const m = root.document && root.document.querySelector(".brand-mark");
+    return m ? m.getAttribute("src") : "img/mark.png";
+  };
+
+  // The plan as a focus screen: four questions, a tip, then Start learning.
+  function planCard(back) {
     const s = NI.store.settings;
     const chip = (name, v, label, on) => '<button class="chip' + (on ? " on" : "") + '" type="button" data-plan="' + name + '" data-v="' + v + '" aria-pressed="' + !!on + '">' + label + "</button>";
+    const q = (n, title, sub, chips) => '<section class="card plan-q"><p class="lbl">' + n + ' of 4</p><h2>' + title + "</h2>" + (sub ? '<p class="small muted">' + sub + "</p>" : "") + '<div class="chips">' + chips + "</div></section>";
     return (
-      '<section class="welcome plan" aria-labelledby="welcome-h">' +
-      '<h2 id="welcome-h">' + ui.jp("ようこそ！", { tokens: false }) + " Let’s set up your plan</h2>" +
-      "<p>This course is for people who can already read <b>hiragana</b>. Four quick questions, and the course adapts to you. You can change any of it later in Options.</p>" +
-      '<div class="plan-q"><b>1. Can you read katakana?</b> <span class="small muted">(the script for words like コーヒー)</span><div class="chips">' +
-      chip("kata", "yes", "Yes", !s.kataHelp && NI.store.state.onboarded) + chip("kata", "no", "Not yet", s.kataHelp) + "</div></div>" +
-      '<div class="plan-q"><b>2. Why are you learning?</b><div class="chips">' + PLAN.GOALS.map((g) => chip("goal", g.id, g.icon + " " + esc(g.t), s.goal === g.id)).join("") + "</div></div>" +
-      '<div class="plan-q"><b>3. How much time do you have most days?</b><div class="chips">' + PLAN.DAILY.map(([xp, t, d]) => chip("daily", xp, esc(t) + " · " + esc(d), Number(s.dailyGoal) === xp)).join("") + "</div></div>" +
-      '<div class="plan-q"><b>4. What do you want to get better at first?</b><div class="chips">' + PLAN.FOCI.map(([v, t]) => chip("focus", v, esc(t), s.focus === v)).join("") + "</div></div>" +
-      '<p class="plan-tip small" aria-live="polite"></p>' +
-      '<div class="row wrap"><button class="btn primary" type="button" data-plan-save>Start learning</button><button class="btn ghost small" type="button" data-plan-skip>Skip for now</button></div>' +
-      '<p class="small muted">Rusty on hiragana? <a href="#kana-hira">Take the 2-minute hiragana check</a>. Curious about the method? <a href="#guide">Read how this course works</a>.</p>' +
-      "</section>"
+      '<div class="plan plan-screen" data-session>' +
+      (back ? '<p class="crumb plan-back"><a href="#' + back + '">Back</a></p>' : "") +
+      '<header class="plan-head"><img class="plan-mark" src="' + esc(markSrc()) + '" alt="" width="48" height="48"><h1 id="welcome-h">' + ui.jp("ようこそ！", { tokens: false }) + "</h1><p class=\"plan-sub\">Let’s set up your plan</p>" +
+      "<p>This course is for people who can already read <b>hiragana</b>. Four quick questions, and the course adapts to you. You can change any of it later in Options.</p></header>" +
+      q("1", "Can you read katakana?", "The script for words like コーヒー", chip("kata", "yes", "Yes", !s.kataHelp && NI.store.state.onboarded) + chip("kata", "no", "Not yet", s.kataHelp)) +
+      q("2", "Why are you learning?", "", PLAN.GOALS.map((g) => chip("goal", g.id, g.icon + " " + esc(g.t), s.goal === g.id)).join("")) +
+      q("3", "How much time do you have most days?", "", PLAN.DAILY.map(([xp, t, d]) => chip("daily", xp, "<b>" + esc(t) + "</b><small>" + esc(d) + "</small>", Number(s.dailyGoal) === xp)).join("")) +
+      q("4", "What do you want to get better at first?", "", PLAN.FOCI.map(([v, t]) => chip("focus", v, esc(t), s.focus === v)).join("")) +
+      '<p class="plan-tip" aria-live="polite"></p>' +
+      '<div class="plan-btns"><button class="btn primary big" type="button" data-plan-save>' + (back ? "Save my plan" : "Start learning") + "</button>" + (back ? "" : '<button class="btn plain" type="button" data-plan-skip>Skip for now</button>') + "</div>" +
+      '<p class="small muted plan-foot">Rusty on hiragana? <a href="#kana-hira">Take the 2-minute hiragana check</a>. Curious about the method? <a href="#guide">Read how this course works</a>.</p>' +
+      "</div>"
     );
   }
 
@@ -108,7 +99,8 @@
     const tip = box.querySelector(".plan-tip");
     const showTip = () => {
       const g = PLAN.GOALS.find((x) => x.id === NI.store.settings.goal);
-      tip.textContent = g ? "Tip for you: " + g.tip : "";
+      tip.innerHTML = g ? "<b>Tip for you:</b> " + esc(g.tip) : "";
+      tip.hidden = !g;
     };
     box.querySelectorAll("[data-plan]").forEach((b) =>
       b.addEventListener("click", () => {
@@ -140,12 +132,208 @@
     box.querySelector("[data-plan-save]").addEventListener("click", () => {
       NI.store.setPlanned();
       ui.toast("Your plan is saved. がんばって！");
-      NI.app.render();
+      if (NI.app.current() === "plan") NI.app.go("options");
+      else NI.app.render();
+      root.scrollTo(0, 0);
     });
-    box.querySelector("[data-plan-skip]").addEventListener("click", () => {
-      NI.store.setPlanned();
-      NI.app.render();
-    });
+    const skip = box.querySelector("[data-plan-skip]");
+    if (skip)
+      skip.addEventListener("click", () => {
+        NI.store.setPlanned();
+        NI.app.render();
+        root.scrollTo(0, 0);
+      });
+  }
+
+  // ---------------------------------------------------------------------------
+  // Home: four stat tiles, today's ticket, the omikuji, Today (goal, reviews,
+  // missions, this week), the route map, stamps and the word of the day.
+
+  // A tile's bar: segments [[flex, class]] or a fraction filled with a colour class.
+  function tileBar(segs) {
+    return '<span class="tile-bar" aria-hidden="true">' + segs.map(([n, cls]) => '<i class="' + cls + '" style="flex:' + n + '"></i>').join("") + "</span>";
+  }
+  function fracBar(frac, cls) {
+    const f = U.clamp(frac, 0, 1);
+    return tileBar(f >= 1 ? [[1, cls]] : f <= 0 ? [[1, ""]] : [[f, cls], [1 - f, ""]]).replace('class="tile-bar"', 'class="tile-bar solid"');
+  }
+  function tile(label, value, bar, sub, href, aria) {
+    const tag = href ? "a" : "div";
+    return "<" + tag + ' class="stile"' + (href ? ' href="' + href + '"' : "") + (aria ? ' aria-label="' + esc(aria) + '"' : "") + '><span class="lbl">' + label + '</span><b class="tile-v">' + value + "</b>" + bar + '<span class="tile-sub">' + sub + "</span></" + tag + ">";
+  }
+
+  function homeTiles(c) {
+    const st = NI.store.state;
+    const L = NI.game.level(st.xp);
+    const week = NI.game.week();
+    const byTier = {};
+    let cards = 0;
+    for (const id in st.srs) {
+      const t = NI.srs.tierOf(st.srs[id].st);
+      if (t) (byTier[t.id] = (byTier[t.id] || 0) + 1), cards++;
+    }
+    const tiers = cards ? NI.srs.TIERS.filter((t) => byTier[t.id]).map((t) => [byTier[t.id], "t-" + t.id]) : [[1, ""]];
+    const total = NI.course.words.length;
+    const revSub = c.due ? (c.due === 1 ? "card due" : "cards due") : c.next ? "next in " + U.formatInterval(c.next - Date.now()) : "none yet";
+    return (
+      '<div class="tiles">' +
+      tile("Streak", '<span aria-hidden="true">🔥</span> ' + c.streak, tileBar(week.map((d) => [1, d.on ? "on" : d.rest ? "rest" : ""])), c.streak === 1 ? "day" : c.streak ? "in a row" : "practise today", "", "Streak: " + U.plural(c.streak, "day") + " in a row") +
+      tile("Review", String(c.due), tileBar(tiers), revSub, "#review", "Review: " + U.plural(c.due, "card") + " due") +
+      tile("Words", String(c.words), fracBar(c.words / total, "ok"), "of " + total, "#book", "Words: " + c.words + " of " + total + " in your reviews") +
+      tile("Level", "Lv " + L.n, fracBar(L.frac, "xp"), Math.round(L.frac * 100) + "% to Lv " + (L.n + 1), "#stamps", "Level " + L.n + ", " + Math.round(L.frac * 100) + "% of the way to level " + (L.n + 1)) +
+      "</div>"
+    );
+  }
+
+  // A section: a title on the left, a short note on the right, then its content.
+  function sec(title, meta, body, cls, id) {
+    return '<section class="h-sec' + (cls ? " " + cls : "") + '"' + (id ? ' aria-labelledby="' + id + '"' : "") + '><div class="sec-head"><h2' + (id ? ' id="' + id + '"' : "") + ">" + title + "</h2>" + (meta ? '<span class="meta">' + meta + "</span>" : "") + "</div>" + body + "</section>";
+  }
+
+  // What a part holds: "10 words", "8 sentences" or "A conversation".
+  function partWhat(u, p) {
+    if (p.words) return U.plural(p.words.length, "word");
+    if (p.key === "s") return U.plural((u.sentences || []).length, "sentence");
+    return "A conversation";
+  }
+
+  // Today's ticket (乗車券): from the last station to the one you're on.
+  function ticketCard(step) {
+    const tag = '<span class="tk-ja">' + ui.jp("{乗車券|じょうしゃけん}", { tokens: false }) + '</span><span class="lbl">Today’s ticket</span>';
+    if (!step) {
+      return (
+        '<section class="ticket" aria-labelledby="tk-h"><div class="tk-top"><p class="tk-label" id="tk-h">' + tag + "</p>" +
+        '<p class="tk-end">' + ui.jp("{終点|しゅうてん}", { tokens: false }) + ' <span>Terminus</span></p><p class="tk-note">Every station is visited. お疲れ様でした！ Keep your words fresh with reviews and games.</p></div>' +
+        '<div class="tk-bottom"><a class="btn primary tk-go" href="#review">Review</a><a class="btn ghost tk-go" href="#play">Play</a></div></section>'
+      );
+    }
+    const u = step.u;
+    const p = step.p;
+    const line = NI.course.lineOf(u.n);
+    const prev = u.n > 1 ? NI.course.unit(u.n - 1) : null;
+    const parts = NI.course.parts(u);
+    const code = NI.course.code(u.n);
+    const started = Object.keys(NI.store.state.parts).length > 0;
+    const nDone = partsDone(u);
+    return (
+      '<section class="ticket line-' + line.color + '" aria-labelledby="tk-h"><div class="tk-top">' +
+      '<p class="tk-label" id="tk-h">' + tag + '<span class="tk-line"><i aria-hidden="true"></i>' + ui.jp(line.ja, { tokens: false, ro: true }) + "</span></p>" +
+      '<div class="tk-route">' +
+      '<p class="tk-from"><span class="lbl">' + (prev ? "From " + esc(NI.course.code(prev.n)) : "Start") + '</span> <span class="tk-fname">' + (prev ? ui.jp(prev.ja, { tokens: false, gaps: false }) : "your first station") + "</span></p>" +
+      '<p class="tk-to"><span class="lbl">To ' + esc(code) + ' · <span lang="ja" title="You are here">現在地</span></span><span class="tk-tname">' + ui.jp(u.ja, { tokens: false, gaps: false, ro: true }) + "</span></p>" +
+      "</div>" +
+      '<p class="tk-part"><b>' + esc(p.title) + "</b> <span>" + esc(partWhat(u, p)) + " · " + esc(u.en) + "</span></p>" +
+      '<span class="tk-parts" role="img" aria-label="' + nDone + " of " + parts.length + ' parts done">' + parts.map((x) => '<i class="' + (NI.store.partDone(u.n, x.key) ? "on" : x === p ? "next" : "") + '"></i>').join("") + "</span>" +
+      "</div>" +
+      '<div class="tk-bottom"><a class="btn primary tk-go" href="#learn-' + u.n + "-" + p.key + '" aria-label="' + (started ? "Continue" : "Start") + ": " + esc(code + " " + p.title) + '">' + (started ? "Continue" : "Start") + ui.ICON.chev + "</a>" +
+      '<a class="tk-st" href="#unit-' + u.n + '" aria-label="Station ' + esc(code) + ": " + esc(u.en) + '"><b>' + esc(code) + "</b><span>Station</span></a></div>" +
+      "</section>"
+    );
+  }
+
+  // The last seven days as stops on a line, today last.
+  function weekLine() {
+    const days = NI.game.week();
+    const xp = NI.store.state.days;
+    const DAY = ["S", "M", "T", "W", "T", "F", "S"];
+    const rode = (d) => d.on || d.rest;
+    let rail = "";
+    for (let i = 0; i < 6; i++) rail += "<i" + (rode(days[i]) && rode(days[i + 1]) ? ' class="on"' : "") + "></i>";
+    return (
+      '<div class="wk"><span class="wk-rail" aria-hidden="true">' + rail + '</span><ol class="wk-days" aria-label="The last seven days">' +
+      days
+        .map((d) => {
+          const dt = new Date(d.key + "T12:00:00");
+          const x = (xp[d.key] && xp[d.key].xp) || 0;
+          return (
+            '<li class="' + (d.on ? "on" : d.rest ? "rest" : "") + (d.today ? " is-today" : "") + '" title="' + esc(d.key) + (d.on ? ": " + x + " XP" : d.rest ? ": rest day" : "") + '"><i class="wk-node" aria-hidden="true"></i>' +
+            "<b>" + DAY[dt.getDay()] + '</b><span>' + (d.rest ? '<span aria-label="rest day">🎫</span>' : x) + "</span></li>"
+          );
+        })
+        .join("") +
+      "</ol></div>"
+    );
+  }
+
+  function todayCard(c, g) {
+    const plan = PLAN.DAILY.find((d) => d[0] === g.target);
+    const rest = NI.store.state.rest.n;
+    const rev = c.due
+      ? '<a class="rev-row" href="#review"><span class="rv-ic">' + ui.ICON.repeat + '</span><span class="rv-t"><b>' + U.plural(c.due, "card") + " to review</b><span>" + (NI.nextStep() ? "Do these first, then your ticket" : "Keep your words fresh") + "</span></span>" + ui.ICON.chev + "</a>"
+      : '<a class="rev-row quiet" href="#review"><span class="rv-ic">' + ui.ICON.check + '</span><span class="rv-t"><b>Nothing to review</b><span>' + (c.next ? "Next review in " + U.formatInterval(c.next - Date.now()) : "Reviews start after your first lesson") + "</span></span>" + ui.ICON.chev + "</a>";
+    return sec(
+      "Today",
+      g.done ? "Goal reached ✓" : g.target - g.xp + " XP to your goal",
+      '<div class="card today-card">' +
+        '<div class="tc-goal"><span class="ring-box">' + NI.session.ring(g.frac, "<b>" + g.xp + "</b><small>/" + g.target + " XP</small>") + "</span>" +
+        '<span class="goal-t"><b>' + (g.done ? "Goal reached!" : "Daily goal") + "</b><span>" + (plan ? esc(plan[1]) + " plan · " : "") + g.target + ' XP a day</span></span></div>' +
+        rev +
+        NI.missionsList() +
+        '<hr class="dash">' +
+        '<div class="lbl-row"><span class="lbl">This week’s line</span><span>' + (c.streak ? c.streak + "-day streak" : "No streak yet") + (rest ? ' · <span title="If you miss a day, a rest day keeps your streak going. You earn one for every 7 days in a row.">🎫 ' + U.plural(rest, "rest day") + "</span>" : "") + "</span></div>" +
+        weekLine() +
+        "</div>",
+      "today-sec"
+    );
+  }
+
+  /* Route map: one card per line, side by side; the current line comes
+     first in view. Each card shows the line's five stations. */
+  function routeMap(step) {
+    const cur = step ? NI.course.lineOf(step.u.n) : null;
+    let doneAll = 0;
+    let total = 0;
+    const cards = NI.course.lines
+      .map((line) => {
+        const units = line.units.map((n) => NI.course.unit(n)).filter(Boolean);
+        const d = units.filter((u) => partsDone(u) === NI.course.parts(u).length).length;
+        doneAll += d;
+        total += units.length;
+        const pct = NI.store.state.exams[line.id];
+        const isCur = line === cur;
+        const chip =
+          pct >= 80 ? '<span class="pill gold" title="Line exam passed">★ ' + pct + "%</span>"
+          : d === units.length ? '<span class="pill ok">Done ✓</span>'
+          : isCur ? '<span class="pill now">Now · ' + d + "/" + units.length + "</span>"
+          : '<span class="pill">' + d + "/" + units.length + "</span>";
+        const n = units.length;
+        return (
+          '<article class="rm-card line-' + line.color + (isCur ? " cur" : "") + (pct >= 80 ? " gold" : "") + '" data-line="' + line.id + '" aria-labelledby="rm-' + line.id + '">' +
+          '<header class="rm-head"><span class="ring-l" aria-hidden="true">' + line.id + '</span><span class="rm-t"><b id="rm-' + line.id + '">' + ui.jp(line.ja, { tokens: false, ro: true }) + "</b><span>" + esc(line.en) + "</span></span>" + chip + "</header>" +
+          NI.views.lineStrip(line, step ? step.u.n : 0) +
+          '<p class="rm-blurb">' + esc(line.blurb) + (d === n && !(pct >= 80) ? ' <a href="#exam-' + line.id + '">Take the line exam</a>' : "") + "</p></article>"
+        );
+      })
+      .join("");
+    const dots = NI.course.lines.map((l) => '<button class="line-' + l.color + (l === cur ? " on" : "") + '" type="button" data-rm-dot="' + l.id + '" aria-label="Show the ' + esc(l.en) + '"><i></i></button>').join("");
+    const why =
+      '<details class="map-why"><summary>What do H01, M06… mean?</summary><p>Stations are numbered the way real ones are in Japan, where G09 is the ninth stop on Tokyo’s Ginza Line. The letter is the first letter of the line’s Japanese name, so <b>H01</b> is station 1 of the <b>H</b>ajime-sen, the Starting Line.</p><ul class="map-lines">' +
+      NI.course.lines.map((l) => '<li><span class="ring-l line-' + l.color + '" aria-hidden="true">' + l.id + "</span>" + ui.jp(l.ja, { tokens: false }) + " <b>" + esc(ui.lineRomaji(l)) + "</b> " + esc(l.en) + "</li>").join("") +
+      "</ul><p class=\"small muted\">English initials wouldn’t work: Starting and Onward would both be S, and Can-Do, Conversation and Connections all C.</p></details>";
+    return sec("Route map", doneAll + " of " + total + " stations", '<div class="rm-scroll" data-rm>' + cards + '</div><div class="rm-dots">' + dots + "</div>" + why, "rm-sec", "rm-h");
+  }
+
+  // An eki stamp (駅スタンプ) for the home row and the stamp book.
+  function ekiStamp(u, state) {
+    const line = NI.course.lineOf(u.n);
+    const code = NI.course.code(u.n);
+    if (state !== "done") return '<span class="eki ' + (state || "next") + '" title="' + esc(code + " " + u.en) + ': not collected yet"><b>?</b><span class="eki-en">' + esc(code) + "</span></span>";
+    return (
+      '<span class="eki line-' + line.color + '" style="--tilt:' + ((U.hash("stamp" + u.n) % 16) - 7) + 'deg" title="' + esc(code + " " + u.en) + '"><span class="eki-l" lang="ja">' + esc(NI.furi.base(line.ja)) + "</span><b>" + esc(code) + '</b><span class="eki-en">' + esc(u.en) + "</span></span>"
+    );
+  }
+  NI.ekiStamp = ekiStamp;
+
+  function stampsRow() {
+    const list = NI.game.stamps();
+    const got = list.filter((s) => s.done);
+    const next = list.find((s) => !s.done);
+    const body =
+      '<a class="card stamp-row" href="#stamps" aria-label="Stamp book: ' + got.length + " of " + list.length + ' stamps collected">' +
+      got.map((s) => ekiStamp(s.unit, "done")).join("") + (next ? ekiStamp(next.unit, "next") : "") +
+      (got.length ? "" : '<span class="stamp-hint">Finish every part of ' + esc(NI.course.code(next.unit.n)) + " to collect your first station stamp.</span>") +
+      "</a>";
+    return sec("Stamps", got.length + " of " + list.length + " collected", body, "st-sec");
   }
 
   function wotdCard() {
@@ -153,11 +341,11 @@
     if (!w) return "";
     const ex = NI.items.bestExample(w);
     return (
-      '<section class="wotd" aria-labelledby="wotd-h"><h2 id="wotd-h">' + ui.jp("{今日|きょう}の{言葉|ことば}", { tokens: false }) + ' <span class="sub">Word of the day</span></h2>' +
-      '<div class="wotd-word">' + (w.em ? '<span class="em-big" aria-hidden="true">' + w.em + "</span>" : "") + '<span class="hand">' + ui.wordHead(w, { tokens: false }) + "</span>" + ui.say(ui.wordAudio(w), w.r) + NI.book.star(w.id) + "</div>" +
-      '<p class="wotd-en">' + esc(w.en) + " " + ui.posTag(w) + "</p>" +
-      (ex ? '<div class="word-ex">' + ui.jp(ex.jp) + '<span class="s-tools">' + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '</span><p class="en">' + esc(ex.en) + "</p></div>" : "") +
-      '<p class="small"><a href="#unit-' + w.unit + '">From ' + esc(NI.course.code(w.unit)) + "</a></p></section>"
+      '<section class="card wotd" aria-labelledby="wotd-h"><p class="tk-label" id="wotd-h"><span class="tk-ja">' + ui.jp("{今日|きょう}の{言葉|ことば}", { tokens: false }) + "</span>" + '<span class="lbl">Word of the day</span></p>' +
+      '<div class="wotd-row"><span class="wotd-word">' + ui.wordHead(w, { tokens: false }) + '</span><span class="wotd-btns">' + ui.say(ui.wordAudio(w), w.r) + NI.book.star(w.id) + "</span></div>" +
+      '<p class="wotd-en"><b>' + esc(w.en) + "</b> · " + esc(NI.course.posLabel(w.pos)) + ' · <a href="#unit-' + w.unit + '">from ' + esc(NI.course.code(w.unit)) + "</a></p>" +
+      (ex ? '<div class="wotd-ex">' + ui.jp(ex.jp) + '<span class="s-tools">' + ui.say(ui.sentenceAudio(ex.jp)) + ui.breakdownBtn(ex.jp, ex.en) + '</span><p class="en">' + esc(ex.en) + "</p></div>" : "") +
+      "</section>"
     );
   }
 
@@ -168,22 +356,29 @@
     if (!NI.game.goal().done) return "";
     const O = NI.data.omikuji;
     const day = NI.store.today();
+    const title = ui.jp("おみくじ", { tokens: false }) + " · Today’s fortune";
     if (!day.ok) {
-      return (
-        '<section class="omikuji" aria-labelledby="omi-h"><span class="omi-box" aria-hidden="true">🎋</span><div>' +
-        '<h2 id="omi-h">' + ui.jp("おみくじ", { tokens: false }) + ' <span class="sub">Today’s fortune</span></h2>' +
-        "<p>Goal reached! At shrines people draw a paper fortune, an omikuji. Draw yours for today.</p>" +
-        '<button class="btn primary small" type="button" data-omikuji>Draw a fortune</button></div></section>'
+      return sec(
+        title,
+        "Goal reached ✓",
+        '<div class="card omikuji"><span class="omi-tag" aria-hidden="true" lang="ja">御籤</span><div class="omi-body">' +
+          "<p>Goal reached! At shrines people draw a paper fortune, an omikuji. Draw yours for today.</p>" +
+          '<button class="btn primary small" type="button" data-omikuji>Draw a fortune</button></div></div>',
+        "omi-sec",
+        "omi-h"
       );
     }
     const [lv, lvEn] = O.levels[day.ok - 1] || O.levels[3];
     const [msg, msgEn] = O.messages[(day.om || 1) - 1] || O.messages[0];
-    return (
-      '<section class="omikuji drawn" aria-labelledby="omi-h"><div class="omi-paper">' +
-      '<p class="omi-kicker" id="omi-h">' + ui.jp("おみくじ", { tokens: false }) + "</p>" +
-      '<p class="omi-level">' + ui.jp(lv, { tokens: false }) + ui.say(NI.furi.reading(lv)) + '<span class="omi-en">' + esc(lvEn) + "</span></p>" +
-      '<p class="omi-msg">' + ui.jp(msg) + ui.say(ui.sentenceAudio(msg)) + '</p><p class="omi-msg-en">' + esc(msgEn) + "</p>" +
-      '<p class="small muted">A new fortune tomorrow, once you reach your goal.</p></div></section>'
+    return sec(
+      title,
+      "Goal reached ✓",
+      '<div class="card omikuji drawn"><span class="omi-slip" aria-hidden="true"><span>おみくじ</span><b lang="ja">' + esc(NI.furi.base(lv)) + "</b></span>" +
+        '<div class="omi-body"><p class="omi-level">' + ui.jp(lv, { tokens: false }) + ui.say(NI.furi.reading(lv)) + '</p><p class="omi-en">' + esc(lvEn) + "</p>" +
+        '<p class="omi-msg">' + ui.jp(msg) + ui.say(ui.sentenceAudio(msg)) + '</p><p class="omi-msg-en">' + esc(msgEn) + "</p>" +
+        '<p class="small muted">A new fortune tomorrow, once you reach your goal.</p></div></div>',
+      "omi-sec",
+      "omi-h"
     );
   }
 
@@ -199,16 +394,21 @@
     if (i === 0) NI.fx.confetti();
   }
 
-  // Once a goal is set, the home page keeps its tip and shortcuts in view.
-  function routeCard() {
-    const g = PLAN.GOALS.find((x) => x.id === NI.store.settings.goal);
-    if (!g || !NI.store.state.planned) return "";
-    return (
-      '<section class="route-strip" aria-label="Your route"><span class="rs-icon" aria-hidden="true">' + g.icon + "</span>" +
-      "<div><b>Your route: " + esc(g.t) + '</b> <span class="small muted">' + esc(g.tip) + "</span>" +
-      '<p class="route-links">' + g.go.map(([h, t]) => '<a href="' + h + '">' + esc(t) + "</a>").join(" · ") + ' · <a href="#guide-routes">Other routes</a></p></div></section>'
-    );
-  }
+  const greeting = () => {
+    const h = new Date().getHours();
+    return h >= 4 && h < 11 ? ["おはようございます", "Good morning"] : h >= 11 && h < 18 ? ["こんにちは", "Hello"] : ["こんばんは", "Good evening"];
+  };
+
+  pages.plan = {
+    title: "Your plan",
+    nav: "home",
+    render() {
+      return planCard("options");
+    },
+    mount(el) {
+      mountPlan(el);
+    },
+  };
 
   pages.home = {
     title: "Route map",
@@ -217,87 +417,18 @@
       const c = counts();
       const step = nextStep();
       const g = NI.game.goal();
-      const L = NI.game.level(NI.store.state.xp);
-      const h = new Date().getHours();
-      const greet = h >= 4 && h < 11 ? ["おはようございます", "Good morning"] : h >= 11 && h < 18 ? ["こんにちは", "Hello"] : ["こんばんは", "Good evening"];
-      const reviewBtn = c.due
-        ? '<a class="btn primary" href="#review">Review ' + U.plural(c.due, "card") + "</a>"
-        : '<span class="muted small">' + (c.next ? "Next review in " + U.formatInterval(c.next - Date.now()) : "Reviews appear after your first lesson") + "</span>";
-      const stepBtn = step
-        ? '<a class="btn ' + (c.due ? "ghost" : "primary") + '" href="#learn-' + step.u.n + "-" + step.p.key + '">' + (NI.store.state.parts && Object.keys(NI.store.state.parts).length ? "Continue: " : "Start: ") + esc(NI.course.code(step.u.n)) + " " + esc(step.p.title) + "</a>"
-        : '<span class="muted small">Every unit is complete. お疲れ様でした！</span>';
-      let html =
-        '<section class="today">' +
-        '<div class="today-main"><p class="eyebrow">' + ui.jp("{今日|きょう}", { tokens: false }) + " · Today</p>" +
-        '<h1 class="greet">' + ui.jp(greet[0], { tokens: false }) + ui.say(greet[0], greet[1]) + '<span class="greet-en">' + greet[1] + "</span></h1>" +
-        '<div class="today-actions">' + reviewBtn + stepBtn + '<a class="btn ghost" href="#play">Play</a></div></div>' +
-        '<div class="today-goal"><div class="ring-box big">' + NI.session.ring(g.frac, g.done ? "✓" : g.xp + '<small>/' + g.target + "</small>") + "</div>" +
-        '<div class="tg-text"><b>' + (g.done ? "Goal reached!" : "Daily goal") + '</b><span class="small muted">' + g.xp + " of " + g.target + " XP today</span>" +
-        '<a class="lvl-chip" href="#stamps" title="Level ' + L.n + '"><span class="lvl-badge">Lv ' + L.n + "</span>" + ui.jp(L.title.ja, { tokens: false, ro: true }) + "</a></div></div>" +
-        '<dl class="stats">' +
-        '<div><dt>Due now</dt><dd>' + c.due + "</dd></div>" +
-        '<div><dt>Words learned</dt><dd>' + c.words + "</dd></div>" +
-        '<div><dt>Day streak</dt><dd>' + c.streak + (c.streak ? ' <span aria-hidden="true">🔥</span>' : "") +
-        (NI.store.state.rest.n ? ' <span class="rest-n" title="Rest days: if you miss a day, one keeps your streak going. You earn one for every 7 days in a row.">🎫' + NI.store.state.rest.n + "</span>" : "") + "</dd></div>" +
-        "</dl>" +
-        '<div class="today-week">' + NI.weekDots() + "</div>" +
-        tierSummary() + "</section>";
-
-      if (!NI.store.state.planned) html += planCard();
-      html += omikujiCard();
-      html += '<div class="home-row">' + NI.missionsCard() + wotdCard() + "</div>" + routeCard();
-
-      // What the station numbers mean (H01, M06…): the lines' Japanese names.
+      const greet = greeting();
+      // First visit: the plan comes first, as its own screen. Someone who
+      // already has progress gets a nudge instead.
+      const st = NI.store.state;
+      const started = st.xp > 0 || Object.keys(st.parts).length > 0;
+      if (!st.planned && !started) return planCard();
+      let html = '<header class="page-head"><h1>' + ui.jp(greet[0], { tokens: false }) + '<span class="sub">' + greet[1] + "</span></h1></header>";
+      if (!st.planned) html += '<a class="card plan-nudge" href="#plan"><span class="lr-ic" aria-hidden="true">🧭</span><span class="lr-t"><b>Set up your plan</b><span>Four quick questions, and lessons fit your goal</span></span>' + ui.ICON.chev + "</a>";
+      html += homeTiles(c);
       html +=
-        '<details class="map-why"><summary>What do H01, M06… mean?</summary><p>Stations are numbered the way real ones are in Japan, where G09 is the ninth stop on Tokyo’s Ginza Line. The letter is the first letter of the line’s Japanese name, so <b>H01</b> is station 1 of the <b>H</b>ajime-sen, the Starting Line.</p><ul class="map-lines">' +
-        NI.course.lines.map((l) => '<li><span class="line-badge line-' + l.color + '" aria-hidden="true">' + l.id + "</span>" + ui.jp(l.ja, { tokens: false }) + " <b>" + esc(ui.lineRomaji(l)) + "</b> " + esc(l.en) + "</li>").join("") +
-        "</ul><p class=\"small muted\">English initials wouldn’t work: Starting and Onward would both be S, and Can-Do, Conversation and Connections all C.</p></details>";
-      html += '<section class="routemap" aria-label="Course route map">';
-      const stampEm = {};
-      for (const st of NI.game.stamps()) stampEm[st.unit.n] = st.em;
-      NI.course.lines.forEach((line, li) => {
-        const units = line.units.map((n) => NI.course.unit(n)).filter(Boolean);
-        const done = units.filter((u) => partsDone(u) === NI.course.parts(u).length).length;
-        const pct = NI.store.state.exams[line.id];
-        html +=
-          '<section class="line line-' + line.color + (pct >= 80 ? " gold" : "") + '" aria-labelledby="line-' + line.id + '">' +
-          '<header class="line-head"><span class="line-badge" aria-hidden="true" title="' + esc(line.id + " = " + ui.lineRomaji(line)) + '">' + line.id + "</span>" +
-          '<div><h2 id="line-' + line.id + '">' + ui.jp(line.ja, { tokens: false, ro: true }) + ' <span class="line-en">' + esc(line.en) + "</span>" + (pct >= 80 ? ' <span class="gold-badge" title="Line exam passed">★</span>' : "") + "</h2>" +
-          '<p class="line-blurb">' + esc(line.blurb) + ' <span class="muted">' + done + "/" + units.length + " stations</span>" +
-          (done === units.length && units.length && !(pct >= 80) ? ' · <a href="#exam-' + line.id + '">Take the line exam</a>' : "") + "</p></div></header>" +
-          '<ol class="stations">';
-        for (const u of units) {
-          const parts = NI.course.parts(u);
-          const d = partsDone(u);
-          const cur = step && step.u.n === u.n;
-          const state = d === parts.length ? "done" : cur ? "current" : d > 0 ? "started" : "todo";
-          html +=
-            '<li class="station ' + state + '"><a href="#unit-' + u.n + '">' +
-            '<span class="node" aria-hidden="true"></span>' +
-            ui.stationCode(u.n) +
-            '<span class="st-text"><span class="st-name">' + ui.jp(u.ja, { tokens: false, gaps: false, ro: true }) + '</span><span class="st-en">' + esc(u.en) + "</span></span>" +
-            (cur ? '<span class="here" title="You are here">' + ui.jp("{現在地|げんざいち}", { tokens: false }) + "</span>" : "") +
-            (state === "done" ? '<span class="mini-stamp" title="Stamp collected" aria-label="Stamp collected">' + esc(stampEm[u.n]) + "</span>" : "") +
-            '<span class="st-prog" aria-label="' + d + " of " + parts.length + ' parts done">' +
-            parts.map((p) => '<i class="' + (NI.store.partDone(u.n, p.key) ? "on" : "") + '"></i>').join("") +
-            "</span></a></li>";
-        }
-        html += "</ol></section>";
-        const nextLine = NI.course.lines[li + 1];
-        if (nextLine) html += '<div class="transfer" aria-hidden="true"><span>' + ui.jp("{乗|の}り{換|か}え", { tokens: false }) + "</span> Transfer to " + ui.jp(nextLine.ja, { tokens: false, ro: true }) + "</div>";
-      });
-      html += "</section>";
-
-      html +=
-        '<section class="home-links">' +
-        '<a class="card-link" href="#play"><b>🎮 Play</b><span>Time Attack, Kana Rain, Memory Match and Sentence Sprint, plus your mistakes notebook.</span></a>' +
-        '<a class="card-link" href="#reader"><b>🔎 Reader & dictionary</b><span>Paste any Japanese to see readings and meanings, word by word.</span></a>' +
-        '<a class="card-link" href="#maker"><b>🛠️ Sentence Maker</b><span>Build your own correct sentences: polite or casual, past or negative.</span></a>' +
-        '<a class="card-link" href="#stories"><b>📖 Stories</b><span>Short graded stories with audio, written with the words you know.</span></a>' +
-        '<a class="card-link" href="#book"><b>🔖 Word book</b><span>The words you save, in your own lists, with vocabulary tests and flashcards.</span></a>' +
-        '<a class="card-link" href="#stamps"><b>🏅 Stamp book</b><span>Station stamps, badges, your level and records.</span></a>' +
-        '<a class="card-link" href="#guide"><b>🧭 How this course works</b><span>The research behind it, and how to learn in a way that suits you.</span></a>' +
-        "</section>";
+        '<div class="h-cols"><div class="h-col">' + ticketCard(step) + omikujiCard() + todayCard(c, g) + "</div>" +
+        '<div class="h-col">' + routeMap(step) + stampsRow() + wotdCard() + "</div></div>";
       return html;
     },
     mount(el) {
@@ -312,6 +443,29 @@
             NI.app.render();
           }, 700);
         });
+      // The route map starts at the current line; the dots follow the scroll.
+      const rm = el.querySelector("[data-rm]");
+      if (rm) {
+        const cards = Array.from(rm.children);
+        const dots = Array.from(el.querySelectorAll("[data-rm-dot]"));
+        const pad = () => parseFloat(getComputedStyle(rm).paddingLeft) || 0;
+        const cur = rm.querySelector(".cur");
+        if (cur) rm.scrollLeft = cur.offsetLeft - pad();
+        let raf = 0;
+        const sync = () => {
+          raf = 0;
+          const x = rm.scrollLeft + pad();
+          let best = 0;
+          cards.forEach((c, i) => { if (Math.abs(c.offsetLeft - x) < Math.abs(cards[best].offsetLeft - x)) best = i; });
+          dots.forEach((d, i) => d.classList.toggle("on", i === best));
+        };
+        rm.addEventListener("scroll", () => { if (!raf) raf = root.requestAnimationFrame(sync); }, { passive: true });
+        dots.forEach((d, i) => d.addEventListener("click", () => rm.scrollTo({ left: cards[i].offsetLeft - pad(), behavior: root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })));
+        sync();
+      }
+      // Recent stamps in view.
+      const sr = el.querySelector(".stamp-row");
+      if (sr) sr.scrollLeft = sr.scrollWidth;
     },
   };
 
@@ -416,28 +570,32 @@
       if (!u) return '<p class="empty">That unit doesn\'t exist. <a href="#home">Back to the route map</a></p>';
       const parts = NI.course.parts(u);
       const next = parts.find((p) => !NI.store.partDone(u.n, p.key));
-      let html = NI.views.sign(u);
-      html += '<div class="unit-intro"><p class="goal"><b>Goal</b> ' + esc(u.goal) + '</p><p class="intro">' + esc(u.intro) + "</p></div>";
-      html += NI.views.aids();
+      const line = NI.course.lineOf(u.n);
+      let html =
+        '<header class="page-head"><p class="crumb"><a href="#home">Route map</a></p><h1>Station ' + esc(NI.course.code(u.n)) + '<span class="sub">' + ui.jp(line.ja, { tokens: false }) + " · " + esc(line.en) + "</span></h1></header>";
+      html += NI.views.sign(u);
       html +=
-        '<section class="steps" aria-label="Lesson parts"><ol class="step-list">' +
+        '<section class="card steps" aria-label="Lesson parts"><ol class="step-list">' +
         parts
           .map((p, i) => {
             const done = NI.store.partDone(u.n, p.key);
             const isNext = next && next.key === p.key;
             const sub = p.words ? U.plural(p.words.length, "word") : p.key === "s" ? "Grammar in sentences" : "Listen, read, answer";
+            const href = "#learn-" + u.n + "-" + p.key;
             return (
               '<li class="step ' + (done ? "done" : isNext ? "next" : "todo") + '">' +
               '<span class="step-n" aria-hidden="true">' + (done ? ui.ICON.check : i + 1) + "</span>" +
-              '<div class="step-text"><b>' + esc(p.title) + "</b><span>" + esc(sub) + "</span></div>" +
-              '<a class="btn small ' + (isNext ? "primary" : "ghost") + '" href="#learn-' + u.n + "-" + p.key + '">' + (done ? "Practise again" : "Start") + "</a></li>"
+              '<div class="step-text"><b>' + esc(p.title) + (done ? '<span class="sr"> (done)</span>' : "") + "</b><span>" + esc(sub) + "</span></div>" +
+              (isNext ? '<a class="btn primary step-go" href="' + href + '">Start ' + esc(p.title) + "</a>" : '<a class="btn small ghost" href="' + href + '" aria-label="' + (done ? "Practise " + esc(p.title) + " again" : "Start " + esc(p.title)) + '">' + (done ? "Again" : "Start") + "</a>") +
+              "</li>"
             );
           })
           .join("") +
-        "</ol>" +
-        '<p class="small muted">Read the words, grammar and examples below first, or jump straight into a lesson. Finished parts go into your reviews.</p></section>';
+        "</ol></section>";
+      html += '<p class="unit-intro">' + esc(u.intro) + " Read the words, grammar and examples below first, or jump straight into a lesson. Finished parts go into your reviews.</p>";
+      html += NI.views.aids();
 
-      html += '<section class="u-sec" aria-labelledby="w-h"><h2 id="w-h">Words <span class="count">' + u.words.length + "</span></h2>" + NI.views.wordList(u.words) + "</section>";
+      html += '<section class="card u-card" aria-labelledby="w-h"><h2 id="w-h">Words <span class="count">' + u.words.length + "</span></h2>" + NI.views.wordList(u.words) + "</section>";
 
       // The kanji this unit's words bring in, each opening its card.
       const kj = NI.kanji ? NI.kanji.list().filter((x) => x.unit === u.n) : [];
@@ -627,10 +785,6 @@
   };
 
   // ---------------------------------------------------------------------------
-  function radio(name, value, current, label, desc) {
-    const id = name + "-" + value;
-    return '<label class="radio" for="' + id + '"><input type="radio" id="' + id + '" name="' + name + '" value="' + value + '"' + (String(current) === String(value) ? " checked" : "") + "><span><b>" + label + "</b>" + (desc ? "<small>" + desc + "</small>" : "") + "</span></label>";
-  }
   function toggle(key, label, desc) {
     const on = !!NI.store.settings[key];
     return '<label class="toggle" for="t-' + key + '"><input type="checkbox" id="t-' + key + '" data-set="' + key + '"' + (on ? " checked" : "") + "><span><b>" + label + "</b>" + (desc ? "<small>" + desc + "</small>" : "") + "</span></label>";
@@ -697,15 +851,30 @@
   }
 
   // Options: the profile in use, and the others to switch to.
+  // A segmented control made of radio buttons: [[value, label], …].
+  function segRadio(name, current, options, label) {
+    return (
+      '<div class="seg seg-radio" role="radiogroup" aria-label="' + esc(label) + '">' +
+      options.map(([v, t]) => '<label class="seg-b" for="' + name + "-" + esc(v) + '"><input class="sr" type="radio" id="' + name + "-" + esc(v) + '" name="' + name + '" value="' + esc(v) + '"' + (String(current) === String(v) ? " checked" : "") + "><span>" + t + "</span></label>").join("") +
+      "</div>"
+    );
+  }
+
+  // The profile: its icon, name and level, and a way to switch.
   function profileSection() {
     const cur = NI.store.profile;
-    const others = NI.store.profiles.filter((p) => p.id !== cur.id);
+    const L = NI.game.level(NI.store.state.xp);
     return (
-      '<section class="u-sec opt-sec" id="opt-profile"><h2>Learning profile</h2>' +
-      '<div class="prof-now"><span class="prof-ic" aria-hidden="true">' + cur.icon + "</span><div><b>" + esc(cur.name) + "</b><span class=\"small muted\">Its own progress, reviews, word book, plan and settings.</span></div></div>" +
-      '<div class="row wrap">' + others.map((p) => '<button class="btn small ghost" type="button" data-switch="' + esc(p.id) + '">Switch to ' + p.icon + " " + esc(p.name) + "</button>").join("") +
-      '<a class="btn small ghost" href="#profiles-new">＋ New profile</a><a class="btn small ghost" href="#profiles">Manage profiles</a></div></section>'
+      '<div class="card prof-card" id="opt-profile"><span class="prof-ic" aria-hidden="true">' + cur.icon + '</span><span class="prof-t"><b>' + esc(cur.name) + "</b>" +
+      '<span class="small">Lv ' + L.n + " · " + ui.jp(L.title.ja, { tokens: false }) + " " + esc(L.title.en) + "</span>" + ui.progressBar(L.frac, "Progress to level " + (L.n + 1)) + "</span>" +
+      '<button class="btn small ghost" type="button" data-profiles aria-haspopup="dialog">Switch</button></div>'
     );
+  }
+
+  // How the theme choice reads, given the device's own setting.
+  function themeNote(v) {
+    const dark = root.matchMedia && root.matchMedia("(prefers-color-scheme: dark)").matches;
+    return v === "light" ? "Always light." : v === "dark" ? "Always dark." : "Matches your device, which is " + (dark ? "dark" : "light") + " right now.";
   }
 
   pages.options = {
@@ -735,76 +904,85 @@
                   ? "<b>Windows:</b> open this site in <b>Microsoft Edge</b>: its natural Japanese voices (Nanami, Keita) sound far better than the built-in ones."
                   : "";
         voices =
-          '<label for="voice">Voice</label><select id="voice"><option value="">Automatic' + (best ? " (" + esc(best.v.name) + ")" : "") + "</option>" +
+          '<select id="voice" aria-label="Voice"><option value="">Automatic' + (best ? " (" + esc(best.v.name) + ")" : "") + "</option>" +
           NI.speech.ranked.map(({ v, kind }) => '<option value="' + esc(v.voiceURI) + '"' + (s.voice === v.voiceURI ? " selected" : "") + ">" + esc(v.name + KIND[kind]) + "</option>").join("") +
           "</select>" +
           (NI.speech.hasVoice && best && best.kind !== "natural" && tip ? '<p class="note">For a more natural voice: ' + tip + "</p>" : "") +
           (NI.speech.hasVoice ? "" : '<p class="note">No Japanese voice found on this device. To add one: <b>Windows</b> Settings → Time &amp; language → Speech → Add voices → Japanese. <b>macOS</b> System Settings → Accessibility → Spoken Content → System voice → Manage voices → Japanese. <b>Android</b> install Google Speech Services and add Japanese. <b>iPhone/iPad</b> Settings → Accessibility → Spoken Content → Voices → Japanese. Then reload this page.</p>');
       }
+      const plan = NI.plan.GOALS.find((g) => g.id === s.goal);
+      const sec = (id, title, body) => '<section class="h-sec opt-sec" id="' + id + '"><div class="sec-head"><h2>' + title + '</h2></div><div class="card opt-card">' + body + "</div></section>";
+      const row = (label, body, cls) => '<div class="opt-row' + (cls ? " " + cls : "") + '"><span class="opt-l">' + label + "</span>" + body + "</div>";
+      const THEMES = [["system", "Match device"], ["light", "Light"], ["dark", "Dark"]];
+      const SIZES = [["s", 18], ["m", 22], ["l", 27], ["xl", 32]];
       return (
-        '<header class="page-head"><h1>Options</h1><p>Settings are saved in this browser, for each learning profile.' + (NI.store.persistent ? "" : " <b>Your browser is blocking storage, so progress will be lost when you close this page.</b>") + "</p>" +
-        '<nav class="chips opt-jump" aria-label="Sections">' + [["opt-profile", "Profile"], ["opt-plan", "Plan"], ["opt-lessons", "Lessons"], ["opt-reading", "Reading"], ["opt-audio", "Audio"], ["opt-look", "Appearance"], ["opt-data", "Progress"]].map(([id, t]) => '<a class="chip small" href="#' + id + '">' + t + "</a>").join("") + "</nav></header>" +
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Options<span class="sub">' + ui.jp("{設定|せってい}", { tokens: false }) + "</span></h1></header>" +
+        (NI.store.persistent ? "" : '<p class="note">Your browser is blocking storage, so progress will be lost when you close this page.</p>') +
+        '<div class="opt-cols"><div class="h-col">' +
         profileSection() +
-        '<section class="u-sec opt-sec" id="opt-plan"><h2>Your plan</h2>' +
-        "<p>Your goal and focus shape what lessons practise most; the daily goal sets your XP target.</p>" +
-        '<fieldset><legend>Why are you learning?</legend><div class="chips">' +
-        NI.plan.GOALS.map((g) => '<button class="chip' + (s.goal === g.id ? " on" : "") + '" type="button" data-opt-goal="' + g.id + '" aria-pressed="' + (s.goal === g.id) + '">' + g.icon + " " + esc(g.t) + "</button>").join("") +
-        '</div><p class="small muted plan-tip">' + esc((NI.plan.GOALS.find((g) => g.id === s.goal) || {}).tip || "") + "</p></fieldset>" +
-        '<fieldset><legend>Daily goal</legend>' + NI.plan.DAILY.map(([xp, t, d]) => radio("dailyGoal", xp, s.dailyGoal, t + " · " + xp + " XP", d)).join("") + "</fieldset>" +
-        '<fieldset><legend>Lesson focus</legend>' + NI.plan.FOCI.map(([v, t, d]) => radio("focus", v, s.focus, t, d)).join("") + "</fieldset>" +
-        toggle("relaxed", "Relaxed mode", "No clocks or lives in games, and a softer sound for mistakes. Lessons and reviews never time you anyway.") +
-        '<fieldset class="remind"><legend>Daily reminder</legend>' +
-        '<p class="small muted">A repeating event in your calendar, with an alert, so your phone reminds you every day.</p>' +
-        '<div class="row wrap"><label class="remind-time" for="remind-at">At <input id="remind-at" type="time" value="' + esc(s.remindAt || "19:00") + '"></label>' +
-        '<a class="btn small primary" data-remind-google target="_blank" rel="noopener" href="' + esc(reminderGoogle(s.remindAt)) + '">Google Calendar</a>' +
-        (root.NI_EMBED ? "" : '<button class="btn small ghost" type="button" data-remind-ics>Apple, Outlook or other calendar</button>') +
-        "</div></fieldset>" +
-        "</section>" +
-        '<section class="u-sec opt-sec" id="opt-lessons"><h2>Lessons and reviews</h2>' +
-        '<fieldset><legend>Cards in one review session</legend>' + radio("reviewLimit", 20, s.reviewLimit, "20", "A few minutes") + radio("reviewLimit", 50, s.reviewLimit, "50", "The usual") + radio("reviewLimit", 100, s.reviewLimit, "100", "For catching up after a break") + "</fieldset>" +
-        toggle("autoNext", "Move on after a right answer", "Skip the Continue button when you get it right. A wrong answer still waits, so you can read the correction.") +
-        toggle("retryMissed", "Missed questions come back", "In lessons, a question you miss is asked again (another way) at the end.") +
-        toggle("handFont", "Handwriting-style kana", "Big words in questions are written in a pen-like font, closer to handwriting. Turn it off for the plain font.") +
-        "</section>" +
-        '<section class="u-sec opt-sec" id="opt-reading"><h2>Reading</h2>' +
-        '<div class="preview" aria-live="polite">' + ui.jp(sample) + "</div>" +
-        '<fieldset><legend>Kanji and furigana</legend>' +
-        radio("furigana", "furigana", s.furigana, "Kanji with furigana", "Recommended: the reading sits above every kanji.") +
-        radio("furigana", "hover", s.furigana, "Furigana on tap", "Readings appear when you hover over or tap a word.") +
-        radio("furigana", "kana", s.furigana, "Kana only", "No kanji at all.") +
-        "</fieldset>" +
-        toggle("kataHelp", "Katakana help", "Show hiragana above katakana until you can read it.") +
-        toggle("gaps", "Space between phrases", "Japanese has no spaces; small gaps make sentences easier to split at first.") +
-        toggle("gloss", "Word meanings under Japanese", "A small English gloss under every word. Great for reading longer texts; turn it off to test yourself.") +
-        toggle("romaji", "Romaji under Japanese", "Each word in Latin letters, as it's said: はじめ線 is Hajime-sen. A stepping stone: kana sticks faster without it, so turn it off when you can.") +
-        toggle("romajiPop", "Romaji in word pop-ups", "Tap a word and its romaji appears with the reading, without romaji under every word.") +
-        toggle("particles", "Colour-code particles", "は topic, が subject, を object, に/へ direction, で place or means…") +
-        toggle("tapSpeak", "Say words when you tap them", "Tap any Japanese word to see what it means; this also plays it.") +
-        toggle("selBar", "Listen and translate selected text", "Select some Japanese (press and hold on a phone) for Listen, Slowly, Meaning and Translate.") +
-        '<fieldset><legend>Text size</legend>' + radio("textSize", "s", s.textSize, "Small") + radio("textSize", "m", s.textSize, "Medium") + radio("textSize", "l", s.textSize, "Large") + radio("textSize", "xl", s.textSize, "Extra large") + "</fieldset>" +
-        "</section>" +
-        '<section class="u-sec opt-sec" id="opt-audio"><h2>Audio</h2>' +
-        toggle("autoplay", "Play audio automatically", "Words and sentences are spoken as they appear.") +
-        toggle("sound", "Sound effects", "A chime for right answers, combos and rewards.") +
-        (navigator.vibrate ? toggle("buzz", "Vibration", "A short buzz for right and wrong answers (with sound effects on).") : "") +
-        '<label for="rate">Speed <output id="rate-out">' + Number(s.rate).toFixed(2) + "×</output></label>" +
-        '<input id="rate" type="range" min="0.5" max="1.2" step="0.05" value="' + esc(s.rate) + '">' +
-        voices +
-        (NI.speech.supported ? '<div class="row"><button class="btn small ghost" type="button" data-test-voice>' + ui.ICON.speaker + "<span>Test the voice</span></button></div>" : "") +
-        "</section>" +
-        '<section class="u-sec opt-sec" id="opt-look"><h2>Appearance</h2><fieldset><legend>Theme</legend>' +
-        radio("theme", "system", s.theme, "Match my device") + radio("theme", "light", s.theme, "Light") + radio("theme", "dark", s.theme, "Dark") +
-        "</fieldset></section>" +
-        '<section class="u-sec opt-sec" id="opt-data"><h2>Your progress</h2>' +
-        "<p>Progress lives in this browser only. To carry on on another phone, tablet or computer, or to keep a backup, send your profiles there in a link or a file. A link or file you sent yourself earlier opens there too.</p>" +
-        (NI.sync && NI.sync.connected ? '<p class="small">⟳ Syncing with GitHub as <b>' + esc(NI.sync.status.login) + "</b>.</p>" : "") +
-        '<div class="row wrap"><a class="btn small primary" href="#move">📲 Move to another device</a>' + (root.NI_EMBED ? "" : '<a class="btn small ghost" href="#move-sync">⟳ Sync automatically</a>') + '<button class="btn small danger" type="button" data-reset>Reset this profile’s progress</button></div>' +
-        "</section>" +
-        '<p class="small muted opt-version"><span lang="ja">日本</span> version ' + NI.VERSION + (root.NI_EMBED ? "" : ' · <button class="btn small ghost" type="button" data-check-update>Check for a new version</button>') + "</p>"
+        '<section class="h-sec opt-sec" id="opt-look"><div class="sec-head"><h2>Theme</h2></div><div class="card opt-card">' +
+        '<div class="theme-tiles" role="radiogroup" aria-label="Theme">' +
+        THEMES.map(([v, t]) => '<label class="theme-tile th-' + v + '" for="theme-' + v + '"><input class="sr" type="radio" id="theme-' + v + '" name="theme" value="' + v + '"' + (s.theme === v ? " checked" : "") + '><span class="th-prev" aria-hidden="true"><i></i><i></i><i></i></span><span class="th-t">' + t + "</span></label>").join("") +
+        '</div><p class="small muted theme-note" aria-live="polite">' + themeNote(s.theme) + "</p></div></section>" +
+        '<section class="h-sec opt-sec"><div class="sec-head"><h2>Text size</h2></div><div class="card opt-card">' +
+        '<div class="size-btns" role="radiogroup" aria-label="Text size">' +
+        SIZES.map(([v, px], i) => '<label class="size-b" for="textSize-' + v + '"><input class="sr" type="radio" id="textSize-' + v + '" name="textSize" value="' + v + '"' + (s.textSize === v ? " checked" : "") + '><span lang="ja" style="font-size:' + px + 'px" aria-hidden="true">あ</span><span class="sr">' + ["Small", "Medium", "Large", "Extra large"][i] + "</span></label>").join("") +
+        "</div></div></section>" +
+        sec(
+          "opt-data",
+          "Your progress",
+          '<a class="list-row" href="#move"><span class="lr-t"><b>Move to another device</b></span><span class="lr-v">Link or file</span>' + ui.ICON.chev + "</a>" +
+            (root.NI_EMBED ? "" : '<a class="list-row" href="#move-sync"><span class="lr-t"><b>Sync automatically</b>' + (NI.sync && NI.sync.connected ? "<span>With GitHub as " + esc(NI.sync.status.login) + "</span>" : "") + '</span><span class="pill' + (NI.sync && NI.sync.connected ? " ok" : "") + '">' + (NI.sync && NI.sync.connected ? "On" : "Off") + "</span>" + ui.ICON.chev + "</a>") +
+            '<button class="list-row danger-row" type="button" data-reset><span class="lr-t"><b>Reset this profile’s progress</b><span>Lessons, reviews and the word book</span></span></button>'
+        ) +
+        sec(
+          "opt-lessons",
+          "Lessons and reviews",
+          row("Cards in one review session", segRadio("reviewLimit", s.reviewLimit, [[20, "20"], [50, "50"], [100, "100"]], "Cards in one review session"), "stack") +
+            toggle("autoNext", "Move on after a right answer", "Skip the Next button when you get it right") +
+            toggle("retryMissed", "Missed questions come back", "Asked again, another way, at the end of a lesson") +
+            toggle("relaxed", "Relaxed mode", "No clocks or hearts in games, a softer sound for mistakes")
+        ) +
+        '</div><div class="h-col">' +
+        sec(
+          "opt-reading",
+          "Reading aids",
+          '<div class="opt-row stack"><span class="opt-l">Furigana</span>' + segRadio("furigana", s.furigana, [["furigana", "Always"], ["hover", "On tap"], ["kana", "Kana only"]], "Furigana") +
+            '<div class="preview" aria-live="polite">' + ui.jp(sample) + "</div></div>" +
+            toggle("gloss", "Word meanings", "English under each Japanese word") +
+            toggle("romaji", "Romaji", "Latin letters under each word") +
+            toggle("particles", "Particle colours", "は topic, が subject, を object …") +
+            toggle("handFont", "Handwriting-style font", "For big words in lessons") +
+            toggle("kataHelp", "Katakana help", "Hiragana above katakana until you can read it") +
+            toggle("gaps", "Space between phrases", "Small gaps make sentences easier to split") +
+            toggle("romajiPop", "Romaji in word pop-ups", "Without romaji under every word") +
+            toggle("tapSpeak", "Say words when you tap them", "Tap a word to see what it means and hear it") +
+            toggle("selBar", "Listen and translate selected text", "Select Japanese for Listen, Slowly, Meaning and Translate")
+        ) +
+        sec(
+          "opt-plan",
+          "Plan & audio",
+          '<a class="list-row" href="#plan"><span class="lr-t"><b>Your plan</b></span><span class="lr-v">' + (plan ? plan.icon + " " + esc(plan.t) : "Not set") + "</span>" + ui.ICON.chev + "</a>" +
+            row("Daily goal", segRadio("dailyGoal", s.dailyGoal, NI.plan.DAILY.map(([xp, t]) => [xp, esc(t) + "<small>" + xp + " XP</small>"]), "Daily goal"), "stack") +
+            row("Lesson focus", segRadio("focus", s.focus, NI.plan.FOCI.map(([v, t]) => [v, esc(t)]), "Lesson focus"), "stack wrap-seg") +
+            '<div class="opt-row stack" id="opt-audio"><span class="opt-l">Voice</span>' + voices + "</div>" +
+            '<div class="opt-row stack"><label class="opt-l" for="rate">Speaking speed <output id="rate-out">' + Number(s.rate).toFixed(2) + "×</output></label>" +
+            '<input id="rate" type="range" min="0.5" max="1.2" step="0.05" value="' + esc(s.rate) + '">' +
+            (NI.speech.supported ? '<button class="btn small ghost" type="button" data-test-voice>' + ui.ICON.speaker + "<span>Test the voice</span></button>" : "") + "</div>" +
+            toggle("autoplay", "Play audio automatically", "Words and sentences are spoken as they appear") +
+            toggle("sound", "Sound effects", "A chime for right answers, combos and rewards") +
+            (navigator.vibrate ? toggle("buzz", "Vibration", "A short buzz for right and wrong answers") : "") +
+            '<div class="opt-row stack remind"><span class="opt-l">Daily reminder</span><span class="small muted">A repeating event in your calendar, with an alert, so your phone reminds you every day.</span>' +
+            '<div class="row wrap"><label class="remind-time" for="remind-at">At <input id="remind-at" type="time" value="' + esc(s.remindAt || "19:00") + '"></label>' +
+            '<a class="btn small primary" data-remind-google target="_blank" rel="noopener" href="' + esc(reminderGoogle(s.remindAt)) + '">Google Calendar</a>' +
+            (root.NI_EMBED ? "" : '<button class="btn small ghost" type="button" data-remind-ics>Apple, Outlook or other</button>') +
+            "</div></div>"
+        ) +
+        "</div></div>" +
+        '<p class="small muted opt-version"><span lang="ja">日本</span> version ' + NI.VERSION + " · settings are saved in this browser, for each learning profile" + (root.NI_EMBED ? "" : ' · <button class="btn small ghost" type="button" data-check-update>Check for a new version</button>') + "</p>"
       );
     },
     mount(el) {
-      el.querySelectorAll("[data-switch]").forEach((b) => b.addEventListener("click", () => NI.store.switchProfile(b.getAttribute("data-switch"))));
       // The daily reminder: the time is kept with the profile's settings.
       const at = el.querySelector("#remind-at");
       const gLink = el.querySelector("[data-remind-google]");
@@ -842,17 +1020,8 @@
       el.querySelectorAll('input[type="radio"]').forEach((r) =>
         r.addEventListener("change", () => {
           NI.store.set(r.name, r.name === "dailyGoal" || r.name === "reviewLimit" ? Number(r.value) : r.value);
+          if (r.name === "theme") el.querySelector(".theme-note").textContent = themeNote(r.value);
           refreshPreview();
-        })
-      );
-      el.querySelectorAll("[data-opt-goal]").forEach((b) =>
-        b.addEventListener("click", () => {
-          const g = NI.plan.GOALS.find((x) => x.id === b.getAttribute("data-opt-goal"));
-          NI.store.set("goal", g.id, true);
-          NI.store.set("focus", g.focus);
-          NI.store.setPlanned();
-          NI.app.render();
-          ui.toast("Plan updated: " + g.t + ". " + PLAN.focusLine(g.focus));
         })
       );
       el.querySelectorAll("[data-set]").forEach((c) =>
@@ -881,28 +1050,67 @@
     },
   };
 
+  // Counts for the More and Tools tiles.
+  function tileCounts() {
+    const st = NI.store.state;
+    const KP = NI.kanaPractice;
+    let kana = null;
+    if (KP) {
+      let n = 0;
+      let all = 0;
+      const G = KP.groups();
+      for (const sc of ["hira", "kata"]) {
+        const g = (G[sc] || []).find((x) => x.id === "basic");
+        if (!g) continue;
+        const ks = [].concat(...g.cards.map((c) => c.kana));
+        all += ks.length;
+        n += ks.filter((k) => KP.level(k) === "known").length;
+      }
+      kana = n + "/" + all;
+    }
+    const kanji = NI.kanji ? NI.kanji.list().filter((x) => NI.kanji.level(x.k) === "known").length : 0;
+    return {
+      stamps: NI.game.stamps().filter((x) => x.done).length + "/" + NI.course.units.length,
+      mistakes: Object.keys(st.mistakes).filter((r) => NI.items.get(r)).length,
+      saved: Object.keys(NI.store.books.saved).length,
+      stories: Object.keys(st.stories).length,
+      kana,
+      kanji,
+      words: NI.course.words.length,
+      profiles: NI.store.profiles.length,
+    };
+  }
+  NI.tileCounts = tileCounts;
+
   pages.more = {
     title: "More",
     nav: "more",
     render() {
-      const link = (href, t, d) => '<a class="card-link" href="' + href + '"><b>' + t + "</b><span>" + d + "</span></a>";
+      const n = tileCounts();
       return (
-        '<header class="page-head"><h1>More</h1></header><section class="home-links">' +
-        link("#stamps", "🏅 Stamp book", "Station stamps, badges, your level and records.") +
-        link("#stats", "📊 Statistics", "XP day by day, your activity calendar, review cards, kana and tests.") +
-        link("#move", "📲 Move to another device", "Take your profiles to a phone, tablet or computer in a link or a file; also for backups.") +
-        link("#mistakes", "📝 Mistakes notebook", "Everything you got wrong, ready to practise.") +
-        link("#stories", "📖 Stories", "Graded stories with audio.") +
-        link("#kana", "あ Kana trainer", "Katakana charts, drills, loanwords and look-alikes.") +
-        link("#guide", "🧭 How this course works", "The research behind the course, and routes for different learners.") +
-        link("#grammar", "📐 Grammar reference", "Particles, verb and adjective forms, numbers and counters.") +
-        link("#book", "🔖 Word book", "Words you've saved, your own lists and words, vocabulary tests and flashcards.") +
-        link("#kanji", "漢 Kanji", "The kanji in the course: meanings, readings, stroke order, and kanji cards for your reviews.") +
-        link("#words", "📚 Word list", "Every word in the course, searchable.") +
-        link("#phrases", "💬 Phrasebook", "Survival phrases by situation.") +
-        link("#profiles", NI.store.profile.icon + " Learning profiles", "A profile for each person learning here, each with its own progress.") +
-        link("#options", "⚙️ Options", "Your plan, lessons, reading aids, audio, theme and backups.") +
-        "</section>"
+        '<header class="page-head"><h1>More<span class="sub">' + ui.jp("その{他|た}", { tokens: false }) + "</span></h1></header>" +
+        '<div class="tg-wrap">' +
+        ui.tileGroup("Your progress", [
+          ["#stamps", "🏅", "Stamp book", n.stamps, "shu"],
+          ["#stats", "📊", "Statistics"],
+          ["#mistakes", "📝", "Mistakes notebook", n.mistakes || "", "bad"],
+        ]) +
+        ui.tileGroup("Read & look up", [
+          ["#book", "🔖", "Word book", n.saved || ""],
+          ["#stories", "📖", "Stories", n.stories ? n.stories + " read" : ""],
+          ["#kana", "あ", "Kana trainer", n.kana, "ok"],
+          ["#kanji", "漢", "Kanji", n.kanji ? n.kanji + " known" : "", "ok"],
+          ["#grammar", "📐", "Grammar reference"],
+          ["#words", "📚", "Word list", n.words],
+          ["#phrases", "💬", "Phrasebook"],
+        ]) +
+        ui.tileGroup("You & this device", [
+          ["#profiles", esc(NI.store.profile.icon), "Learning profiles", n.profiles],
+          ["#move", "📲", "Move to another device"],
+          ["#guide", "🧭", "How this course works"],
+          ["#options", "⚙️", "Options"],
+        ]) +
+        "</div>"
       );
     },
   };

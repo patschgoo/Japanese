@@ -30,10 +30,10 @@
   }
 
   const GAMES = [
-    { id: "timeattack", icon: "⏱️", t: "Time Attack", ja: "タイムアタック", d: "60 seconds: how many word meanings can you get right?", best: (v) => v + " points" },
-    { id: "kanarain", icon: "🌧️", t: "Kana Rain", ja: "かなの{雨|あめ}", d: "Type the romaji for each falling kana before it lands.", best: (v) => v + " kana" },
-    { id: "memory", icon: "🃏", t: "Memory Match", ja: "{神経衰弱|しんけいすいじゃく}", d: "Turn over cards to pair each word with its meaning.", best: (v) => v + " s" },
-    { id: "sprint", icon: "🧩", t: "Sentence Sprint", ja: "{文|ぶん}づくり", d: "Build five sentences from their pieces, against the clock.", best: (v) => v + " s" },
+    { id: "timeattack", line: "h", icon: "⏱️", t: "Time Attack", ja: "タイムアタック", d: "60 seconds: how many word meanings can you get right?", best: (v) => v + " points" },
+    { id: "kanarain", line: "d", icon: "🌧️", t: "Kana Rain", ja: "かなの{雨|あめ}", d: "Type the romaji for each falling kana before it lands.", best: (v) => v + " kana" },
+    { id: "memory", line: "k", icon: "🃏", t: "Memory Match", ja: "{神経衰弱|しんけいすいじゃく}", d: "Turn over cards to pair each word with its meaning.", best: (v) => v + " s" },
+    { id: "sprint", line: "t", icon: "🧩", t: "Sentence Sprint", ja: "{文|ぶん}づくり", d: "Build five sentences from their pieces, against the clock.", best: (v) => v + " s" },
   ];
 
   // Other ways to practise, linked from Play.
@@ -44,22 +44,27 @@
     { href: "kana-practice", icon: "🔤", t: "Kana practice", ja: "かなれんしゅう", d: "Nine stages from reading a kana to writing it from memory; train, or take a test." },
   ];
 
-  function missionsCard() {
+  // Today's missions: a label row, then three rows with a check and a bar.
+  function missionsList() {
     const list = NI.game.missions();
     const bonusDone = !!NI.store.today().mb;
     return (
-      '<section class="missions" aria-labelledby="mis-h"><h2 id="mis-h">' + ui.jp("{今日|きょう}のミッション", { tokens: false }) + ' <span class="sub">Today’s missions</span></h2>' +
-      '<ul class="mis-list">' +
+      '<div class="lbl-row"><span class="lbl" id="mis-h">Missions</span><span>' + (bonusDone ? "Bonus collected ✓" : "All three: +" + NI.game.XP.missions + " XP") + "</span></div>" +
+      '<ul class="mis-list" aria-labelledby="mis-h">' +
       list
         .map(
           (m) =>
             '<li class="' + (m.done ? "done" : "") + '"><span class="mis-check" aria-hidden="true">' + (m.done ? ui.ICON.check : "") + "</span>" +
-            '<span class="mis-t">' + esc(m.t) + "</span>" + ui.progressBar(m.v / m.goal, m.t) + '<span class="mis-n">' + m.v + "/" + m.goal + "</span></li>"
+            '<span class="mis-t">' + esc(m.t) + (m.done ? '<span class="sr"> (done)</span>' : "") + '</span><span class="mis-n">' + m.v + "/" + m.goal + "</span>" + ui.progressBar(m.v / m.goal, m.t) + "</li>"
         )
         .join("") +
-      "</ul>" +
-      '<p class="small muted">' + (bonusDone ? "All done today: bonus collected. New missions tomorrow." : "Finish all three for a +" + NI.game.XP.missions + " XP bonus.") + "</p></section>"
+      "</ul>"
     );
+  }
+  NI.missionsList = missionsList;
+
+  function missionsCard() {
+    return '<section class="h-sec"><div class="sec-head"><h2>Today’s missions</h2><span class="meta">+' + NI.game.XP.missions + ' XP for all three</span></div><div class="card missions">' + missionsList() + "</div></section>";
   }
   NI.missionsCard = missionsCard;
 
@@ -69,40 +74,50 @@
     render() {
       const best = NI.store.state.games;
       const nm = Object.keys(NI.store.state.mistakes).filter((r) => NI.items.get(r)).length;
+      const step = NI.nextStep();
+      const cur = step ? NI.course.lineOf(step.u.n) : null;
+      const stamps = NI.game.stamps();
       let html =
-        '<header class="page-head"><h1>Play <span class="sub">' + ui.jp("{遊|あそ}ぶ", { tokens: false }) + "</span></h1>" +
-        "<p>Quick games with the words and sentences you've learned. Every round is recall practice, and it all earns XP.</p></header>" +
-        missionsCard() +
-        '<section class="u-sec"><h2>Games</h2><div class="game-grid">' +
+        '<header class="page-head"><h1>Play<span class="sub">' + ui.jp("{遊|あそ}ぶ", { tokens: false }) + "</span></h1></header>" +
+        '<div class="h-cols"><div class="h-col">' +
+        '<section class="h-sec"><div class="sec-head"><h2>Games</h2><span class="meta">Your best scores</span></div><div class="game-grid">' +
         GAMES.map(
           (g) =>
-            '<a class="game-card" href="#game-' + g.id + '"><span class="g-icon" aria-hidden="true">' + g.icon + "</span>" +
-            '<span class="g-text"><b>' + esc(g.t) + '</b><span class="g-ja">' + ui.jp(g.ja, { tokens: false }) + "</span><span>" + esc(g.d) + "</span>" +
-            (best[g.id] != null ? '<span class="g-best">Best: ' + esc(g.best(best[g.id])) + "</span>" : "") + "</span></a>"
+            '<a class="game-tile line-' + g.line + '" href="#game-' + g.id + '" title="' + esc(g.d) + '"><span class="g-icon" aria-hidden="true">' + g.icon + "</span>" +
+            "<b>" + esc(g.t) + '</b><span class="g-ja">' + ui.jp(g.ja, { tokens: false }) + "</span>" +
+            '<span class="g-best">' + (best[g.id] != null ? "Best · " + esc(g.best(best[g.id])) : "Not played yet") + "</span></a>"
         ).join("") +
-        "</div></section>" +
-        '<section class="u-sec"><h2>More ways to practise</h2><div class="game-grid">' +
-        WAYS.map((w) => '<a class="game-card" href="#' + w.href + '"><span class="g-icon" aria-hidden="true">' + w.icon + "</span>" + '<span class="g-text"><b>' + esc(w.t) + '</b><span class="g-ja">' + ui.jp(w.ja, { tokens: false }) + "</span><span>" + esc(w.d) + "</span></span></a>").join("") +
-        "</div></section>" +
-        '<section class="u-sec"><h2>Mistakes notebook <span class="sub">' + ui.jp("{間違|まちが}いノート", { tokens: false }) + "</span></h2>" +
-        "<p>" + (nm ? "You have " + U.plural(nm, "item") + " to practise. Get each one right twice and it leaves the notebook." : "Nothing here yet. Anything you get wrong in lessons, reviews and games is collected here to practise later.") + "</p>" +
-        '<div class="row wrap">' + (nm ? '<a class="btn primary" href="#practice">Practise mistakes</a>' : "") + '<a class="btn ghost" href="#mistakes">Open the notebook</a></div></section>' +
-        '<section class="u-sec"><h2>Line exams <span class="sub">' + ui.jp("{検定|けんてい}", { tokens: false }) + "</span></h2>" +
-        "<p>20 mixed questions from one line. Pass with 80% to turn the line gold in your stamp book. Best taken once you've finished the line.</p><ul class=\"exam-list\">" +
+        "</div>" +
+        '<label class="card relax-row"><span class="lr-ic" aria-hidden="true">🍵</span><span class="lr-t"><b>Relaxed mode</b><span>No clocks and no hearts in any game</span></span><input class="switch" type="checkbox" data-relaxed' + (NI.store.settings.relaxed ? " checked" : "") + "></label></section>" +
+        '<section class="h-sec"><div class="sec-head"><h2>More ways to practise</h2></div><div class="card list-card">' +
+        WAYS.map((w) => ui.listRow("#" + w.href, w.icon, esc(w.t), esc(w.d))).join("") +
+        ui.listRow("#mistakes", "📝", "Mistakes notebook", nm ? U.plural(nm, "item") + " to practise" : "Empty: anything you miss lands here", nm ? '<span class="pill bad">' + nm + "</span>" : "") +
+        "</div></section></div>" +
+        '<div class="h-col">' + missionsCard() +
+        '<section class="h-sec"><div class="sec-head"><h2>Line exams</h2><span class="meta">80% turns a line gold</span></div><div class="card list-card exam-list">' +
         NI.course.lines
           .map((l) => {
             const pct = NI.store.state.exams[l.id];
             const units = l.units.map((n) => NI.course.unit(n)).filter(Boolean);
-            const done = units.filter((u) => NI.game.stamps().find((s) => s.unit.n === u.n && s.done)).length;
+            const done = units.filter((u) => stamps.find((s) => s.unit.n === u.n && s.done)).length;
+            const left = units.length - done;
+            const chip =
+              pct >= 80 ? '<span class="pill gold">★ ' + pct + "%</span>"
+              : !left ? '<span class="pill now">Ready' + (pct != null ? " · best " + pct + "%" : "") + "</span>"
+              : l === cur ? '<span class="pill now">' + U.plural(left, "station") + " to go</span>"
+              : '<span class="pill">' + done + "/" + units.length + "</span>";
             return (
-              '<li class="line-' + l.color + (pct >= 80 ? " passed" : "") + '"><span class="line-badge" aria-hidden="true">' + l.id + "</span>" +
-              '<span class="ex-t"><b>' + ui.jp(l.ja, { tokens: false, ro: true }) + "</b><span>" + esc(l.en) + " · " + done + "/" + units.length + " stations" + (pct != null ? " · best " + pct + "%" : "") + "</span></span>" +
-              '<a class="btn small ' + (done === units.length && !(pct >= 80) ? "primary" : "ghost") + '" href="#exam-' + l.id + '">' + (pct >= 80 ? "★ Retake" : "Take exam") + "</a></li>"
+              '<a class="list-row line-' + l.color + (pct >= 80 ? " gold" : "") + (!done && l !== cur ? " later" : "") + '" href="#exam-' + l.id + '" aria-label="' + esc(l.en + " exam") + '">' +
+              '<span class="ring-l" aria-hidden="true">' + l.id + '</span><span class="lr-t"><b>' + ui.jp(l.ja, { tokens: false, ro: true }) + "</b><span>" + esc(l.en) + "</span></span>" + chip + "</a>"
             );
           })
           .join("") +
-        "</ul></section>";
+        "</div><p class=\"small muted sec-note\">20 mixed questions from one line. Best taken once you’ve finished the line.</p></section></div></div>";
       return html;
+    },
+    mount(el) {
+      const r = el.querySelector("[data-relaxed]");
+      if (r) r.addEventListener("change", () => NI.store.set("relaxed", r.checked));
     },
   };
 

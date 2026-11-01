@@ -221,21 +221,29 @@
       const doneUnits = NI.course.units.filter((u) => NI.course.parts(u).every((p) => NI.store.partDone(u.n, p.key))).map((u) => u.n);
       const ready = all.filter((x) => doneUnits.indexOf(x.unit) >= 0 && level(x.k) === "new");
       const units = NI.course.units.filter((u) => inLine(u.n) && all.some((x) => x.unit === u.n));
+      const step = NI.nextStep();
+      const hereU = step ? step.u : null;
+      const here = hereU ? all.filter((x) => x.unit === hereU.n && level(x.k) === "new") : [];
       return (
-        '<div class="kj-page"><header class="page-head"><p class="crumb"><a href="#kana">← Kana</a></p><h1>Kanji <span class="sub">' + ui.jp("{漢字|かんじ}", { tokens: false }) + "</span></h1>" +
-        "<p>The " + all.length + " kanji in the course’s words, unit by unit. Tap one for its meaning, its readings, how it’s written and the words you know it from. Put a unit’s kanji into your reviews to learn them for good.</p>" +
-        '<p class="kj-sum"><b>' + inRev + "</b> in your reviews · <b>" + known + "</b> known well" + (ready.length ? ' · <button class="btn small primary" type="button" data-kj-ready>Add the ' + U.plural(ready.length, "kanji", "kanji") + " from units you’ve finished</button>" : "") + "</p>" +
+        '<div class="kj-page"><header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Kanji<span class="sub">' + ui.jp("{漢字|かんじ}", { tokens: false }) + "</span></h1></header>" +
+        '<div class="tiles two">' +
+        '<div class="stile"><span class="lbl">In the course</span><b class="tile-v">' + all.length + '</b><span class="tile-sub">kanji, unit by unit</span></div>' +
+        '<div class="stile"><span class="lbl">Known well</span><b class="tile-v">' + known + '</b><span class="tile-sub">from your reviews</span></div>' +
+        '<div class="stile"><span class="lbl">In reviews</span><b class="tile-v">' + inRev + '</b><span class="tile-sub">as kanji cards</span></div>' +
+        '<div class="stile"><span class="lbl">This unit</span><b class="tile-v">' + here.length + '</b><span class="tile-sub">' + (hereU ? "new in " + esc(NI.course.code(hereU.n)) : "—") + "</span></div></div>" +
+        '<p class="page-intro">Tap a kanji for its meaning, its readings, how it’s written and the words you know it from. Put a unit’s kanji into your reviews to learn them for good.</p>' +
+        (ready.length ? '<button class="btn primary kj-ready" type="button" data-kj-ready>Add the ' + U.plural(ready.length, "kanji", "kanji") + " from units you’ve finished</button>" : "") +
         '<nav class="chips kj-lines" aria-label="Lines"><button type="button" class="chip small' + (line === "all" ? " on" : "") + '" data-kj-line="all" aria-pressed="' + (line === "all") + '">All</button>' +
         lines.map((l) => '<button type="button" class="chip small line-' + l.color + (line === l.id ? " on" : "") + '" data-kj-line="' + l.id + '" aria-pressed="' + (line === l.id) + '">' + esc(l.en) + "</button>").join("") +
-        '</nav><p class="kc-legend small"><span class="lv-known"><i></i>Known well</span><span class="lv-learning"><i></i>In your reviews</span><span><i></i>Not yet</span></p></header>' +
+        '</nav><p class="kc-legend small"><span class="lv-known"><i></i>Known well</span><span class="lv-learning"><i></i>In your reviews</span><span><i></i>Not yet</span></p>' +
         units
           .map((u) => {
             const ks = all.filter((x) => x.unit === u.n);
             const fresh = ks.filter((x) => level(x.k) === "new").length;
             return (
-              '<section class="u-sec kj-unit" aria-labelledby="kj-u' + u.n + '"><h2 id="kj-u' + u.n + '"><a href="#unit-' + u.n + '">' + ui.stationCode(u.n) + " " + esc(u.en) + "</a></h2>" +
-              '<div class="kj-unit-bar"><span class="small muted">' + U.plural(ks.length, "kanji", "kanji") + "</span>" + (fresh ? '<button class="btn small ghost" type="button" data-kj-unit="' + u.n + '">Add ' + (fresh === ks.length ? "them" : "the " + fresh + " new ones") + " to my reviews</button>" : '<span class="small muted">· all in your reviews</span>') + "</div>" +
-              '<div class="kj-grid">' + ks.map((x) => '<button class="kc-cell kj-cell lv-' + level(x.k) + '" type="button" data-kj-k="' + esc(x.k) + '" aria-label="' + esc(x.k + ": " + x.en) + '"><b lang="ja">' + esc(x.k) + "</b><small>" + esc(short(NI.data.kanji[x.k][1])) + "</small></button>").join("") + "</div></section>"
+              '<section class="h-sec kj-unit" aria-labelledby="kj-u' + u.n + '"><div class="sec-head"><h2 id="kj-u' + u.n + '"><a href="#unit-' + u.n + '">' + ui.stationCode(u.n) + " " + esc(u.en) + '</a></h2><span class="meta">' + U.plural(ks.length, "kanji", "kanji") + "</span></div>" +
+              '<div class="card"><div class="kj-grid">' + ks.map((x) => '<button class="kc-cell kj-cell lv-' + level(x.k) + '" type="button" data-kj-k="' + esc(x.k) + '" aria-label="' + esc(x.k + ": " + x.en) + '"><b lang="ja">' + esc(x.k) + "</b><small>" + esc(short(NI.data.kanji[x.k][1])) + "</small></button>").join("") + "</div>" +
+              (fresh ? '<button class="kj-add" type="button" data-kj-unit="' + u.n + '">＋ Add ' + (fresh === ks.length ? esc(NI.course.code(u.n)) + "’s kanji" : "the " + fresh + " new ones") + " to your reviews</button>" : '<p class="small muted kj-all">All in your reviews</p>') + "</div></section>"
             );
           })
           .join("") +

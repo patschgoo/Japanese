@@ -22,6 +22,10 @@
     split: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M8 10.5h5M10.5 8v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     turtle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15.5c0-4 3.4-7 7.5-7s7.5 3 7.5 7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M19 13.5l2.2-1.2M7 15.5l-1 2.5M16 15.5l1 2.5M8.5 9.8l2 5.7M14.5 9.8l-2 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
     mic: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    grid: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="4" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="4" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="13" y="13" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+    dots: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.9" fill="currentColor"/><circle cx="12" cy="12" r="1.9" fill="currentColor"/><circle cx="18.5" cy="12" r="1.9" fill="currentColor"/></svg>',
+    back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    chev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5L16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     repeat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9.5A6.5 6.5 0 0 1 17 7l1.5 1.5M19 14.5A6.5 6.5 0 0 1 7 17l-1.5-1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18.5 4v4.5H14M5.5 20v-4.5H10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   };
 
@@ -261,6 +265,27 @@
     });
   }
 
+  /* A group of tiles: a Klee One title, then a card of tiles with a round
+     glyph, a label and an optional count chip. items: [href, glyph, label, chip, chipClass]. */
+  function tileGroup(title, items) {
+    return (
+      '<section class="h-sec tg"><div class="sec-head"><h2>' + title + '</h2></div><div class="card tg-card">' +
+      items
+        .filter(Boolean)
+        .map(([href, glyph, label, chip, cls]) => {
+          const g = /^[\u3040-\u30ff\u4e00-\u9faf]+$/.test(glyph) ? '<span class="tg-ic jp-glyph" lang="ja">' + esc(glyph) + "</span>" : '<span class="tg-ic">' + glyph + "</span>";
+          return '<a class="tg-tile" href="' + href + '">' + g + '<span class="tg-t">' + label + "</span>" + (chip != null && chip !== "" ? '<span class="pill ' + (cls || "") + '">' + chip + "</span>" : "") + "</a>";
+        })
+        .join("") +
+      "</div></section>"
+    );
+  }
+
+  // A row in a list card: a round icon, a title and a line, a chevron.
+  function listRow(href, icon, t, sub, chip) {
+    return '<a class="list-row" href="' + href + '"><span class="lr-ic" aria-hidden="true">' + icon + '</span><span class="lr-t"><b>' + t + "</b>" + (sub ? "<span>" + sub + "</span>" : "") + "</span>" + (chip || "") + ICON.chev + "</a>";
+  }
+
   function progressBar(frac, label) {
     const pct = Math.round(NI.util.clamp(frac, 0, 1) * 100);
     return '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"' + (label ? ' aria-label="' + esc(label) + '"' : "") + '><span style="width:' + pct + '%"></span></div>';
@@ -270,5 +295,5 @@
      to fit on one line (よろしくお願いします) instead of wrapping one character. */
   const fit = (markup) => ' style="--n:' + Math.max(3, Array.from(NI.furi.base(String(markup))).length) + '"';
 
-  NI.ui = { ICON, esc, jp, rich, romajiOn, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, lineRomaji, showWord, hidePop, toast, confirm: confirmBox, progressBar, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
+  NI.ui = { ICON, esc, jp, rich, romajiOn, fit, say, sentenceAudio, wordAudio, posTag, wordHead, stationCode, lineRomaji, showWord, hidePop, toast, confirm: confirmBox, progressBar, tileGroup, listRow, furiOpts, breakdownBtn, em, placePop, get popAnchor() { return popAnchor; } };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -58,36 +58,45 @@
       const stamps = NI.game.stamps();
       const got = stamps.filter((s) => s.done).length;
       const earned = NI.game.BADGES.filter((b) => st.badges[b.id]).length;
+      const gold = NI.course.lines.filter((l) => st.exams[l.id] >= 80);
+      const tile = (label, value, sub, href) => (href ? '<a class="stile" href="' + href + '">' : '<div class="stile">') + '<span class="lbl">' + label + '</span><b class="tile-v">' + value + '</b><span class="tile-sub">' + sub + "</span>" + (href ? "</a>" : "</div>");
+      const next = stamps.find((x) => !x.done);
       let html =
-        '<header class="page-head"><h1>Stamp book <span class="sub">' + ui.jp("スタンプ{帳|ちょう}", { tokens: false }) + "</span></h1>" +
-        "<p>Finish every part of a unit to collect its station stamp, like the rubber stamps at Japanese railway stations. Pass a line exam to turn its line gold. <a href=\"#stats\">📊 All your statistics</a></p></header>" +
-        '<section class="u-sec stat-cards">' +
-        '<div class="stat-card"><span class="lvl-badge big">Lv ' + L.n + "</span><div><b>" + ui.jp(L.title.ja, { tokens: false, ro: true }) + " · " + esc(L.title.en) + "</b>" + ui.progressBar(L.frac, "Progress to the next level") + '<span class="small muted">' + st.xp + " XP in total · " + (L.need - L.into) + " to level " + (L.n + 1) + "</span></div></div>" +
-        '<div class="stat-card"><span class="big-num">' + NI.store.streak() + '</span><div><b>Day streak</b><span class="small muted">Best: ' + NI.game.bestStreak() + " days</span>" + weekDots() + "</div></div>" +
-        '<div class="stat-card"><span class="big-num">' + got + '</span><div><b>Stamps</b><span class="small muted">of ' + stamps.length + " stations · " + earned + " of " + NI.game.BADGES.length + " badges</span></div></div>" +
-        "</section>";
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Stamp book<span class="sub">' + ui.jp("スタンプ{帳|ちょう}", { tokens: false }) + "</span></h1></header>" +
+        '<div class="tiles two">' +
+        tile("Stamps", got, "of " + stamps.length + " stations") +
+        tile("Streak", '<span aria-hidden="true">🔥</span> ' + NI.store.streak(), "best: " + U.plural(Math.max(NI.game.bestStreak(), NI.store.streak()), "day")) +
+        tile("Badges", earned, "of " + NI.game.BADGES.length) +
+        tile("Gold lines", gold.length, gold.length ? gold.map((l) => NI.furi.base(l.ja) + " · " + st.exams[l.id] + "%").join(", ") : "pass a line exam", "#play") +
+        "</div>" +
+        '<a class="card lvl-card" href="#stats"><span class="lvl-top"><b>Lv ' + L.n + " · " + ui.jp(L.title.ja, { tokens: false }) + " " + esc(L.title.en) + '</b><span class="small">' + L.into + " of " + L.need + " XP to Lv " + (L.n + 1) + "</span></span>" + ui.progressBar(L.frac, "Progress to the next level") + "</a>" +
+        '<p class="sb-intro small muted">Finish every part of a station to collect its stamp, like the rubber stamps at Japanese railway stations. Pass a line exam to turn its line gold.</p>' +
+        '<div class="sb-lines">';
 
       for (const line of NI.course.lines) {
         const pct = st.exams[line.id];
-        const gold = pct >= 80;
+        const isGold = pct >= 80;
+        const units = line.units.map((n) => NI.course.unit(n)).filter(Boolean);
+        const d = units.filter((u) => (stamps.find((x) => x.unit.n === u.n) || {}).done).length;
         html +=
-          '<section class="u-sec stamp-line line-' + line.color + (gold ? " gold" : "") + '"><h2><span class="line-badge" aria-hidden="true">' + line.id + "</span> " + ui.jp(line.ja, { tokens: false, ro: true }) + ' <span class="line-en">' + esc(line.en) + "</span>" +
-          (gold ? ' <span class="gold-badge" title="Line exam passed: ' + pct + '%">★ ' + pct + "%</span>" : "") + "</h2>" +
-          '<ol class="stamp-grid">' +
-          line.units
-            .map((n) => NI.course.unit(n))
-            .filter(Boolean)
+          '<section class="h-sec stamp-line line-' + line.color + (isGold ? " gold" : "") + '" aria-labelledby="sl-' + line.id + '"><div class="sec-head"><h2 id="sl-' + line.id + '"><span class="ring-l" aria-hidden="true">' + line.id + "</span>" + ui.jp(line.ja, { tokens: false, ro: true }) + ' <span class="line-en">' + esc(line.en) + "</span></h2>" +
+          '<span class="meta">' + (isGold ? '<span class="pill gold" title="Line exam passed">★ ' + pct + "%</span>" : d + "/" + units.length) + "</span></div>" +
+          '<div class="card"><ol class="stamp-grid">' +
+          units
             .map((u) => {
-              const s = stamps.find((x) => x.unit.n === u.n);
-              return '<li><a href="#unit-' + u.n + '">' + stampSvg(u, { done: s && s.done }) + '<span class="stamp-cap">' + esc(NI.course.code(u.n)) + " " + esc(u.en) + "</span></a></li>";
+              const x = stamps.find((y) => y.unit.n === u.n);
+              const state = x && x.done ? "done" : next && next.unit.n === u.n ? "next" : "todo";
+              return '<li><a href="#unit-' + u.n + '">' + NI.ekiStamp(u, state) + '<span class="stamp-cap">' + (state === "next" ? "next stamp" : esc(u.en)) + "</span></a></li>";
             })
             .join("") +
           "</ol>" +
-          '<p class="small"><a href="#exam-' + line.id + '">' + (gold ? "Retake the line exam" : pct != null ? "Line exam: best " + pct + "%. Try again" : "Take the line exam") + "</a></p></section>";
+          (d === units.length || pct != null ? '<p class="sl-exam small"><a href="#exam-' + line.id + '">' + (isGold ? "Retake the line exam" : pct != null ? "Line exam: best " + pct + "%. Try again" : "Take the line exam") + "</a></p>" : "") +
+          "</div></section>";
       }
+      html += "</div>";
 
       html +=
-        '<section class="u-sec"><h2>Badges</h2><ul class="badges">' +
+        '<div class="h-cols sb-more"><section class="h-sec"><div class="sec-head"><h2>Badges</h2><span class="meta">' + earned + " of " + NI.game.BADGES.length + '</span></div><ul class="card badges">' +
         NI.game.BADGES.map((b) => {
           const t = st.badges[b.id];
           return '<li class="badge-item' + (t ? " got" : "") + '"><span class="b-icon" aria-hidden="true">' + b.icon + '</span><span class="b-text"><b>' + esc(b.t) + "</b><span>" + esc(b.d) + "</span>" + (t ? '<small>Earned ' + esc(U.dayKey(t)) + "</small>" : "") + "</span></li>";
@@ -101,7 +110,7 @@
         ["Memory Match", best.memory != null ? best.memory + " s" : "—"],
         ["Sentence Sprint", best.sprint != null ? best.sprint + " s" : "—"],
       ];
-      html += '<section class="u-sec"><h2>Records</h2><dl class="records">' + rec.map(([k, v]) => "<div><dt>" + k + "</dt><dd>" + esc(v) + "</dd></div>").join("") + '</dl><p class="small"><a href="#play">Play a game</a></p></section>';
+      html += '<section class="h-sec"><div class="sec-head"><h2>Records</h2><a class="meta" href="#play">Play a game</a></div><dl class="card records">' + rec.map(([k, v]) => "<div><dt>" + k + "</dt><dd>" + esc(v) + "</dd></div>").join("") + "</dl></section></div>";
       return html;
     },
   };

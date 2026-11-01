@@ -14,9 +14,18 @@ are numbered like real ones in Japan, by the first letter of the line's
 Japanese name: H01 is station 1 of the Hajime-sen (Starting Line), then M
 Mainichi-sen (Everyday), D Dekiru-sen (Can-Do), K Kaiwa-sen (Conversation),
 T Tsunagaru-sen (Connections) and S Susumu-sen (Onward). Each unit
-opens with a station name board, you collect a station stamp for every unit
+opens with a station card, today's lesson is a train ticket (乗車券) from
+your last station to the next, you collect a station stamp for every unit
 you finish, and review cards “speed up” from the local train (各停) to the
 shinkansen (新幹線) as you remember them.
+
+**The look** (design “3a”): warm paper and card colours with vermilion (朱)
+for the one thing to do, Klee One for titles and big Japanese words, light
+and dark themes that follow the device by default (or always light or dark),
+and a layout made for phones first: a floating tab bar (Learn, Review, Play,
+Tools, More) and page titles with a round back button. On wider screens the
+five places sit in a pill at the top and pages use two columns. Lessons,
+reviews and the first-run plan are focus screens without the tab bar.
 
 ## What's in it
 
@@ -132,7 +141,7 @@ check by hand.
 
 ```
 index.html            app shell; loads every script in order
-css/app.css           all styles (light and dark themes)
+css/app.css           all styles: design tokens (light and dark), layout, screens
 js/core/              engines with no DOM: kana & romaji input, furigana,
                       conjugation, number readings, word segmenter,
                       spaced repetition, storage (with learning profiles

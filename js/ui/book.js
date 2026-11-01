@@ -263,35 +263,52 @@
     icons.map((ic, i) => '<label><input type="radio" name="' + name + '" value="' + ic + '"' + (ic === cur || (!cur && i === 0) ? " checked" : "") + '><span aria-hidden="true">' + ic + '</span><span class="sr">Icon ' + (i + 1) + "</span></label>").join("") +
     "</div>";
 
-  function card(href, icon, name, words, src) {
-    const t = testLine(src);
-    return '<a class="b-card" href="' + href + '"><span class="b-ic" aria-hidden="true">' + icon + '</span><span class="b-tx"><b>' + esc(name) + "</b><span>" + U.plural(words, "word") + (t ? " · " + t : "") + "</span></span></a>";
+  // A saved word as a card: the word, its meaning and its review train.
+  function wordCard(it) {
+    return (
+      '<li class="wb-card"><span class="wb-word">' + ui.jp(it.head || it.j, { tokens: false }) + "</span>" + star(it.id) +
+      '<span class="wb-en">' + esc(it.en) + "</span>" + (NI.views.tierBadge(it.id) || '<span class="tier">new</span>') + "</li>"
+    );
+  }
+
+  // Last and best score on a list's tests, as two bars.
+  function testCard(src) {
+    const t = NI.store.testsOf(src);
+    const bar = (label, pct) => '<div class="tc-row"><span class="lbl">' + label + "</span>" + ui.progressBar(pct / 100, label) + "<b>" + pct + "%</b></div>";
+    return (
+      '<div class="card test-card">' +
+      (t ? bar("Last test", t.last) + bar("Best", t.best).replace('class="tc-row"', 'class="tc-row best"') : '<p class="small muted">Test yourself on these words: meaning, reading or writing, ten at a time.</p>') +
+      '<div class="tc-btns"><a class="btn primary big" href="#vtest-' + src + '">Test yourself</a><a class="btn ghost big" href="#cards-' + src + '">Flashcards</a></div></div>'
+    );
   }
 
   function overview(adding) {
     const B = NI.store.books;
-    const all = source("all").words.length;
+    const all = source("all").words;
     const rev = source("rev").words.length;
     const mis = source("mis").words.length;
+    const shown = all.slice(0, 12);
     return (
-      '<header class="page-head"><h1>Word book <span class="sub">' + ui.jp("{単語帳|たんごちょう}", { tokens: false }) + "</span></h1>" +
-      "<p>Save words wherever you meet them: tap any Japanese word and choose <b>Save</b>, or the bookmark beside a word on new-word cards, in reviews and in the word list. Sort them into lists, add words of your own, then test yourself.</p>" +
-      '<div class="row wrap"><a class="btn primary" href="#vtest">Test yourself</a><button class="btn ghost" type="button" data-add>＋ Add your own word</button></div></header>' +
+      '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Word book<span class="sub">' + ui.jp("{単語帳|たんごちょう}", { tokens: false }) + "</span></h1></header>" +
+      '<div class="wb-wrap">' +
+      '<label class="wb-search"><span class="sr">Search your saved words</span><input id="wb-q" type="search" placeholder="Search: eat, たべる, taberu" autocomplete="off"></label>' +
+      '<nav class="wb-chips" aria-label="Your lists"><a class="chip on" href="#book" aria-current="page">All saved · ' + all.length + "</a>" +
+      B.lists.map((l) => '<a class="chip" href="#book-' + l.id + '">' + esc(l.icon + " " + l.name) + " · " + l.words.filter((id) => NI.items.get(id)).length + "</a>").join("") +
+      '<button class="chip add" type="button" data-new-list aria-label="New list" title="New list">＋</button></nav>' +
+      '<form class="card nl-form big" hidden><label for="nl-big">Name of the new list</label><div class="row wrap"><input id="nl-big" type="text" maxlength="40" placeholder="e.g. Food" autocomplete="off"><button class="btn primary" type="submit">Make the list</button></div>' + iconPicker("nl-icon", LIST_ICONS) + "</form>" +
       (adding ? addForm(Object.assign({}, prefill)) : "") +
-      '<section class="u-sec"><h2>Your lists</h2><div class="b-cards">' +
-      card("#book-all", "🔖", "All saved words", all, "all") +
-      B.lists.map((l) => card("#book-" + l.id, l.icon, l.name, l.words.filter((id) => NI.items.get(id)).length, l.id)).join("") +
-      '<button class="b-card b-new" type="button" data-new-list><span class="b-ic" aria-hidden="true">＋</span><span class="b-tx"><b>New list</b><span>Food, verbs, for the trip…</span></span></button>' +
-      "</div>" +
-      '<form class="nl-form big" hidden><label for="nl-big">Name of the new list</label><div class="row wrap"><input id="nl-big" type="text" maxlength="40" placeholder="e.g. Food" autocomplete="off"><button class="btn primary" type="submit">Make the list</button></div>' + iconPicker("nl-icon", LIST_ICONS) + "</form>" +
-      (all ? "" : '<p class="empty small">Nothing saved yet. Tap any Japanese word and choose <b>Save</b>, or tap the bookmark beside a word.</p>') +
-      "</section>" +
-      '<section class="u-sec"><h2>Also test yourself on</h2><div class="b-cards">' +
-      card("#vtest-rev", "🚃", "Words in your reviews", rev, "rev") +
-      card("#vtest-mis", "📝", "Your mistakes", mis, "mis") +
-      '<a class="b-card" href="#vtest-u1.5"><span class="b-ic" aria-hidden="true">🚉</span><span class="b-tx"><b>Course units</b><span>Any unit or range, from the course word list</span></span></a>' +
-      '<a class="b-card" href="#words"><span class="b-ic" aria-hidden="true">📚</span><span class="b-tx"><b>Every course word</b><span>' + NI.course.words.length + " words, searchable</span></span></a>" +
-      "</div></section>"
+      (all.length ? testCard("all") : "") +
+      '<section class="h-sec"><div class="sec-head"><h2>All saved · ' + U.plural(all.length, "word") + '</h2><a class="meta" href="#book-all">' + (all.length > shown.length ? "See all " + all.length : all.length ? "Manage" : "") + "</a></div>" +
+      (all.length
+        ? '<ul class="wb-grid" data-wb-grid>' + shown.map(wordCard).join("") + "</ul>"
+        : '<p class="card empty">Nothing saved yet. Tap any Japanese word and choose <b>Save</b>, or tap the bookmark beside a word.</p>') +
+      '<button class="wb-add" type="button" data-add>＋ Add a word from outside the course</button></section>' +
+      '<section class="h-sec"><div class="sec-head"><h2>Also test yourself on</h2></div><div class="card list-card">' +
+      ui.listRow("#vtest-rev", "🚃", "Words in your reviews", U.plural(rev, "word")) +
+      ui.listRow("#vtest-mis", "📝", "Your mistakes", U.plural(mis, "word")) +
+      ui.listRow("#vtest-u1.5", "🚉", "Course units", "Any unit or range, from the course word list") +
+      ui.listRow("#words", "📚", "Every course word", NI.course.words.length + " words, searchable") +
+      "</div></section></div>"
     );
   }
 
@@ -335,8 +352,8 @@
     const l = S.list;
     const missing = S.words.filter((w) => !NI.store.hasItem(w.id)).length;
     return (
-      '<header class="page-head"><p class="crumb"><a href="#book">← Word book</a></p>' +
-      '<h1><span aria-hidden="true">' + S.icon + "</span> " + esc(S.t) + ' <span class="sub">' + U.plural(S.words.length, "word") + "</span></h1>" +
+      '<header class="page-head"><p class="crumb"><a href="#book">Word book</a></p>' +
+      '<h1><span aria-hidden="true">' + S.icon + "</span> " + esc(S.t) + '<span class="sub">' + U.plural(S.words.length, "word") + "</span></h1>" +
       (testLine(S.src) ? '<p class="small muted">Tests: ' + testLine(S.src) + "</p>" : "") +
       (S.words.length ? '<div class="row wrap"><a class="btn primary" href="#vtest-' + S.src + '">Test this list</a><a class="btn ghost" href="#cards-' + S.src + '">Flashcards</a></div>' : "") +
       '<div class="row wrap b-more">' +
@@ -351,7 +368,7 @@
         ? '<div class="row wrap b-tools"><label class="sr" for="b-q">Search this list</label><input id="b-q" class="search" type="search" placeholder="Search: eat, たべる, taberu">' +
           '<label class="sr" for="b-sort">Sort</label><select id="b-sort">' + SORTS.map(([v, t]) => '<option value="' + v + '">' + t + "</option>").join("") + "</select></div>"
         : "") +
-      '<ul class="wordlist b-list"></ul>' +
+      '<ul class="card wordlist b-list"></ul>' +
       (S.words.length ? "" : '<p class="empty">' + (l ? "This list is empty. Tap any Japanese word, choose <b>Save</b>, then this list's name." : "Nothing saved yet. Tap any Japanese word and choose <b>Save</b>, or tap the bookmark beside a word.") + ' <a href="#words">Browse the course words</a></p>')
     );
   }
@@ -388,6 +405,18 @@
   };
 
   function mountOverview(el, adding) {
+    const q = el.querySelector("#wb-q");
+    const grid = el.querySelector("[data-wb-grid]");
+    if (q && grid)
+      q.addEventListener("input", () => {
+        const term = q.value.trim().toLowerCase();
+        let words = source("all").words;
+        if (term) {
+          const kana = NI.kana.fold(NI.kana.romajiToHiragana(term, true));
+          words = words.filter((w) => w.en.toLowerCase().indexOf(term) >= 0 || w.w.indexOf(term) >= 0 || (kana && NI.kana.fold(w.r).indexOf(kana) >= 0));
+        }
+        grid.innerHTML = (term ? words : words.slice(0, 12)).map(wordCard).join("") || '<li class="empty">No saved words match “' + esc(q.value) + "”.</li>";
+      });
     const form = el.querySelector(".b-add");
     if (form) {
       const pre = prefill;
