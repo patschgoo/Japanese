@@ -142,6 +142,7 @@ check by hand.
 ```
 index.html            app shell; loads every script in order
 css/app.css           all styles: design tokens (light and dark), layout, screens
+css/fonts.css         the web fonts, served from fonts/ (with their licences)
 js/core/              engines with no DOM: kana & romaji input, furigana,
                       conjugation, number readings, word segmenter,
                       spaced repetition, storage (with learning profiles
@@ -150,7 +151,8 @@ js/core/              engines with no DOM: kana & romaji input, furigana,
 js/data/              course content (units-h/m/d/k/t/s.js = the six lines),
                       stories, phrasebook, kana tables, grammar-word glosses,
                       emoji for concrete words, sentence-maker fillers,
-                      omikuji fortunes, kana stroke order (strokes.js), and a
+                      omikuji fortunes, kana and kanji stroke order
+                      (strokes.js, kanji-strokes.js), kanji (kanji.js), and a
                       glossary of the Japanese shown outside the lessons
 js/ui/                pages, exercise types, lesson/review sessions, games,
                       reader and maker, stories, stamps, the sentence breakdown,
@@ -197,20 +199,38 @@ number readings include the right sound changes (さんびゃく, いっぷん, 
 さんぼん, しちがつ…), that stories and the sentence maker stay within what
 the learner knows, and that every lesson can be generated.
 
-## Licence
+## Licence and credits
 
-Content and code are provided as-is for learning. Fonts are loaded from
-Google Fonts (Fira Sans, BIZ UDPGothic, Klee One) under their own licences.
+The app's own code and course content (units, sentences, conversations,
+stories, grammar notes, the phrasebook, fortunes and kanji meanings) are
+provided as-is for learning and are not under an open licence. The things
+below were made by others and keep their own licences; the app lists them
+too, under More → Credits & licences.
 
-The app icon, the daruma with 日本 (`img/`), is the project's own artwork.
+**KANJIDIC2.** Kanji readings and stroke counts in `js/data/kanji.js` come
+from the KANJIDIC2 dictionary file. This file is the property of the
+[Electronic Dictionary Research and Development Group](https://www.edrdg.org/),
+and is used in conformance with the Group's
+[licence](https://www.edrdg.org/edrdg/licence.html):
+[Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+Changes: only the kanji in the course's words are included, with their
+stroke counts and on and kun readings; the short English meanings were
+written for this course. `js/data/kanji.js` is shared under the same licence.
 
-Kanji readings and stroke counts in `js/data/kanji.js` come from KANJIDIC
-(the Electronic Dictionary Research and Development Group,
-http://www.edrdg.org/), under the Creative Commons Attribution-ShareAlike 4.0
-licence; the short meanings were written for this course. The kanji stroke
-order in `js/data/kanji-strokes.js` comes from KanjiVG, like the kana's.
+**KanjiVG.** The stroke order in `js/data/strokes.js` (kana) and
+`js/data/kanji-strokes.js` (kanji) comes from
+[KanjiVG](https://kanjivg.tagaini.net/), Copyright (C) 2009–2011 Ulrich Apel,
+under the [Creative Commons Attribution-ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
+licence. Changes: only the characters this course uses are included, with
+numbers rounded to one decimal place. Both files are shared under the same
+licence.
 
-The kana stroke order in `js/data/strokes.js` comes from
-[KanjiVG](http://kanjivg.tagaini.net), Copyright (C) 2009–2011 Ulrich Apel,
-under the [Creative Commons Attribution-Share Alike 3.0](http://creativecommons.org/licenses/by-sa/3.0/)
-licence; that file is shared under the same licence.
+**Fonts.** Fira Sans (Copyright 2012–2015 The Mozilla Foundation and
+Telefonica S.A.), BIZ UDPGothic (Copyright 2022 The BIZ UDGothic Project
+Authors) and Klee One (Copyright 2020 The Klee Project Authors), all under the
+[SIL Open Font License 1.1](https://openfontlicense.org/). They are served
+from this site (`fonts/`, with `css/fonts.css`), so visitors' browsers don't
+contact Google; the licence texts are in `fonts/OFL-*.txt`. The pieces and
+their character ranges are the ones Google Fonts serves for the same fonts.
+
+**App icon.** The daruma with 日本 (`img/`) is the project's own artwork.

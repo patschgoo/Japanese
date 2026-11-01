@@ -2474,3 +2474,13 @@ kbd { font: 600 0.72em var(--f-ui); padding: 1px 6px; border-radius: 5px; border
 .b-tools { margin: 4px 0 12px; }
 .plan-nudge { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; color: var(--ink); text-decoration: none; }
 .plan-nudge > svg { width: 18px; height: 18px; color: var(--ink-3); flex: none; }
+
+/* Credits & licences */
+.credits { display: flex; flex-direction: column; gap: 20px; }
+.credits .page-head, .credits .page-intro { margin-bottom: 0; }
+.cr-card { padding: 16px 18px; font-size: 14.5px; line-height: 1.55; }
+.cr-card p { margin: 0 0 8px; }
+.cr-card p:last-child { margin-bottom: 0; }
+.cr-card code { font-size: 0.9em; padding: 1px 5px; border-radius: 6px; background: var(--tint); overflow-wrap: anywhere; }
+.cr-list { margin: 0 0 10px; padding-left: 1.2em; display: grid; gap: 6px; }
+.kj-credit a, .cr-card a { color: inherit; }

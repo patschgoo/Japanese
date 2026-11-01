@@ -247,7 +247,7 @@
             );
           })
           .join("") +
-        '<p class="small muted kj-credit">Readings and stroke counts from KANJIDIC (EDRDG), stroke order from KanjiVG, both under Creative Commons Attribution-ShareAlike licences.</p></div>'
+        '<p class="small muted kj-credit">Readings and stroke counts from <a href="https://www.edrdg.org/wiki/index.php/KANJIDIC_Project" target="_blank" rel="noopener">KANJIDIC2</a>, the property of the <a href="https://www.edrdg.org/" target="_blank" rel="noopener">Electronic Dictionary Research and Development Group</a>, used in conformance with the Group’s <a href="https://www.edrdg.org/edrdg/licence.html" target="_blank" rel="noopener">licence</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>). Stroke order from <a href="https://kanjivg.tagaini.net/" target="_blank" rel="noopener">KanjiVG</a> © Ulrich Apel (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>). <a href="#credits">All credits</a></p></div>'
       );
     },
     mount(el, args) {

@@ -2,11 +2,15 @@
    readings]. On readings (from Chinese) are in katakana; in kun readings (the
    Japanese words) a dot marks where the okurigana starts: た.べる is 食べる.
 
-   Readings and stroke counts are from KANJIDIC (the Electronic Dictionary
-   Research and Development Group, http://www.edrdg.org/), used under the
-   Creative Commons Attribution-ShareAlike 4.0 licence; this file is shared
-   under the same licence. The short meanings were written for this course.
-   Which unit a kanji belongs to comes from the words that use it. */
+   This file uses the KANJIDIC2 dictionary file. That file is the property
+   of the Electronic Dictionary Research and Development Group
+   (https://www.edrdg.org/), and is used in conformance with the Group's
+   licence (https://www.edrdg.org/edrdg/licence.html): Creative Commons
+   Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+   Changes: only the kanji in the course's words are included, with their
+   stroke counts and on and kun readings from KANJIDIC2; the short English
+   meanings were written for this course. This file is shared under the same
+   licence. Which unit a kanji belongs to comes from the words that use it. */
 (function (root) {
   "use strict";
   const NI = root.NI;

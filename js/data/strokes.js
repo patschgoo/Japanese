@@ -4,8 +4,9 @@
 
    From KanjiVG (http://kanjivg.tagaini.net), Copyright (C) 2009–2011 Ulrich
    Apel, under the Creative Commons Attribution-Share Alike 3.0 licence
-   (http://creativecommons.org/licenses/by-sa/3.0/). Numbers are rounded to
-   one decimal place; this file is distributed under the same licence. */
+   (https://creativecommons.org/licenses/by-sa/3.0/). Changes: only the
+   characters this course uses are included, and numbers are rounded to one
+   decimal place. This file is distributed under the same licence. */
 (function (root) {
   "use strict";
   const NI = root.NI;

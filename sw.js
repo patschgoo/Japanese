@@ -2,7 +2,7 @@
    updates show up immediately when online and the course still opens offline.
    Installing caches the page and every file it loads, so this already works
    after the first visit (the page's own first requests come before the worker). */
-const CACHE = "nihon-v19";
+const CACHE = "nihon-v20";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -32,9 +32,8 @@ self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  const own = url.origin === self.location.origin;
-  const fonts = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
-  if (!own && !fonts) return;
+  // Only this site's own files (the fonts included); anything else goes straight to the network.
+  if (url.origin !== self.location.origin) return;
   event.respondWith(
     fetch(req)
       .then((res) => {

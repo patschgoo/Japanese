@@ -979,7 +979,7 @@
             "</div></div>"
         ) +
         "</div></div>" +
-        '<p class="small muted opt-version"><span lang="ja">日本</span> version ' + NI.VERSION + " · settings are saved in this browser, for each learning profile" + (root.NI_EMBED ? "" : ' · <button class="btn small ghost" type="button" data-check-update>Check for a new version</button>') + "</p>"
+        '<p class="small muted opt-version"><span lang="ja">日本</span> version ' + NI.VERSION + " · settings are saved in this browser, for each learning profile · <a href=\"#credits\">Credits & licences</a>" + (root.NI_EMBED ? "" : ' · <button class="btn small ghost" type="button" data-check-update>Check for a new version</button>') + "</p>"
       );
     },
     mount(el) {
@@ -1109,6 +1109,7 @@
           ["#move", "📲", "Move to another device"],
           ["#guide", "🧭", "How this course works"],
           ["#options", "⚙️", "Options"],
+          ["#credits", "📜", "Credits & licences"],
         ]) +
         "</div>"
       );

@@ -305,7 +305,7 @@
         "<li><b>A goal:</b> the " + ext("https://www.jlpt.jp/e/", "JLPT") + " N5 and N4 exams make a clear target.</li>" +
         "</ul></section>" +
 
-        '<section class="sources" id="g-sources"><h2>Sources</h2><ul>' +
+        '<section class="sources" id="g-sources"><h2>Sources</h2><p class="small">The kanji data, stroke order and fonts other people made are listed in <a href="#credits">Credits & licences</a>.</p><ul>' +
         "<li>Abraham, L. B. (2008). Computer-mediated glosses in second language reading comprehension and vocabulary learning: A meta-analysis. <i>Computer Assisted Language Learning</i>, 21(3), 199–226. " + ext("https://doi.org/10.1080/09588220802090246", "doi") + "</li>" +
         "<li>Brunmair, M., &amp; Richter, T. (2019). Similarity matters: A meta-analysis of interleaved learning and its moderators. <i>Psychological Bulletin</i>, 145(11), 1029–1052. " + ext("https://doi.org/10.1037/bul0000209", "doi") + "</li>" +
         "<li>Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., &amp; Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. <i>Psychological Bulletin</i>, 132(3), 354–380.</li>" +
@@ -367,6 +367,59 @@
         })
       );
       if (args && args[0]) setTimeout(() => jump(args[0]), 30);
+    },
+  };
+
+  // ---------------------------------------------------------------------------
+  /* Credits and licences: the data and fonts made by others, with the
+     attribution their licences ask for, and what else the app relies on. */
+  const link = (href, text) => '<a href="' + href + '" target="_blank" rel="noopener">' + text + "</a>";
+
+  pages.credits = {
+    title: "Credits & licences",
+    nav: "more",
+    render() {
+      const embed = !!root.NI_EMBED;
+      const sec = (id, title, body) => '<section class="h-sec" aria-labelledby="cr-' + id + '"><div class="sec-head"><h2 id="cr-' + id + '">' + title + '</h2></div><div class="card cr-card">' + body + "</div></section>";
+      return (
+        '<div class="credits">' +
+        '<header class="page-head"><p class="crumb"><a href="#more">More</a></p><h1>Credits & licences<span class="sub">' + ui.jp("{謝辞|しゃじ}", { tokens: false }) + "</span></h1></header>" +
+        '<p class="page-intro">The course itself was written for this app. A few things in it were made by others and shared under open licences; this is who made them and the terms they’re used under.</p>' +
+        sec(
+          "kanjidic",
+          "Kanji readings and stroke counts",
+          "<p><b>KANJIDIC2.</b> This app uses the KANJIDIC2 dictionary file. This file is the property of the " + link("https://www.edrdg.org/", "Electronic Dictionary Research and Development Group") + ", and is used in conformance with the Group’s " + link("https://www.edrdg.org/edrdg/licence.html", "licence") + ".</p>" +
+            "<p>Licence: " + link("https://creativecommons.org/licenses/by-sa/4.0/", "Creative Commons Attribution-ShareAlike 4.0") + ". Changes: only the " + (NI.kanji ? NI.kanji.list().length + " " : "") + "kanji in the course’s words are included, with their stroke counts and on and kun readings; the short English meanings were written for this course. The data file (<code>js/data/kanji.js</code>) is shared under the same licence.</p>"
+        ) +
+        sec(
+          "kanjivg",
+          "Stroke order",
+          "<p><b>KanjiVG</b>, Copyright © 2009–2011 Ulrich Apel, " + link("https://kanjivg.tagaini.net/", "kanjivg.tagaini.net") + ". Used for the stroke order of the kana and kanji, and for checking what you write.</p>" +
+            "<p>Licence: " + link("https://creativecommons.org/licenses/by-sa/3.0/", "Creative Commons Attribution-ShareAlike 3.0") + ". Changes: only the characters this course uses are included, with the numbers rounded to one decimal place. The data files (<code>js/data/strokes.js</code>, <code>js/data/kanji-strokes.js</code>) are shared under the same licence.</p>"
+        ) +
+        sec(
+          "fonts",
+          "Fonts",
+          '<ul class="cr-list">' +
+            "<li><b>Fira Sans</b>: Copyright © 2012–2015 The Mozilla Foundation and Telefonica S.A." + (embed ? "" : " · " + link("fonts/OFL-fira-sans.txt", "licence text")) + "</li>" +
+            "<li><b>BIZ UDPGothic</b>: Copyright © 2022 The BIZ UDGothic Project Authors (Morisawa)." + (embed ? "" : " · " + link("fonts/OFL-biz-udpgothic.txt", "licence text")) + "</li>" +
+            "<li><b>Klee One</b>: Copyright © 2020 The Klee Project Authors (Fontworks)." + (embed ? "" : " · " + link("fonts/OFL-klee-one.txt", "licence text")) + "</li></ul>" +
+            "<p>All three are under the " + link("https://openfontlicense.org/", "SIL Open Font License 1.1") + ". " +
+            (embed ? "In this preview they come from Google Fonts; on the website they’re served from the site itself." : "They’re served from this website, so your browser doesn’t contact Google or anyone else to get them.") + "</p>"
+        ) +
+        sec(
+          "rest",
+          "What else the app uses",
+          '<ul class="cr-list">' +
+            "<li><b>Audio</b> is spoken by your device’s own voices; nothing is recorded or uploaded. The pronunciation check uses your browser’s speech recognition, which some browsers (Chrome, for one) run on their maker’s servers.</li>" +
+            "<li><b>Emoji</b> are drawn by your device’s own emoji font.</li>" +
+            "<li><b>Look-ups</b> in the Reader and word pop-ups link to Jisho, Google Translate and DeepL; those open the other site, under its own terms.</li>" +
+            "<li><b>Sync</b> happens only if you connect GitHub: your progress is then kept in a secret gist on your own account, which isn’t listed anywhere and only opens with its link.</li>" +
+            '<li><b>Research</b> behind the method is listed in the Guide’s <a href="#guide-sources">sources</a>.</li></ul>' +
+            "<p>The app’s own code and course content (units, sentences, conversations, stories, grammar notes, the phrasebook, fortunes and kanji meanings) aren’t under an open licence; the data files above stay under their Creative Commons licences, as those require.</p>"
+        ) +
+        "</div>"
+      );
     },
   };
 })(typeof window !== "undefined" ? window : globalThis);

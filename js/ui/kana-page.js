@@ -53,7 +53,7 @@
       '<h3 class="kc-h">Extra katakana for other languages</h3>' +
       '<div class="kc-extra">' + D.EXTENDED.map((r) => '<div class="kc-side">' + cellsOf(r).map((c) => cell(c[0], c[1])).join("") + "</div>").join("") + "</div>" +
       "</div>" +
-      '<p class="small muted">Known means right three times in a row. Stroke order from <a href="http://kanjivg.tagaini.net" target="_blank" rel="noopener">KanjiVG</a> (CC BY-SA 3.0).</p>'
+      '<p class="small muted">Known means right three times in a row. Stroke order from <a href="https://kanjivg.tagaini.net/" target="_blank" rel="noopener">KanjiVG</a> © Ulrich Apel (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>). <a href="#credits">All credits</a></p>'
     );
   }
 

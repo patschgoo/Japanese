@@ -101,14 +101,17 @@
 
   /* Web fonts come after the app has started: on a slow connection the
      scripts get the bandwidth first, and text shows in the device's own
-     fonts until these arrive. The address is in index.html's <noscript>. */
+     fonts until these arrive. They're served from this site (css/fonts.css,
+     named in index.html's <noscript>), or in the one-file preview from
+     wherever that names. */
   function loadFonts() {
-    if (doc.querySelector('link[rel="stylesheet"][href*="fonts.googleapis"]')) return;
+    if (doc.querySelector("link[data-webfonts]")) return;
     const ns = doc.querySelector("noscript[data-fonts]");
     const m = ns && /href="([^"]+)"/.exec(ns.textContent || ns.innerHTML);
     if (!m) return;
     const link = doc.createElement("link");
     link.rel = "stylesheet";
+    link.setAttribute("data-webfonts", "");
     link.href = m[1].replace(/&amp;/g, "&");
     doc.head.appendChild(link);
   }

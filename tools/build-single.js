@@ -19,7 +19,12 @@ const safeScript = (js) => js.replace(/<\/script/gi, "<\\/script");
 
 const css = read("css/app.css");
 const scripts = (html.match(/<script src="([^"]+)"><\/script>/g) || []).map((tag) => tag.match(/src="([^"]+)"/)[1]);
-const fonts = (html.match(/<link rel="stylesheet" href="(https:\/\/fonts[^"]+)"/) || [])[1];
+/* The site serves its own fonts (css/fonts.css, about 9 MB in pieces), too
+   much to put inside one file. The claude.ai preview may only load
+   stylesheets from Google Fonts, so it takes the same fonts from there; the
+   plain one-file copy uses the device's own fonts. */
+const GOOGLE_FONTS = "https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Klee+One:wght@600&display=swap";
+const fonts = embed ? GOOGLE_FONTS : "";
 const dataUri = (rel) => "data:image/png;base64," + fs.readFileSync(path.join(ROOT, rel)).toString("base64");
 // Images in the page (the logo) travel inside it too.
 const body = html
