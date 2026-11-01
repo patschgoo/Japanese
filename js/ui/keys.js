@@ -104,11 +104,11 @@
     function press(k) {
       if (!on || input.disabled || !k) return;
       if (k === "enter") {
-        input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        input.dispatchEvent(new root.KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
         return;
       }
       input.value = k === "del" ? input.value.slice(0, -1) : input.value + k;
-      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new root.Event("input", { bubbles: true }));
     }
     // A key answers as the finger touches it; the click after a tap is skipped,
     // but a click with no tap before it (keyboard, switch access) still counts.
