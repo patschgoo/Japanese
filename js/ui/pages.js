@@ -623,6 +623,66 @@
     return '<label class="toggle" for="t-' + key + '"><input type="checkbox" id="t-' + key + '" data-set="' + key + '"' + (on ? " checked" : "") + "><span><b>" + label + "</b>" + (desc ? "<small>" + desc + "</small>" : "") + "</span></label>";
   }
 
+  /* A daily reminder, as a repeating calendar event with an alert: a static
+     site can't send notifications on its own, but every phone's calendar can.
+     Google Calendar takes a link; Apple Calendar, Outlook and the rest take
+     an .ics file. Times are local ("floating"), so 19:00 stays 19:00 when
+     travelling. */
+  const pad = (n) => String(n).padStart(2, "0");
+  function reminderStart(time) {
+    const [h, m] = String(time || "19:00").split(":").map(Number);
+    const d = new Date();
+    d.setHours(h || 0, m || 0, 0, 0);
+    if (d.getTime() < Date.now()) d.setDate(d.getDate() + 1);
+    return d;
+  }
+  const icsStamp = (d) => d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "T" + pad(d.getHours()) + pad(d.getMinutes()) + "00";
+  function reminderText() {
+    const goal = Number(NI.store.settings.dailyGoal) || 60;
+    return { title: "日本: time for Japanese", body: "Reviews first, then a lesson part: your daily goal is " + goal + " XP.", url: NI.move.base() + "#review" };
+  }
+  // Calendar lines wrap at 75 bytes, carrying on after a space.
+  function fold(line) {
+    let out = "";
+    let n = 0;
+    for (const ch of line) {
+      const c = ch.codePointAt(0);
+      const b = c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4;
+      if (n + b > 75) {
+        out += "\r\n ";
+        n = 1;
+      }
+      out += ch;
+      n += b;
+    }
+    return out;
+  }
+  function reminderIcs(time) {
+    const start = reminderStart(time);
+    const end = new Date(start.getTime() + 15 * 60000);
+    const t = reminderText();
+    const now = new Date();
+    const utc = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+    const text = (s) => s.replace(/\\/g, "\\\\").replace(/([,;])/g, "\\$1").replace(/\n/g, "\\n");
+    return [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Nihon//Daily reminder//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT", "UID:nihon-daily-" + now.getTime() + "@patschgoo.github.io", "DTSTAMP:" + utc,
+      "DTSTART:" + icsStamp(start), "DTEND:" + icsStamp(end), "RRULE:FREQ=DAILY",
+      "SUMMARY:" + text(t.title), "DESCRIPTION:" + text(t.body + "\n" + t.url), "URL:" + t.url,
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + text(t.title), "TRIGGER:PT0M", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR", "",
+    ]
+      .map(fold)
+      .join("\r\n");
+  }
+  function reminderGoogle(time) {
+    const start = reminderStart(time);
+    const end = new Date(start.getTime() + 15 * 60000);
+    const t = reminderText();
+    const q = { action: "TEMPLATE", text: t.title, dates: icsStamp(start) + "/" + icsStamp(end), details: t.body + "\n" + t.url, recur: "RRULE:FREQ=DAILY" };
+    return "https://calendar.google.com/calendar/render?" + Object.keys(q).map((k) => k + "=" + encodeURIComponent(q[k])).join("&");
+  }
+
   // Options: the profile in use, and the others to switch to.
   function profileSection() {
     const cur = NI.store.profile;
@@ -663,6 +723,12 @@
         '<fieldset><legend>Daily goal</legend>' + NI.plan.DAILY.map(([xp, t, d]) => radio("dailyGoal", xp, s.dailyGoal, t + " · " + xp + " XP", d)).join("") + "</fieldset>" +
         '<fieldset><legend>Lesson focus</legend>' + NI.plan.FOCI.map(([v, t, d]) => radio("focus", v, s.focus, t, d)).join("") + "</fieldset>" +
         toggle("relaxed", "Relaxed mode", "No clocks or lives in games, and a softer sound for mistakes. Lessons and reviews never time you anyway.") +
+        '<fieldset class="remind"><legend>Daily reminder</legend>' +
+        '<p class="small muted">A repeating event in your calendar, with an alert, so your phone reminds you every day.</p>' +
+        '<div class="row wrap"><label class="remind-time" for="remind-at">At <input id="remind-at" type="time" value="' + esc(s.remindAt || "19:00") + '"></label>' +
+        '<a class="btn small primary" data-remind-google target="_blank" rel="noopener" href="' + esc(reminderGoogle(s.remindAt)) + '">Google Calendar</a>' +
+        (root.NI_EMBED ? "" : '<button class="btn small ghost" type="button" data-remind-ics>Apple, Outlook or other calendar</button>') +
+        "</div></fieldset>" +
         "</section>" +
         '<section class="u-sec opt-sec" id="opt-lessons"><h2>Lessons and reviews</h2>' +
         '<fieldset><legend>Cards in one review session</legend>' + radio("reviewLimit", 20, s.reviewLimit, "20", "A few minutes") + radio("reviewLimit", 50, s.reviewLimit, "50", "The usual") + radio("reviewLimit", 100, s.reviewLimit, "100", "For catching up after a break") + "</fieldset>" +
@@ -708,6 +774,36 @@
     },
     mount(el) {
       el.querySelectorAll("[data-switch]").forEach((b) => b.addEventListener("click", () => NI.store.switchProfile(b.getAttribute("data-switch"))));
+      // The daily reminder: the time is kept with the profile's settings.
+      const at = el.querySelector("#remind-at");
+      const gLink = el.querySelector("[data-remind-google]");
+      at.addEventListener("change", () => {
+        NI.store.set("remindAt", at.value || "19:00", true);
+        gLink.href = reminderGoogle(at.value);
+      });
+      gLink.addEventListener("click", () => {
+        NI.store.set("remindAt", at.value || "19:00", true);
+        gLink.href = reminderGoogle(at.value);
+      });
+      const ics = el.querySelector("[data-remind-ics]");
+      if (ics)
+        ics.addEventListener("click", () => {
+          NI.store.set("remindAt", at.value || "19:00", true);
+          try {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([reminderIcs(at.value)], { type: "text/calendar" }));
+            a.download = "nihon-daily-reminder.ics";
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+              URL.revokeObjectURL(a.href);
+              a.remove();
+            }, 500);
+            ui.toast("Open the file to add the reminder to your calendar.");
+          } catch (e) {
+            ui.toast("Saving a file isn't possible here. Use the Google Calendar link instead.");
+          }
+        });
       const upd = el.querySelector("[data-check-update]");
       if (upd) upd.addEventListener("click", () => NI.app.checkVersion(true));
       const preview = el.querySelector(".preview");

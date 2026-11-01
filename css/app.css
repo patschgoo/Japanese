@@ -1976,3 +1976,8 @@ kbd { font: 600 0.72em var(--f-ui); padding: 1px 6px; border-radius: 5px; border
 .update-bar .icon-btn { width: 34px; height: 34px; }
 @media (max-width: 760px) { .update-bar { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); } }
 .opt-version { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+
+/* Daily reminder in Options */
+.remind .row { align-items: center; }
+.remind-time { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.remind-time input { width: auto; padding: 6px 10px; }

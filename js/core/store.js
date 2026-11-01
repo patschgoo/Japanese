@@ -38,6 +38,7 @@
     autoNext: false, // move on by itself after a right answer
     retryMissed: true, // a missed question comes back at the end of a lesson
     handFont: true, // the handwriting-style font for big words in questions
+    remindAt: "19:00", // the time of the daily calendar reminder
   };
 
   /* The word book: every saved word (saved: id → when), named lists of ids,
